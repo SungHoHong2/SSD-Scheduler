@@ -8,6 +8,7 @@
      ```
      if(rq && dd->batching < dd->fifo_batch)
      goto dispatch_request;
+     is the latency determined by the sector size? 
      ```
 
 ### Rules of SFQ
