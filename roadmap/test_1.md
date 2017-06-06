@@ -9,6 +9,7 @@
 struct sfq_data{
   struct rb_root sort_list;     // sorting the start_tag
   int virtual_time;             // virtual time
+  int latest_finish_time;       // save the latest finish time for the requests
 
   unsigned int batching;        // number of allowed concurrent requests (depth)
   // unsigned int write_starved;   // checking for the fairness of the writes
@@ -75,8 +76,8 @@ static int set_request(struct request_queue *q, struct request *rq){
 
   // compare current arrival_time with the latest finish tag
   if(!list_empty(&sfqd->fifo_list)){
-      if(virtual_time > sfqr->start_tag){
-         sfqr->start_tag = virtual_time; // assign the highest value in the start_tag time
+      if(sfqd->latest_finish_time > sfqr->start_tag){
+         sfqr->start_tag = latest_finish_time; // assign the highest value in the start_tag time
       }
   }
 
@@ -145,7 +146,9 @@ static int dispatch_requests(struct request_queue *q){
 ```
 static void completed_req_fn(struct request_queue *q, struct request *rq){
 	struct sfq_data *sfqd = q->elevator->elevator_data;
-  sfqd->virtual_time = current_virtual_time;
+
+  if(sfqd->latest_finish_time < current_virtual_time)
+  sfqd->latest_finish_time = current_virtual_time;
 }
 
 ```
