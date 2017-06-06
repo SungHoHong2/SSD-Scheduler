@@ -1,4 +1,8 @@
 # SFQ-Scheduler Assumption 1
+- full source code are displayed [here](test_1.c)
+- use the rbtree to sort the request based on start_tag
+- allow limited number of concurrent requests for each deployment
+
 
 ### global data
 ```
@@ -12,6 +16,7 @@ struct sfq_data{
   int current_batch;
   // int writes_starved;
 };
+
 
 ```
 ### private struct for each request
