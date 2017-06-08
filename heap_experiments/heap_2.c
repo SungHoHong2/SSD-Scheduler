@@ -58,9 +58,10 @@ int main(){
                 sfq_11->rq = (request *)malloc(sizeof(request));
                 sfq_11->rq->proof =0;
 
+
   sfq_1->start_tag = 1;
   sfq_2->start_tag = 2;
-  sfq_3->start_tag = 9;
+  sfq_3->start_tag = 3;
   sfq_4->start_tag = 4;
   sfq_5->start_tag = 5;
   sfq_6->start_tag = 6;
@@ -69,6 +70,7 @@ int main(){
   sfq_9->start_tag = 9;
   sfq_10->start_tag = 10;
   sfq_11->start_tag = 0;
+
 
   sfq_request **sfqqs = (sfq_request **)malloc(10*sizeof(sfq_request *));
   sfqqs[0] = sfq_1;
@@ -117,9 +119,10 @@ int main(){
 
       do {
             c = 2 * root + 1;
-            if(c<(no-1) && (sfqqs[c]->start_tag < sfqqs[c+1]->start_tag) && c <j-1)
+            printf("while working: %d\n", c);
+            if((sfqqs[c]->start_tag < sfqqs[c+1]->start_tag) && c <j-1)
               c++;
-            if(c<(no-1) && sfqqs[root]->start_tag < sfqqs[c]->start_tag && c<j){
+            if(sfqqs[root]->start_tag < sfqqs[c]->start_tag && c<j){
               temp = sfqqs[root];
               sfqqs[root] = sfqqs[c];
               sfqqs[c] = temp;
