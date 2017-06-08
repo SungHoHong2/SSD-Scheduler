@@ -1,15 +1,8 @@
 # SSD-Scheduler
 
-### Insights
-1. the latency may be determined by fifo_batch.
-   - the size of the batch determined by the sets of the increasing sector number
-   - the smaller batch can reduce latency by ensuring new requests are exectued sooner.
-   - fifo batch can determine the depth
-     ```
-     if(rq && dd->batching < dd->fifo_batch)
-     goto dispatch_request;
-     is the latency determined by the sector size? 
-     ```
+### In a Nutshell
+1. heap algorithm sorts the queue for requests.
+2. virtual_time only uses logical_time
 
 ### Rules of SFQ
 1. only need one queue for all pending requests
@@ -20,6 +13,18 @@
    - determine the start/finish time
    - dispatch a request (if depth has not been reached)
    - advance the virtual time
+5. virtual time does not use jiffies
+   - only useus the start_time and the finish_time
+   - start_time and finish_time are only assigned with the size of the requests.
+
+### Experiment with Heap-Sort
+1. heap sort is recommended to be sorted in an array (not a linked-list)
+   - heap sort is good for big O and in-place.
+   - using linked-list will break the big O because it relies on random access to the array
+2. use a fixed_sized array for sorting the start_tag
+3. once the sorted data are full add them to the request queue
+4. empty and reallocate the fixed_sized array
+
 
 ### Experiment with Deadline-Scheduler
 1. deadline queues are basicaly sorted by their deadline (expiration time) while the sorted queues are sorted by the sector number
