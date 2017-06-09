@@ -17,16 +17,17 @@
    - only useus the start_time and the finish_time
    - start_time and finish_time are only assigned with the size of the requests.
 
+### Applying SFQ and Heap-Sort in SSD Scheduler
+1. pseudo code for SSD scheduler
+
+
 ### Experiment with Heap-Sort
 1. heap sort is recommended to be sorted in an array (not a linked-list)
    - heap sort is good for big O and in-place.
    - using linked-list will break the big O because it relies on random access to the array
-2. use a fixed_sized array for sorting the start_tag
-3. once the sorted data are full add them to the request queue
-4. empty and reallocate the fixed_sized array
-5. implementation of min-heap
+2. implementation of min-heap
    - userspace implementation [view](heap_experiments/min_heap_3.c)
-
+   - kernelspace implementation [view](heap_experiments/min_heap_4.c)
 
 ### Experiment with Deadline-Scheduler
 1. deadline queues are basicaly sorted by their deadline (expiration time) while the sorted queues are sorted by the sector number
