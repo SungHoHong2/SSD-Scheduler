@@ -25,7 +25,7 @@
 3. once the sorted data are full add them to the request queue
 4. empty and reallocate the fixed_sized array
 5. implementation of min-heap
-   - userspace implementation (view)[heap_experiments/min-heap_3.c]
+   - userspace implementation [view](heap_experiments/min-heap_3.c)
 
 
 ### Experiment with Deadline-Scheduler
