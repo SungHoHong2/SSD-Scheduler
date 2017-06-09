@@ -6,16 +6,15 @@
 
 ### Global Values
 - assume all requests have fixed length
-- assume all requests are reads
-- declare min-heap index functions
+- assume all type of requests is READ (fixed weight)
+- declare indexing functions for min-heap
 - declare sfq_global struct
-   - global struct for the elevator
-   - include virtual_time that tracks the logical time
-   - include requests array for sorting the requests
+   - virtual_time: tracks the logical time
+   - requests[array]: array for sorting the requests
 - declare sfq_request struct
-  - include start_tag to assign the arrival time
-  - include finish_tag to estimate the finish time
-  - include request struct to assign the request   
+  - start_tag: assign the arrival time
+  - finish_tag: estimate the finish time
+  - request struct: assign the request   
 
 ```
 
@@ -104,8 +103,8 @@ int get_highest_finish_tag(sfq_global *hp, int i) {
 
 
 ### SFQ INIT QUEUE
-1. allocate memory to sfq_global struct
-2. assign zero for the current virtual_time
+1. allocate memory for sfq_global struct
+2. assign virtual_time to zero
 ```
 
 static int sfq_init_queue(struct request_queue *q, struct elevator_type *e){
@@ -139,12 +138,12 @@ static int sfq_init_queue(struct request_queue *q, struct elevator_type *e){
 
 ```
 
-### SFQ INIT QUEUE
-1. allocate struct (sfq_request)
-2. assign pid to each request
+### SFQ SET REQUEST
+1. allocate memory for struct(sfq_request)
+2. assign pid for each request
 3. compare and assign start_tag of each request
 4. estimate finish_tag for each request
-5. assign the struct for each request privately
+5. assign the struct(sfq_request) to each request
 
 ```
 
@@ -179,9 +178,9 @@ static int sfq_set_request(struct request_queue *q, struct request *rq, struct b
 ```
 
 ### SFQ ADD REQUEST
-1. assign request pointer to each sfq_request struct
-2. add requests in the global array obligating to heap-sort policy
-3. increase the size of the array for each requests
+1. assign request address to each sfq_request struct
+2. add requests to global array for heap-sort
+3. reallocate the size of the array for each requests
 
 ```
 
@@ -242,11 +241,13 @@ static int sfq_dispatch_requests(struct request_queue *q, int force){
 
 
 ### SFQ EXIT QUEUE
-1. free the sfq_global struct
+1. free the memory of the global array storing the requests
+2. free the memory of the sfq_global struct
 
 ```
 static void sfq_exit_queue(struct elevator_queue *e){
 	struct sfq_global *sfqd = e->elevator_data;
+  kfree(sfqd->requests);
 	kfree(sfqd);
 }
 ```
