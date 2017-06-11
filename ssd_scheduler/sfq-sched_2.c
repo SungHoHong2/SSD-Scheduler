@@ -31,8 +31,6 @@ typedef struct sfq_request {
     pid_t pid;
     struct request *rq;
 
-    int valid;
-
 } sfq_request;
 
 
@@ -120,8 +118,6 @@ static int sfq_init_queue(struct request_queue *q, struct elevator_type *e){
 	spin_lock_irq(q->queue_lock);
 	q->elevator = eq;
 	spin_unlock_irq(q->queue_lock);
-
-  printk("INIT_SFQ 006\n");
 	return 0;
 }
 
@@ -134,106 +130,49 @@ static int sfq_set_request(struct request_queue *q, struct request *rq, struct b
 
      sfqr = (struct sfq_request*)kmalloc(sizeof(struct sfq_request), gfp_mask);
      sfqr->pid = current->pid;
-     sfqr->valid = 1;
-
-     sfqr->start_tag = sfqd->virtual_time;
 
      // update the virtual_time with the smallest outstanding request
-     if(sfqd && sfqd->size>0 && sfqd->requests[0] && sfqd->requests[0]->start_tag >=0){
-       // sfqd->virtual_time = sfqd->requests[0]->start_tag;
-        latest_finish_tag = sfqd->requests[(sfqd->size)-1]->finish_tag;
-        if(sfqd->virtual_time < latest_finish_tag){
-              sfqd->virtual_time = latest_finish_tag;
-        }
+     if(sfqd->size>0){
+        sfqd->virtual_time = sfqd->requests[0]->start_tag;
 
-        sfqr->start_tag = sfqd->virtual_time;
+        // compare the time with latest request
+        latest_finish_tag = get_highest_finish_tag(sfqd, 0);
+
+        if(sfqd->virtual_time < latest_finish_tag)
+           sfqr->start_tag = latest_finish_tag;
+
+     } else {
+    // update the virtual_time to zero if it is the first time
+       sfqr->start_tag = sfqd->virtual_time;
      }
 
-
+     // estimate the finish_tag of the request
      sfqr->finish_tag = sfqr->start_tag + ( REQUEST_LENGTH / REQUEST_WEIGHT );
-     // printk("SET_REQUEST[ sfqr_pid: %d,  start_tag: %d  finish_tag: %d ] \n",  sfqd->requests[0]->pid,  sfqd->requests[0]->start_tag,  sfqd->requests[0]->finish_tag);
-
      rq->elv.priv[0] = sfqr;
 
-     if(sfqd && sfqr)
-     printk("SET_REQUEST[ virtual_time : %d,  pid: %d, start_tag : %d] \n", sfqd->virtual_time, sfqr->pid, sfqr->start_tag);
+     printk("SET_REQUEST[ virtual_time : %d,  pid: %d  ] \n", sfqd->virtual_time, sfqr->pid);
 
      return 0;
 }
 
 
 static void sfq_add_request(struct request_queue *q, struct request *rq){
-	struct sfq_data *sfqd = q->elevator->elevator_data;
-  struct sfq_request *sfqr = rq->elv.priv[0];
-  int i;
+	struct sfq_data *nd = q->elevator->elevator_data;
 
-   sfqr->rq = rq;
-
-   if(sfqr->start_tag >= 0){
-
-   if(sfqd->size) {
-       sfqd->requests = (sfq_request **)krealloc(sfqd->requests, (sfqd->size + 1) * sizeof(sfq_request *), GFP_KERNEL) ;
-   } else {
-       sfqd->requests = (sfq_request **)kmalloc(sizeof(sfq_request *), GFP_KERNEL) ;
-   }
-       i = (sfqd->size)++ ;
-
-   while(i && sfqr->start_tag < sfqd->requests[PARENT(i)]->start_tag) {
-       sfqd->requests[i] = sfqd->requests[PARENT(i)] ;
-       i = PARENT(i) ;
-   }
-   sfqd->requests[i] = sfqr ;
-
-  }
-
-  // printk("1 ADD_REQUEST[ sfqr_pid: %d, start_tag: %d, valid: %d ] \n", sfqd->requests[0]->pid, sfqd->requests[0]->start_tag, sfqd->requests[0]->valid);
-  // printk("2 ADD_REQUEST[ sfqr_pid: %d, start_tag: %d, valid: %d ] \n", sfqr->pid, sfqr->start_tag, sfqr->valid);
-  // printk("3 ADD_REQUEST[ virtual_time : %d,  size: %d  ] \n", sfqd->virtual_time, sfqd->size);
-	list_add_tail(&rq->queuelist, &sfqd->queue);
+	list_add_tail(&rq->queuelist, &nd->queue);
 }
 
 
 static int sfq_dispatch(struct request_queue *q, int force){
-	struct sfq_data *sfqd = q->elevator->elevator_data;
+	struct sfq_data *nd = q->elevator->elevator_data;
 	struct request *rq;
 
-
-  if(sfqd && sfqd->size>0){
-    printk("SET DISPATCH: pid: %d, start_tag: %d\n",sfqd->requests[0]->pid, sfqd->requests[0]->start_tag);
-
-    rq = sfqd->requests[0]->rq;
-  	// if (rq) {
-    //
-    //   printk("before going in\n");
-  	// 	// list_del_init(&rq->queuelist);
-  	// 	elv_dispatch_sort(q, rq);
-    //
-    //   printk("after going in\n");
-    //
-  	// 	// return 1;
-  	// }
-
-
-    // remove the dispatched request from the heap-sort array
-    sfqd->requests[0] = sfqd->requests[--(sfqd->size)] ;
-    sfqd->requests = (sfq_request **)krealloc(sfqd->requests, sfqd->size * sizeof(sfq_request *), GFP_KERNEL) ;
-
-    printk("before heapify\n");
-    heapify(sfqd, 0) ;
-    printk("after heapify\n");
-
-  }
-
-
-
-
-	rq = list_first_entry_or_null(&sfqd->queue, struct request, queuelist);
+	rq = list_first_entry_or_null(&nd->queue, struct request, queuelist);
 	if (rq) {
 		list_del_init(&rq->queuelist);
 		elv_dispatch_sort(q, rq);
 		return 1;
 	}
-
 	return 0;
 }
 
