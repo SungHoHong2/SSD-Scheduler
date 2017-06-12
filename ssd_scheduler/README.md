@@ -17,7 +17,6 @@
   - request struct: assign the request   
 
 ```
-
 // assume all requests have fixed size
 #define REQUEST_LENGTH 100;
 
@@ -52,14 +51,12 @@ typedef struct sfq_request {
     struct request *rq;
 
 } sfq_request;
-
 ```
 
 ### Common Functions for Heap Sorting
 - heapify function checks violation of the heap property after removing a request from the array   
 
 ```
-
 /*
  * Heap Sorting Common Function
  */
@@ -81,7 +78,6 @@ void heapify(sfq_global *hp, int i) {
         heapify(hp, smallest) ;
     }
 }
-
 ```
 
 
@@ -130,34 +126,32 @@ static int sfq_init_queue(struct request_queue *q, struct elevator_type *e){
 5. assign the struct(sfq_request) to each request
 
 ```
-
 static int sfq_set_request(struct request_queue *q, struct request *rq, struct bio *bio, gfp_t gfp_mask){
-  struct sfq_data *sfqd = q->elevator->elevator_data;
-  struct sfq_request *sfqr;
-  int latest_finish_tag;
+    struct sfq_data *sfqd = q->elevator->elevator_data;
+    struct sfq_request *sfqr;
+    int latest_finish_tag;
 
-  sfqr = (struct sfq_request*)kmalloc(sizeof(struct sfq_request), gfp_mask);
-  sfqr->pid = current->pid;
-  sfqr->valid = 1;
+    sfqr = (struct sfq_request*)kmalloc(sizeof(struct sfq_request), gfp_mask);
+    sfqr->pid = current->pid;
+    sfqr->valid = 1;
 
-  sfqr->start_tag = sfqd->virtual_time;
+    sfqr->start_tag = sfqd->virtual_time;
 
-  // update the virtual_time with the smallest outstanding request
-  if(sfqd && sfqd->size>0 && sfqd->requests[0] && sfqd->requests[0]->start_tag >=0){
-    // sfqd->virtual_time = sfqd->requests[0]->start_tag;
-     latest_finish_tag = sfqd->requests[(sfqd->size)-1]->finish_tag;
-     if(sfqd->virtual_time < latest_finish_tag){
-           sfqd->virtual_time = latest_finish_tag;
-     }
+    // update the virtual_time with the smallest outstanding request
+    if(sfqd && sfqd->size>0 && sfqd->requests[0] && sfqd->requests[0]->start_tag >=0){
+      // sfqd->virtual_time = sfqd->requests[0]->start_tag;
+       latest_finish_tag = sfqd->requests[(sfqd->size)-1]->finish_tag;
+       if(sfqd->virtual_time < latest_finish_tag){
+             sfqd->virtual_time = latest_finish_tag;
+       }
 
-     sfqr->start_tag = sfqd->virtual_time;
-  }
+       sfqr->start_tag = sfqd->virtual_time;
+    }
 
-  sfqr->finish_tag = sfqr->start_tag + ( REQUEST_LENGTH / REQUEST_WEIGHT );
-  rq->elv.priv[0] = sfqr;
+    sfqr->finish_tag = sfqr->start_tag + ( REQUEST_LENGTH / REQUEST_WEIGHT );
+    rq->elv.priv[0] = sfqr;
 
 }
-
 ```
 
 ### SFQ ADD REQUEST
@@ -166,34 +160,30 @@ static int sfq_set_request(struct request_queue *q, struct request *rq, struct b
 3. reallocate the size of the array for each requests
 
 ```
-
 static void sfq_add_request(struct request_queue *q, struct request *rq){
-  struct sfq_data *sfqd = q->elevator->elevator_data;
-  struct sfq_request *sfqr = rq->elv.priv[0];
-  int i;
+    struct sfq_data *sfqd = q->elevator->elevator_data;
+    struct sfq_request *sfqr = rq->elv.priv[0];
+    int i;
 
 
-   if(sfqr->start_tag >= 0){
+     if(sfqr->start_tag >= 0){
 
-   if(sfqd->size) {
-       sfqd->requests = (sfq_request **)krealloc(sfqd->requests, (sfqd->size + 1) * sizeof(sfq_request *), GFP_KERNEL) ;
-   } else {
-       sfqd->requests = (sfq_request **)kmalloc(sizeof(sfq_request *), GFP_KERNEL) ;
-   }
-       i = (sfqd->size)++ ;
+     if(sfqd->size) {
+         sfqd->requests = (sfq_request **)krealloc(sfqd->requests, (sfqd->size + 1) * sizeof(sfq_request *), GFP_KERNEL) ;
+     } else {
+         sfqd->requests = (sfq_request **)kmalloc(sizeof(sfq_request *), GFP_KERNEL) ;
+     }
+         i = (sfqd->size)++ ;
 
-   while(i && sfqr->start_tag < sfqd->requests[PARENT(i)]->start_tag) {
-       sfqd->requests[i] = sfqd->requests[PARENT(i)] ;
-       i = PARENT(i) ;
-   }
+     while(i && sfqr->start_tag < sfqd->requests[PARENT(i)]->start_tag) {
+         sfqd->requests[i] = sfqd->requests[PARENT(i)] ;
+         i = PARENT(i) ;
+     }
 
-   sfqr->rq = rq;
-   sfqd->requests[i] = sfqr ;
-
+     sfqr->rq = rq;
+     sfqd->requests[i] = sfqr ;
   }
-
 }
-
 ```
 
 ### SFQ DISPATCH REQUESTS
@@ -203,28 +193,26 @@ static void sfq_add_request(struct request_queue *q, struct request *rq){
 4. secure the heap-sort policy by using the heapify function   
 
 ```
-
 static int sfq_dispatch_requests(struct request_queue *q, int force){
-  struct sfq_data *sfqd = q->elevator->elevator_data;
-  struct sfq_request *sfqr;
-  struct request *rq;
+    struct sfq_data *sfqd = q->elevator->elevator_data;
+    struct sfq_request *sfqr;
+    struct request *rq;
 
-  if(sfqd && sfqd->size>0){
-    sfqr = sfqd->requests[0];
-    rq = sfqr->rq;
+    if(sfqd && sfqd->size>0){
+          sfqr = sfqd->requests[0];
+          rq = sfqr->rq;
 
-    // remove the dispatched request from the heap-sort array
-    sfqd->requests[0] = sfqd->requests[--(sfqd->size)] ;
-    sfqd->requests = (sfq_request **)krealloc(sfqd->requests, sfqd->size * sizeof(sfq_request *), GFP_KERNEL) ;
-    heapify(sfqd, 0) ;
+          // remove the dispatched request from the heap-sort array
+          sfqd->requests[0] = sfqd->requests[--(sfqd->size)] ;
+          sfqd->requests = (sfq_request **)krealloc(sfqd->requests, sfqd->size * sizeof(sfq_request *), GFP_KERNEL) ;
+          heapify(sfqd, 0) ;
 
-    // dispatch request
-    elv_dispatch_sort(q, rq);
-    return 1;
-  }
-	return 0;
+          // dispatch request
+          elv_dispatch_sort(q, rq);
+          return 1;
+    }
+  	return 0;
 }
-
 ```
 
 
@@ -234,7 +222,7 @@ static int sfq_dispatch_requests(struct request_queue *q, int force){
 
 ```
 static void sfq_exit_queue(struct elevator_queue *e){
-  struct sfq_data *nd = e->elevator_data;
-  kfree(nd);
+    struct sfq_data *nd = e->elevator_data;
+    kfree(nd);
 }
 ```
