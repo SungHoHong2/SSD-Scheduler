@@ -127,6 +127,7 @@ static int sfq_init_queue(struct request_queue *q, struct elevator_type *e){
 
 ```
 static int sfq_set_request(struct request_queue *q, struct request *rq, struct bio *bio, gfp_t gfp_mask){
+
     struct sfq_data *sfqd = q->elevator->elevator_data;
     struct sfq_request *sfqr;
     int latest_finish_tag;
@@ -161,6 +162,7 @@ static int sfq_set_request(struct request_queue *q, struct request *rq, struct b
 
 ```
 static void sfq_add_request(struct request_queue *q, struct request *rq){
+
     struct sfq_data *sfqd = q->elevator->elevator_data;
     struct sfq_request *sfqr = rq->elv.priv[0];
     int i;
@@ -194,6 +196,7 @@ static void sfq_add_request(struct request_queue *q, struct request *rq){
 
 ```
 static int sfq_dispatch_requests(struct request_queue *q, int force){
+
     struct sfq_data *sfqd = q->elevator->elevator_data;
     struct sfq_request *sfqr;
     struct request *rq;
