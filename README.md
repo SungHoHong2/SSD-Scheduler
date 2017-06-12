@@ -18,8 +18,8 @@
    - start_time and finish_time are only assigned with the size of the requests.
 
 ### Applying SFQ and Heap-Sort in SSD Scheduler
-1. pseudo code for SSD scheduler
-
+1. pseudo code for SSD scheduler [view](ssd_scheduler/README.md)
+2. source-code (min-heap with start_tag) [view](ssd_scheduler/sfq-sched_6_complete.c)
 
 ### Experiment with Heap-Sort
 1. heap sort is recommended to be sorted in an array (not a linked-list)

@@ -30,7 +30,7 @@
 #define PARENT(x) (x - 1) / 2
 
 
-typedef struct sfq_global{
+typedef struct sfq_data{
 
     // SFQ Algorithm
     int virtual_time;
@@ -57,7 +57,6 @@ typedef struct sfq_request {
 
 ### Common Functions for Heap Sorting
 - heapify function checks violation of the heap property after removing a request from the array   
-- get_highest_finish_tag function is used to compare the arrival time and the finish_tag before assigning the start_tag to the virtual_time
 
 ```
 
@@ -83,22 +82,6 @@ void heapify(sfq_global *hp, int i) {
     }
 }
 
-int get_highest_finish_tag(sfq_global *hp, int i) {
-    int l, r;
-    if(LCHILD(i) >= hp->size) {
-        return hp->requests[i]->start_tag + (REQUEST_LENGTH / REQUEST_WEIGHT);
-    }
-
-    l = get_highest_finish_tag(hp, LCHILD(i)) ;
-    r = get_highest_finish_tag(hp, RCHILD(i)) ;
-
-    if(l >= r) {
-        return l + (REQUEST_LENGTH / REQUEST_WEIGHT);
-    } else {
-        return r + (REQUEST_LENGTH / REQUEST_WEIGHT);
-    }
-}
-
 ```
 
 
@@ -109,31 +92,33 @@ int get_highest_finish_tag(sfq_global *hp, int i) {
 
 static int sfq_init_queue(struct request_queue *q, struct elevator_type *e){
 
-  struct sfq_global *sfqg;
-  struct elevator_queue *eq;
+  struct sfq_data *sfqd;
+	struct elevator_queue *eq;
 
-  eq= elevator_alloc(q, e);
-  if(!eq)
-    return -ENOMEM;
+	eq = elevator_alloc(q, e);
+	if (!eq)
+		return -ENOMEM;
 
-  sfqg = kzalloc_node(sizeof(*dd), GFP_KERNEL, q->node);
-  if(!dd){
-      kobject_put(&eq->kobj);
-      return -ENOMEM;
-  }
-  eq->elevator_data = sfqg;
+	sfqd = kmalloc_node(sizeof(*sfqd), GFP_KERNEL, q->node);
+	if (!sfqd) {
+		kobject_put(&eq->kobj);
+		return -ENOMEM;
+	}
 
   // initialize virtual time
-  sfqg->virtual_time = 0;
+  sfqd->virtual_time = 0;
 
   // initialize size of the heap array
-  sfqg->size = 0;
+  sfqd->size = 0;
+	eq->elevator_data = sfqd;
 
-  spin_lock_irq(q->queue_lock);
-  q->elevator = eq;
-  spin_unlock_irq(q->queue_lock);
 
-  return 0;
+	spin_lock_irq(q->queue_lock);
+	q->elevator = eq;
+	spin_unlock_irq(q->queue_lock);
+
+  printk("INIT_SFQ SCHEDULER\n");
+	return 0;
 }
 
 ```
@@ -148,31 +133,30 @@ static int sfq_init_queue(struct request_queue *q, struct elevator_type *e){
 ```
 
 static int sfq_set_request(struct request_queue *q, struct request *rq, struct bio *bio, gfp_t gfp_mask){
-     struct sfq_global *sfqd = q->elevator->elevator_data;
-     struct sfq_request *sfqr;
-     int latest_finish_tag;
+  struct sfq_data *sfqd = q->elevator->elevator_data;
+  struct sfq_request *sfqr;
+  int latest_finish_tag;
 
-     sfqr = (struct zfq_queue*)kmalloc(sizeof(struct zfq_queue), gfp_mask);
-     sfqr->pid = current->pid;
+  sfqr = (struct sfq_request*)kmalloc(sizeof(struct sfq_request), gfp_mask);
+  sfqr->pid = current->pid;
+  sfqr->valid = 1;
 
+  sfqr->start_tag = sfqd->virtual_time;
 
-     // update the virtual_time with the smallest outstanding request
-     if(sfqd->size>0 && sfqd->elem_test[0])
-     sfqd->virtual_time = sfqd->elem_test[0]->data;
-
-
-     // compare the time with latest request
-     latest_finish_tag = get_highest_finish_tag(sfqd, 0);
+  // update the virtual_time with the smallest outstanding request
+  if(sfqd && sfqd->size>0 && sfqd->requests[0] && sfqd->requests[0]->start_tag >=0){
+    // sfqd->virtual_time = sfqd->requests[0]->start_tag;
+     latest_finish_tag = sfqd->requests[(sfqd->size)-1]->finish_tag;
      if(sfqd->virtual_time < latest_finish_tag){
-       sfqr->start_tag = latest_finish_tag;
-     } else {
-       sfqr->start_tag = sfqd->virtual_time;
+           sfqd->virtual_time = latest_finish_tag;
      }
 
-     // estimate the finish_tag of the request
-     sfqr->finish_tag = sfqr->start_tag + ( REQUEST_LENGTH / REQUEST_WEIGHT );
+     sfqr->start_tag = sfqd->virtual_time;
+  }
 
-     rq->elv.priv[0] = sfqr;
+  sfqr->finish_tag = sfqr->start_tag + ( REQUEST_LENGTH / REQUEST_WEIGHT );
+  rq->elv.priv[0] = sfqr;
+
 }
 
 ```
@@ -185,27 +169,29 @@ static int sfq_set_request(struct request_queue *q, struct request *rq, struct b
 ```
 
 static void sfq_add_request(struct request_queue *q, struct request *rq){
-    struct sfq_global *sfqd = q->elevator->elevator_data;
-    struct sfq_request *sfqr = (struct sfq_request *)(rq->elv.priv[0]);
-    int i;
-
-     // assign the request -> sfq_request struct
-     sfqr->rq = rq;
+  struct sfq_data *sfqd = q->elevator->elevator_data;
+  struct sfq_request *sfqr = rq->elv.priv[0];
+  int i;
 
 
-     // assign the sfq_request struct in array (heap-sorting)
-     if(sfqd->size) {
-         sfqd->requests = (sfq_request **)krealloc(sfqd->requests, (sfqd->size + 1) * sizeof(sfq_request *), GFP_KERNEL) ;
-     } else {
-         sfqd->requests = (sfq_request **)kmalloc(sizeof(sfq_request *), GFP_KERNEL) ;
-     }
-         i = (sfqd->size)++ ;
+   if(sfqr->start_tag >= 0){
 
-     while(i && sfqr->start_tag < sfqd->requests[PARENT(i)]->start_tag) {
-         sfqd->requests[i] = sfqd->requests[PARENT(i)] ;
-         i = PARENT(i) ;
-     }
-     sfqd->requests[i] = sfqr ;
+   if(sfqd->size) {
+       sfqd->requests = (sfq_request **)krealloc(sfqd->requests, (sfqd->size + 1) * sizeof(sfq_request *), GFP_KERNEL) ;
+   } else {
+       sfqd->requests = (sfq_request **)kmalloc(sizeof(sfq_request *), GFP_KERNEL) ;
+   }
+       i = (sfqd->size)++ ;
+
+   while(i && sfqr->start_tag < sfqd->requests[PARENT(i)]->start_tag) {
+       sfqd->requests[i] = sfqd->requests[PARENT(i)] ;
+       i = PARENT(i) ;
+   }
+
+   sfqr->rq = rq;
+   sfqd->requests[i] = sfqr ;
+
+  }
 
 }
 
@@ -220,21 +206,24 @@ static void sfq_add_request(struct request_queue *q, struct request *rq){
 ```
 
 static int sfq_dispatch_requests(struct request_queue *q, int force){
-  struct sfq_global *sfqd = q->elevator->elevator_data;
+  struct sfq_data *sfqd = q->elevator->elevator_data;
+  struct sfq_request *sfqr;
   struct request *rq;
 
-  if(sfqd->size) {
+  if(sfqd && sfqd->size>0){
+    sfqr = sfqd->requests[0];
+    rq = sfqr->rq;
 
-      //dispatch request
-      rq = sfqd->requests[0]->rq;
-      elv_dispatch_sort(q, rq)
+    // remove the dispatched request from the heap-sort array
+    sfqd->requests[0] = sfqd->requests[--(sfqd->size)] ;
+    sfqd->requests = (sfq_request **)krealloc(sfqd->requests, sfqd->size * sizeof(sfq_request *), GFP_KERNEL) ;
+    heapify(sfqd, 0) ;
 
-      // remove the dispatched request from the heap-sort array
-      sfqd->requests[0] = sfqd->requests[--(sfqd->size)] ;
-      sfqd->requests = (node **)krealloc(sfqd->requests, sfqd->size * sizeof(node *), GFP_KERNEL) ;
-      heapify(hp, 0) ;
+    // dispatch request
+    elv_dispatch_sort(q, rq);
+    return 1;
   }
-    return 0;
+	return 0;
 }
 
 ```
@@ -246,8 +235,7 @@ static int sfq_dispatch_requests(struct request_queue *q, int force){
 
 ```
 static void sfq_exit_queue(struct elevator_queue *e){
-	struct sfq_global *sfqd = e->elevator_data;
-  kfree(sfqd->requests);
-	kfree(sfqd);
+  struct sfq_data *nd = e->elevator_data;
+  kfree(nd);
 }
 ```
