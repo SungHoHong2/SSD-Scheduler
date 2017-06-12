@@ -30,7 +30,10 @@ typedef struct sfq_request {
 
     pid_t pid;
     struct request *rq;
+
     int valid;
+
+    struct list_head queue;
 
 } sfq_request;
 
@@ -43,6 +46,8 @@ typedef struct sfq_data {
   int size ;
   sfq_request **requests;
 
+  // FRISK
+	struct list_head queue;
 } sfq_data;
 
 
@@ -66,6 +71,22 @@ void heapify(sfq_data *hp, int i) {
     if(smallest != i) {
         heap_swap(hp->requests[i], hp->requests[smallest]) ;
         heapify(hp, smallest) ;
+    }
+}
+
+int get_highest_finish_tag(sfq_data *hp, int i) {
+    int l, r;
+    if(LCHILD(i) >= hp->size) {
+        return hp->requests[i]->start_tag + (REQUEST_LENGTH / REQUEST_WEIGHT);
+    }
+
+    l = get_highest_finish_tag(hp, LCHILD(i)) ;
+    r = get_highest_finish_tag(hp, RCHILD(i)) ;
+
+    if(l >= r) {
+        return l + (REQUEST_LENGTH / REQUEST_WEIGHT);
+    } else {
+        return r + (REQUEST_LENGTH / REQUEST_WEIGHT);
     }
 }
 
@@ -96,11 +117,13 @@ static int sfq_init_queue(struct request_queue *q, struct elevator_type *e){
 	eq->elevator_data = sfqd;
 
 
+	INIT_LIST_HEAD(&sfqd->queue);
+
 	spin_lock_irq(q->queue_lock);
 	q->elevator = eq;
 	spin_unlock_irq(q->queue_lock);
 
-  printk("INIT_SFQ SCHEDULER\n");
+  printk("INIT_SFQ 008\n");
 	return 0;
 }
 
@@ -130,6 +153,9 @@ static int sfq_set_request(struct request_queue *q, struct request *rq, struct b
 
 
      sfqr->finish_tag = sfqr->start_tag + ( REQUEST_LENGTH / REQUEST_WEIGHT );
+     // printk("SET_REQUEST[ sfqr_pid: %d,  start_tag: %d  finish_tag: %d ] \n",  sfqd->requests[0]->pid,  sfqd->requests[0]->start_tag,  sfqd->requests[0]->finish_tag);
+
+     INIT_LIST_HEAD(&sfqr->queue);
      rq->elv.priv[0] = sfqr;
 
      // if(sfqd && sfqr)
@@ -175,10 +201,11 @@ static int sfq_dispatch(struct request_queue *q, int force){
 	struct sfq_data *sfqd = q->elevator->elevator_data;
   struct sfq_request *sfqr;
   struct request *rq;
-  // struct list_head *curr_head;
-  // struct request *curr_rq;
-  // int match_found;
-  // match_found = 0;
+  struct list_head *curr_head;
+  struct request *curr_rq;
+  int match_found;
+
+  match_found = 0;
 
   if(sfqd && sfqd->size>0){
     // printk("SET DISPATCH: pid: %d, start_tag: %d\n",sfqd->requests[0]->pid, sfqd->requests[0]->start_tag);
@@ -190,10 +217,39 @@ static int sfq_dispatch(struct request_queue *q, int force){
     sfqd->requests = (sfq_request **)krealloc(sfqd->requests, sfqd->size * sizeof(sfq_request *), GFP_KERNEL) ;
     heapify(sfqd, 0) ;
 
-    // dispatch request
+
+    // list_del_init(&rq->queuelist);
     elv_dispatch_sort(q, rq);
     return 1;
+
+
+
+    if(!list_empty(&sfqd->queue)){
+        list_for_each(curr_head, &(sfqd->queue)){
+                curr_rq = list_entry(curr_head, struct request, queuelist);
+                if(curr_rq && curr_rq->start_time == rq->start_time){
+                  printk("we have a match!\n");
+
+                  		list_del_init(&rq->queuelist);
+                  		elv_dispatch_sort(q, rq);
+                  		return 1; // without this the dispatch is stucked
+                }
+         }
+     }
   }
+
+
+  /*
+   * Double check just in case there are unassigned requests
+   */
+
+	rq = list_first_entry_or_null(&sfqd->queue, struct request, queuelist);
+
+	if (rq) {
+		list_del_init(&rq->queuelist);
+		elv_dispatch_sort(q, rq);
+		return 1;
+	}
 	return 0;
 }
 
@@ -201,7 +257,7 @@ static int sfq_dispatch(struct request_queue *q, int force){
 static void sfq_exit_queue(struct elevator_queue *e){
 	struct sfq_data *nd = e->elevator_data;
 
-	// BUG_ON(!list_empty(&nd->queue));
+	BUG_ON(!list_empty(&nd->queue));
 	kfree(nd);
 }
 
