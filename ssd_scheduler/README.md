@@ -91,33 +91,33 @@ void heapify(sfq_global *hp, int i) {
 ```
 static int sfq_init_queue(struct request_queue *q, struct elevator_type *e){
 
-struct sfq_data *sfqd;
-struct elevator_queue *eq;
+    struct sfq_data *sfqd;
+    struct elevator_queue *eq;
 
-eq = elevator_alloc(q, e);
-if (!eq)
-return -ENOMEM;
+    eq = elevator_alloc(q, e);
+    if (!eq)
+    return -ENOMEM;
 
-sfqd = kmalloc_node(sizeof(*sfqd), GFP_KERNEL, q->node);
-if (!sfqd) {
-	kobject_put(&eq->kobj);
-	return -ENOMEM;
-}
+    sfqd = kmalloc_node(sizeof(*sfqd), GFP_KERNEL, q->node);
+    if (!sfqd) {
+    	kobject_put(&eq->kobj);
+    	return -ENOMEM;
+    }
 
-// initialize virtual time
-sfqd->virtual_time = 0;
+    // initialize virtual time
+    sfqd->virtual_time = 0;
 
-// initialize size of the heap array
-sfqd->size = 0;
-eq->elevator_data = sfqd;
+    // initialize size of the heap array
+    sfqd->size = 0;
+    eq->elevator_data = sfqd;
 
 
-spin_lock_irq(q->queue_lock);
-q->elevator = eq;
-spin_unlock_irq(q->queue_lock);
+    spin_lock_irq(q->queue_lock);
+    q->elevator = eq;
+    spin_unlock_irq(q->queue_lock);
 
-printk("INIT_SFQ SCHEDULER\n");
-return 0;
+    printk("INIT_SFQ SCHEDULER\n");
+    return 0;
 }
 
 ```
