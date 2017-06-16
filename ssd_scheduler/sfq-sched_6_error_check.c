@@ -8,7 +8,7 @@
 #include <linux/slab.h>
 #include <linux/init.h>
 #include <linux/tty.h>
-#include <linux/delay.h>
+
 
 // assume all requests have fixed size
 #define REQUEST_LENGTH 100
@@ -39,7 +39,6 @@ typedef struct sfq_request {
 typedef struct sfq_data {
   // SFQ Algorithm
   int virtual_time;
-  int advance;
 
   // Heap Sort
   int size ;
@@ -110,8 +109,6 @@ static int sfq_init_queue(struct request_queue *q, struct elevator_type *e){
 
   // initialize virtual time
   sfqd->virtual_time = 0;
-  sfqd->advance = 0;
-  sfqd->requests = (sfq_request **)kmalloc(sizeof(sfq_request *), GFP_KERNEL);
 
   // initialize size of the heap array
   sfqd->size = 0;
@@ -124,7 +121,7 @@ static int sfq_init_queue(struct request_queue *q, struct elevator_type *e){
 	q->elevator = eq;
 	spin_unlock_irq(q->queue_lock);
 
-  printk("INIT_SFQ 113\n");
+  printk("INIT_SFQ 111\n");
 	return 0;
 }
 
@@ -180,9 +177,10 @@ static void sfq_add_request(struct request_queue *q, struct request *rq){
 
    if(sfqd->size) {
        sfqd->requests = (sfq_request **)krealloc(sfqd->requests, (sfqd->size + 1) * sizeof(sfq_request *), GFP_KERNEL) ;
+   } else {
+       sfqd->requests = (sfq_request **)kmalloc(sizeof(sfq_request *), GFP_KERNEL) ;
    }
-
-   i = (sfqd->size)++ ;
+       i = (sfqd->size)++ ;
 
    while(i && sfqr->start_tag < sfqd->requests[PARENT(i)]->start_tag) {
        sfqd->requests[i] = sfqd->requests[PARENT(i)] ;
@@ -192,13 +190,12 @@ static void sfq_add_request(struct request_queue *q, struct request *rq){
    sfqr->rq = rq;
    sfqd->requests[i] = sfqr ;
 
-   if(sfqd->advance==0) sfqd->advance++;
-
   }
 
   // printk("1 ADD_REQUEST[ sfqr_pid: %d, start_tag: %d, valid: %d ] \n", sfqd->requests[0]->pid, sfqd->requests[0]->start_tag, sfqd->requests[0]->valid);
   // printk("2 ADD_REQUEST[ sfqr_pid: %d, start_tag: %d, valid: %d ] \n", sfqr->pid, sfqr->start_tag, sfqr->valid);
   // printk("3 ADD_REQUEST[ virtual_time : %d,  size: %d  ] \n", sfqd->virtual_time, sfqd->size);
+	list_add_tail(&rq->queuelist, &sfqd->queue);
 }
 
 
@@ -207,38 +204,66 @@ static int sfq_dispatch(struct request_queue *q, int force){
 	struct sfq_data *sfqd = q->elevator->elevator_data;
   struct sfq_request *sfqr;
   struct request *rq;
+  struct list_head *curr_head;
+  struct request *curr_rq;
+  // int match_found;
+  // int temp;
+  // match_found = 0;
 
   if(sfqd && sfqd->size>0){
-
+    // printk("SET DISPATCH: pid: %d, start_tag: %d\n",sfqd->requests[0]->pid, sfqd->requests[0]->start_tag);
     sfqr = sfqd->requests[0];
     rq = sfqr->rq;
 
-      if(sfqd->size>1){
 
-         printk("SET DISPATCH: pid: %d, size: %d\n",sfqd->requests[0]->pid, sfqd->size);
-         // printk("Start_TAG: %d, \n",sfqd->requests[0]->start_tag);
+    if(!list_empty(&sfqd->queue)){
+       list_for_each(curr_head, &(sfqd->queue)){
+                 curr_rq = list_entry(curr_head, struct request, queuelist);
+                 if(curr_rq && curr_rq->start_time == sfqr->rq->start_time){
 
-          sfqd->requests[0] = sfqd->requests[--(sfqd->size)];
-          sfqd->requests = (sfq_request **)krealloc(sfqd->requests, sfqd->size * sizeof(sfq_request *), GFP_KERNEL) ;
+                      printk("SET DISPATCH: pid: %d, start_tag: %d\n",sfqd->requests[0]->pid, sfqd->requests[0]->start_tag);
+                      // temp = sfqd->size;
+                      // printk("A we have a match! %d\n", temp);
 
-          heapify(sfqd, 0);
-          elv_dispatch_sort(q, rq);
-          return 1;
+                      if(sfqd->size>1){
+                        sfqd->requests[0] = sfqd->requests[--(sfqd->size)] ;
+                        sfqd->requests = (sfq_request **)krealloc(sfqd->requests, sfqd->size * sizeof(sfq_request *), GFP_KERNEL) ;
+                        heapify(sfqd, 0) ;
+                      }
 
-      } else {
+                      // --(sfqd->size);
+                      // printk("A we have a match! %d\n", sfqd->size);
 
-        sfqd->requests[0] = sfqd->requests[--(sfqd->size)];
-        printk("FIRST DISPATCH: pid: %d, size: %d\n",sfqd->requests[0]->pid, sfqd->size);
 
-          if(rq){
-            elv_dispatch_sort(q, rq);
-            return 1;
+    //               printk("we have a match! %d\n", --(sfqd->size));
+    //               match_found =1;
+    //               rq = curr_rq;
+    //
+    //               // remove the dispatched request from the heap-sort array
+    //               // sfqd->requests[0] = sfqd->requests[--(sfqd->size)] ;
+    //               // sfqd->requests = (sfq_request **)krealloc(sfqd->requests, sfqd->size * sizeof(sfq_request *), GFP_KERNEL) ;
+    //               // heapify(sfqd, 0) ;
+                 }
           }
-
-      }
-
+    }
   }
-  return 0;
+
+  printk("SIZE:  %d\n", sfqd->size);
+  
+	rq = list_first_entry_or_null(&sfqd->queue, struct request, queuelist);
+
+	if (rq) {
+    // check the structure of request and find out whether there are valid values
+    // printk("ARRAY: %ld\n", sfqr->rq->start_time);
+    // printk("QUEUE: %ld\n", rq->start_time);
+
+		list_del_init(&rq->queuelist);
+		elv_dispatch_sort(q, rq);
+		return 1; // without this the dispatch is stucked
+	}
+
+	return 0; // return results in infinite lock
+            // gets an error if there are no dispatch
 }
 
 

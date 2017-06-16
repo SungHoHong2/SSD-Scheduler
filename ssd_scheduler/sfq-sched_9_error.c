@@ -208,17 +208,38 @@ static int sfq_dispatch(struct request_queue *q, int force){
   struct sfq_request *sfqr;
   struct request *rq;
 
+
   if(sfqd && sfqd->size>0){
 
+    // I suspect here
+    // randrw produces great number of size and then decrease later
+    // read barely maitains the size 1
+    // I believe the randrw would have the same problem if it maitains size 1
+    // because the scheduler lives when I limit the size to 2
+    // !!!! or kmalloc in the add function might have caused the error
+    // because if the size decrease to zero it will just create new malloc in the add
+    // no matter what
+    // we can conclude that the heap alloritim is correct but maintaining one will cause numerous malloc
+    // we should first test this on the noop
+
+    // after that prevent malloc by removing it from the add
+    // and then allocate it on the set, or only once
+
+
+    // printk("0 SET DISPATCH: pid: %d, size: %d\n",sfqd->requests[0]->pid, sfqd->size);
     sfqr = sfqd->requests[0];
     rq = sfqr->rq;
 
       if(sfqd->size>1){
 
-         printk("SET DISPATCH: pid: %d, size: %d\n",sfqd->requests[0]->pid, sfqd->size);
-         // printk("Start_TAG: %d, \n",sfqd->requests[0]->start_tag);
+          printk("SET DISPATCH: pid: %d, size: %d\n",sfqd->requests[0]->pid, sfqd->size);
+          // printk("Start_TAG: %d, \n",sfqd->requests[0]->start_tag);
 
+          // if(sfqd->size>1){
           sfqd->requests[0] = sfqd->requests[--(sfqd->size)];
+          // this is understandable when it is two! (2->1)  ARRAY[1] -> ARRAY[0]
+          // if this is one (1->0) ARRAY[0] -> ARRAY[0] and then decrease the allocation
+          // !!!! or kmalloc in the add function might have caused the error
           sfqd->requests = (sfq_request **)krealloc(sfqd->requests, sfqd->size * sizeof(sfq_request *), GFP_KERNEL) ;
 
           heapify(sfqd, 0);
@@ -230,12 +251,13 @@ static int sfq_dispatch(struct request_queue *q, int force){
         sfqd->requests[0] = sfqd->requests[--(sfqd->size)];
         printk("FIRST DISPATCH: pid: %d, size: %d\n",sfqd->requests[0]->pid, sfqd->size);
 
-          if(rq){
-            elv_dispatch_sort(q, rq);
-            return 1;
-          }
+        if(rq){
+          elv_dispatch_sort(q, rq);
+          return 1;
+        }
 
       }
+
 
   }
   return 0;
