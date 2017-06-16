@@ -17,6 +17,16 @@
    - only useus the start_time and the finish_time
    - start_time and finish_time are only assigned with the size of the requests.
 
+### Research on FIO 
+| keywords | description |
+|-----|------|
+| slat (usec) | submission latency, how long did it take to submit this IO to the kernel for processing  |
+| lat (usec) | the time that passes between submission to the kernel and when the IO complete, not including the submission latency  |
+| clat (usec) | completion latency is the most useful bit of info in the output   |
+
+
+
+
 ### Applying SFQ and Heap-Sort in SSD Scheduler
 1. pseudo code for SSD scheduler [view](ssd_scheduler/README.md)
 2. source-code (min-heap with start_tag) [view](ssd_scheduler/sfq-sched_6_complete.c)
