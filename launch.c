@@ -221,9 +221,11 @@ static int sfq_dispatch(struct request_queue *q, int force){
           sfqd->requests[0] = sfqd->requests[--(sfqd->size)];
           sfqd->requests = (sfq_request **)krealloc(sfqd->requests, sfqd->size * sizeof(sfq_request *), GFP_KERNEL) ;
 
+        if(rq){
           heapify(sfqd, 0);
           elv_dispatch_sort(q, rq);
           return 1;
+        }
 
       } else {
 
