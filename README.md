@@ -4,6 +4,49 @@
 1. heap algorithm sorts the queue for requests.
 2. virtual_time only uses logical_time
 
+### Question to the Professor
+- When assigning jobs for each read and write,
+  - ex) 16 jobs and run it you will see one job running both read and write
+  - so if you want 16 jobs of read and write, you only run 16 jobs on FIO? or run 32 of them on fio?
+
+
+### FIO parameters used in the Evaluation
+1. direct:1 non-buffered I/O, involves reading and writing data one element at a time. since all data accesses are resolved by the I/O device immediatedly, there is no disagree with the data actually in the storage.
+2. direct:0 buffered I/O, reading or writing the data in chunks. The entire buffer is written to the device at once.
+3. thread: Fio defualts to forking jobs, however if this option is given fio will use POSIX threads, pthread_create(3) instead of forking processes
+4. runtime, tell fio to terminate processing after the specified period of time.
+
+
+### Evaluating the Scheduler
+1. IO slowdown ratio
+   - average IO latency normalized to that when running alone.
+   - each task should experience a factor of n slowdown compared to running-alone.
+2. raw data of block size 256k
+3. bs (block size)
+   - block size for I/O units ex) default 4k
+   - bs= int,[int]
+   - readers and writers can be specified seperately    
+4. bsrange (block size range)
+   - specify the range of block size
+   - bsrange=1k-4k
+5. bssplit
+   - allow finer grained control of the block sizes issued. Weight various block sizes for exact control of the issued IO for a job that has mixed block sizes
+   - bssplit=4k/10:64k/50:32k/40
+   - 50$ 64k blocks, 10% 4kblocks, 40% 32k blocks
+   - the format is identicla to what the bs option accepts, the read and write parts are sepearted with a comma     
+
+
+### Evaluation on Task Fairness
+- Scheduler S1 achieves better fairness than scheduler S2, if the slowest task under S1 makes more progress than the slowest task does under S2.
+
+
+### IO Patterns
+- a concurrent run with a reader continuously issuing 4KB reads and a writer continuously issuing 4 KB writes
+- a concurrent run with sixteen 4KB readers and sixteen 4KB writers
+- a concurrent run with sixteen 4KB readers and sixteen 128KB readers
+- a concurrent run with sixteen 4KB writers and sixteen 128KB writers
+
+
 ### Rules of SFQ
 1. only need one queue for all pending requests
 2. each requests track its PID and assign it's start_time
@@ -16,15 +59,6 @@
 5. virtual time does not use jiffies
    - only useus the start_time and the finish_time
    - start_time and finish_time are only assigned with the size of the requests.
-
-### Research on FIO 
-| keywords | description |
-|-----|------|
-| slat (usec) | submission latency, how long did it take to submit this IO to the kernel for processing  |
-| lat (usec) | the time that passes between submission to the kernel and when the IO complete, not including the submission latency  |
-| clat (usec) | completion latency is the most useful bit of info in the output   |
-
-
 
 
 ### Applying SFQ and Heap-Sort in SSD Scheduler

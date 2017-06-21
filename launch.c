@@ -1,6 +1,7 @@
 /*
- * elevator noop
+ * elevator sfq
  */
+ 
 #include <linux/blkdev.h>
 #include <linux/elevator.h>
 #include <linux/bio.h>
@@ -39,7 +40,6 @@ typedef struct sfq_request {
 typedef struct sfq_data {
   // SFQ Algorithm
   int virtual_time;
-  int advance;
 
   // Heap Sort
   int size ;
@@ -110,7 +110,6 @@ static int sfq_init_queue(struct request_queue *q, struct elevator_type *e){
 
   // initialize virtual time
   sfqd->virtual_time = 0;
-  sfqd->advance = 0;
   sfqd->requests = (sfq_request **)kmalloc(sizeof(sfq_request *), GFP_KERNEL);
 
   // initialize size of the heap array
@@ -140,27 +139,19 @@ static int sfq_set_request(struct request_queue *q, struct request *rq, struct b
      sfqr->valid = 1;
 
      sfqr->start_tag = sfqd->virtual_time;
-     // latest_finish_tag = sfqr->start_tag + ( REQUEST_LENGTH / REQUEST_WEIGHT );
-
 
      // update the virtual_time with the smallest outstanding request
      if(sfqd && sfqd->size>0 && sfqd->requests[0] && sfqd->requests[0]->start_tag >=0){
-       // sfqd->virtual_time = sfqd->requests[0]->start_tag;
-        // printk("before size : %d\n", sfqd->size);
-        // printk("latest finish_tag: %d\n", sfqd->requests[(sfqd->size)-1]->finish_tag);
         latest_finish_tag = sfqd->requests[(sfqd->size)-1]->finish_tag;
         if(sfqd->virtual_time < latest_finish_tag){
               sfqd->virtual_time = latest_finish_tag;
         }
-
         sfqr->start_tag = sfqd->virtual_time;
-       // error latest_finish_tag = get_highest_finish_tag(sfqd, 0);
      }
 
 
     sfqr->finish_tag = sfqr->start_tag + ( REQUEST_LENGTH / REQUEST_WEIGHT );
-
-     rq->elv.priv[0] = sfqr;
+    rq->elv.priv[0] = sfqr;
 
      // if(sfqd && sfqr)
      // printk("SET_REQUEST[ virtual_time : %d,  pid: %d, start_tag : %d] \n", sfqd->virtual_time, sfqr->pid, sfqr->start_tag);
@@ -191,8 +182,6 @@ static void sfq_add_request(struct request_queue *q, struct request *rq){
 
    sfqr->rq = rq;
    sfqd->requests[i] = sfqr ;
-
-   if(sfqd->advance==0) sfqd->advance++;
 
   }
 
