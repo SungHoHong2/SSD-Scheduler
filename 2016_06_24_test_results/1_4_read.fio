@@ -1,0 +1,8 @@
+[read_one]
+filename=/dev/sdb
+bs=4k
+numjobs=1
+group_reporting=1
+direct=1
+rw=read
+runtime=20

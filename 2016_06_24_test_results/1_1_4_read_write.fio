@@ -1,0 +1,17 @@
+[global]
+filename=/dev/sdb
+runtime=20
+group_reporting=1
+direct=1
+group_reporting=1
+direct=1
+
+[reader]
+bs=4k
+numjobs=1
+rw=read
+
+[writer]
+bs=4k
+numjobs=1
+rw=write
