@@ -2,140 +2,145 @@
 - explains the four cases of scenarios.
 - each benchmark contains a number of tasks issuing I/O requests of different types and sizes
 
-#### 4KB with 1 read (running alone)
+#### 1 read (running alone) with 4KB
 - filename: 1_4_read.fio
 
 ```
-[global]
-directory=/dev/sdb
+[read_one_4]
+filename=/dev/sdb
 bs=4k
 numjobs=1
-group_reporting=1  
 direct=1
 rw=read
 runtime=20
 
 ```
 
-#### 4KB with 1 write (running alone)
+#### 1 write (running alone) with 4KB
+- filename: 1_4_write.fio
+
 ```
-[global]
-directory= [ location of the sdb ]
+[write_one_4]
+filename=/dev/sdb
 bs=4k
-numjobs = 1
-group_reporting = 1  
+numjobs=1
 direct=1
 rw=write
+runtime=20
 
 ```
 
-#### 128KB with 1 read (running alone)
+#### 1 read (running alone) with 128KB
+- filename: 1_128_read.fio
+
 ```
-[global]
-directory= [ location of the sdb ]
+[read_one_128]
+filename=/dev/sdb
 bs=128k
-numjobs = 1
-group_reporting = 1  
+numjobs=1
 direct=1
 rw=read
+runtime=20
 
 ```
 
-#### 128KB with 1 write (running alone)
+#### 1 write (running alone) with 128KB
+- filename: 1_128_write.fio
+
 ```
-[global]
-directory= [ location of the sdb ]
+[write_one_128]
+filename=/dev/sdb
 bs=128k
-numjobs = 1
-group_reporting = 1  
+numjobs=1
 direct=1
 rw=write
+runtime=20
 
 ```
 
 
 
-#### 4KB with 1 read and 1 write
+#### 1 read and 1 write with 4KB
 - filename: 1_1_4_read_write.fio
 
 ```
 [global]
-directory= [ location of the sdb ]
-group_reporting = 1  
+filename=/dev/sdb
+runtime=20
 direct=1
 
-[reader]
+[reader_4]
 bs=4k
-numjobs = 1
-rw=seqread / randread
+numjobs=1
+rw=read
 
-[writer]
+[writer_4]
 bs=4k
-numjobs = 1
-rw=seqwrite / randwrite
+numjobs=1
+rw=write
 
 ```
 
-#### 4KB with 16 read and 16 write
-- filename: 16_16_4_4_read_write.fio
+#### 16 read and 16 write with 4KB
+- filename: 16_4_16_4_read_write.fio
 
 ```
 [global]
-directory= [ location of the sdb ]
-iodepth=2
-numjobs = 16
-group_reporting = 1  
+filename=/dev/sdb
+runtime=20
 direct=1
 
-[reader]
+[reader_4]
 bs=4k
-rw=seqread / randread
+numjobs=16
+rw=read
 
-[writer]
+[writer_4]
 bs=4k
-rw=seqwrite / randwrite
+numjobs=16
+rw=write
 
 ```
 
-#### 4KB of 16 read and 128KB of 16 read
-- filename: 16_16_4_128_read_write.fio
+#### 16 read of 4KB and 16 read of 128KB  
+- filename: 16_4_16_128_read.fio
 
 ```
 [global]
-directory= [ location of the sdb ]
-iodepth=2
-numjobs = 16
-group_reporting = 1  
+filename=/dev/sdb
+runtime=20
 direct=1
 
-[4k_reader]
+[reader_4]
 bs=4k
-rw=seqread / randread
+numjobs=16
+rw=read
 
-[128k_reader]
+[reader_128]
 bs=128k
-rw=seqread / randread
+numjobs=16
+rw=read
 
 ```
 
-#### 4KB of 16 write and 128KB of 16 write
-- filename: 16_16_4_128_read_write.fio
+#### 16 write of 4KB and 16 write of 128KB
+- filename: 16_4_16_128_write.fio
 
 ```
 [global]
-directory= [ location of the sdb ]
-iodepth=2
-numjobs = 16
-group_reporting = 1  
+filename=/dev/sdb
+runtime=20
 direct=1
 
-[4k_writer]
+[writer_4]
 bs=4k
-rw=seqwrite / randwrite
+numjobs=16
+rw=write
 
-[128k_writer]
+[writer_128]
 bs=128k
-rw=seqwrite / randwrite
+numjobs=16
+rw=write
 
 ```
 

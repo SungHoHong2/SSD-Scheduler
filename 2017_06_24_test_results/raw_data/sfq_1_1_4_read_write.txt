@@ -1,0 +1,53 @@
+root@sunghohong-VirtualBox:~/Operating-System/test_results# fio 1_1_4_read_write.fio 
+reader_4: (g=0): rw=read, bs=4K-4K/4K-4K/4K-4K, ioengine=sync, iodepth=1
+writer_4: (g=0): rw=write, bs=4K-4K/4K-4K/4K-4K, ioengine=sync, iodepth=1
+fio-2.2.10
+Starting 2 processes
+Jobs: 2 (f=2): [R(1),W(1)] [15.0% done] [5150KB/11288KB/0KB /s] [1287/2822/0 iops] [eta 00m:17Jobs: 2 (f=2): [R(1),W(1)] [20.0% done] [5554KB/11584KB/0KB /s] [1388/2896/0 iops] [eta 00m:16Jobs: 2 (f=2): [R(1),W(1)] [25.0% done] [5850KB/10921KB/0KB /s] [1462/2730/0 iops] [eta 00m:15Jobs: 2 (f=2): [R(1),W(1)] [30.0% done] [5062KB/11860KB/0KB /s] [1265/2965/0 iops] [eta 00m:14Jobs: 2 (f=2): [R(1),W(1)] [35.0% done] [4823KB/11356KB/0KB /s] [1205/2839/0 iops] [eta 00m:13Jobs: 2 (f=2): [R(1),W(1)] [40.0% done] [5698KB/11836KB/0KB /s] [1424/2959/0 iops] [eta 00m:12Jobs: 2 (f=2): [R(1),W(1)] [45.0% done] [5790KB/11384KB/0KB /s] [1447/2846/0 iops] [eta 00m:11Jobs: 2 (f=2): [R(1),W(1)] [50.0% done] [4355KB/11888KB/0KB /s] [1088/2972/0 iops] [eta 00m:10Jobs: 2 (f=2): [R(1),W(1)] [55.0% done] [3508KB/12652KB/0KB /s] [877/3163/0 iops] [eta 00m:09sJobs: 2 (f=2): [R(1),W(1)] [60.0% done] [5078KB/11900KB/0KB /s] [1269/2975/0 iops] [eta 00m:08Jobs: 2 (f=2): [R(1),W(1)] [65.0% done] [6375KB/11393KB/0KB /s] [1593/2848/0 iops] [eta 00m:07Jobs: 2 (f=2): [R(1),W(1)] [70.0% done] [3588KB/12303KB/0KB /s] [897/3075/0 iops] [eta 00m:06sJobs: 2 (f=2): [R(1),W(1)] [75.0% done] [4027KB/12947KB/0KB /s] [1006/3236/0 iops] [eta 00m:05Jobs: 2 (f=2): [R(1),W(1)] [80.0% done] [3768KB/12940KB/0KB /s] [942/3235/0 iops] [eta 00m:04sJobs: 2 (f=2): [R(1),W(1)] [85.0% done] [3456KB/13862KB/0KB /s] [864/3465/0 iops] [eta 00m:03sJobs: 2 (f=2): [R(1),W(1)] [90.0% done] [3496KB/13734KB/0KB /s] [874/3433/0 iops] [eta 00m:02sJobs: 2 (f=2): [R(1),W(1)] [95.0% done] [4239KB/13086KB/0KB /s] [1059/3271/0 iops] [eta 00m:01Jobs: 2 (f=2): [R(1),W(1)] [100.0% done] [3788KB/13602KB/0KB /s] [947/3400/0 iops] [eta 00m:00s]
+reader_4: (groupid=0, jobs=1): err= 0: pid=3006: Sat Jun 24 03:00:29 2017
+  read : io=87608KB, bw=4380.2KB/s, iops=1095, runt= 20001msec
+    clat (usec): min=225, max=117202, avg=862.96, stdev=2829.67
+     lat (usec): min=225, max=117203, avg=867.35, stdev=2832.29
+    clat percentiles (usec):
+     |  1.00th=[  258],  5.00th=[  266], 10.00th=[  270], 20.00th=[  294],
+     | 30.00th=[  330], 40.00th=[  374], 50.00th=[  402], 60.00th=[  462],
+     | 70.00th=[  548], 80.00th=[  748], 90.00th=[ 1224], 95.00th=[ 2224],
+     | 99.00th=[ 8384], 99.50th=[25472], 99.90th=[35584], 99.95th=[45312],
+     | 99.99th=[72192]
+    bw (KB  /s): min= 1184, max= 6509, per=100.00%, avg=4409.31, stdev=1379.30
+    lat (usec) : 250=0.09%, 500=64.75%, 750=15.13%, 1000=7.53%
+    lat (msec) : 2=6.50%, 4=4.54%, 10=0.55%, 20=0.33%, 50=0.53%
+    lat (msec) : 100=0.03%, 250=0.01%
+  cpu          : usr=3.20%, sys=13.28%, ctx=27927, majf=0, minf=10
+  IO depths    : 1=100.0%, 2=0.0%, 4=0.0%, 8=0.0%, 16=0.0%, 32=0.0%, >=64=0.0%
+     submit    : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.0%
+     complete  : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.0%
+     issued    : total=r=21902/w=0/d=0, short=r=0/w=0/d=0, drop=r=0/w=0/d=0
+     latency   : target=0, window=0, percentile=100.00%, depth=1
+writer_4: (groupid=0, jobs=1): err= 0: pid=3008: Sat Jun 24 03:00:29 2017
+  write: io=246168KB, bw=12308KB/s, iops=3076, runt= 20001msec
+    clat (usec): min=179, max=57120, avg=321.56, stdev=329.42
+     lat (usec): min=179, max=57121, avg=321.98, stdev=329.46
+    clat percentiles (usec):
+     |  1.00th=[  193],  5.00th=[  199], 10.00th=[  199], 20.00th=[  211],
+     | 30.00th=[  227], 40.00th=[  245], 50.00th=[  262], 60.00th=[  286],
+     | 70.00th=[  322], 80.00th=[  382], 90.00th=[  490], 95.00th=[  668],
+     | 99.00th=[  996], 99.50th=[ 1192], 99.90th=[ 2224], 99.95th=[ 3024],
+     | 99.99th=[11584]
+    bw (KB  /s): min=10496, max=14088, per=99.81%, avg=12283.90, stdev=1010.61
+    lat (usec) : 250=43.58%, 500=46.75%, 750=6.30%, 1000=2.39%
+    lat (msec) : 2=0.85%, 4=0.09%, 10=0.02%, 20=0.01%, 100=0.01%
+  cpu          : usr=1.42%, sys=7.84%, ctx=61559, majf=0, minf=10
+  IO depths    : 1=100.0%, 2=0.0%, 4=0.0%, 8=0.0%, 16=0.0%, 32=0.0%, >=64=0.0%
+     submit    : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.0%
+     complete  : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.0%
+     issued    : total=r=0/w=61542/d=0, short=r=0/w=0/d=0, drop=r=0/w=0/d=0
+     latency   : target=0, window=0, percentile=100.00%, depth=1
+
+Run status group 0 (all jobs):
+   READ: io=87608KB, aggrb=4380KB/s, minb=4380KB/s, maxb=4380KB/s, mint=20001msec, maxt=20001msec
+  WRITE: io=246168KB, aggrb=12307KB/s, minb=12307KB/s, maxb=12307KB/s, mint=20001msec, maxt=20001msec
+
+Disk stats (read/write):
+  sdb: ios=21874/61020, merge=0/0, ticks=15704/18780, in_queue=34272, util=98.96%
+

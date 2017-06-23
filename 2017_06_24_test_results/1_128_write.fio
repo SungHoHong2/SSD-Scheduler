@@ -1,8 +1,7 @@
-[read_one]
+[write_one_128]
 filename=/dev/sdb
-bs=4k
+bs=128k
 numjobs=1
-group_reporting=1
 direct=1
-rw=read
+rw=write
 runtime=20
