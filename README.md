@@ -5,6 +5,28 @@
 2. virtual_time only uses logical_time
 3. limit the number of concurrent tasks(Depth)
 
+### Questions
+```
+  [Q] About the Depth
+   - is the number of dispatched requests represent the depth?
+   - or the IO-depth in FIO represent the depth
+   - if FIO is capable of setting up the depth, there is nothing to implement in the SFQ scheduler
+   - Professor said quote "I believe by adapting the depth dynamically we can achieve better
+     results than the throttling approach."
+
+  [Q] Difference between FIO's IO-depth and the depth mentioned in the SFQ(D)
+   - If FIO's IO-Depth is something different what is the difference?
+
+  [Q] If the depth does not represent the number of dispatched requests
+      How do we verify the number of depth in the scheduler?
+
+  
+
+  [P] Preliminary Solution
+  - maybe lets try maintaining them to 16 or something
+```
+
+
 ### [2017-06-28] Adding Depth
 - When assigning jobs for each read and write,
 
