@@ -71,6 +71,22 @@ void heapify(sfq_data *hp, int i) {
     }
 }
 
+int get_highest_finish_tag(sfq_data *hp, int i) {
+    int l, r;
+    if(LCHILD(i) >= hp->size) {
+        return hp->requests[i]->start_tag + (REQUEST_LENGTH / REQUEST_WEIGHT);
+    }
+
+    l = get_highest_finish_tag(hp, LCHILD(i)) ;
+    r = get_highest_finish_tag(hp, RCHILD(i)) ;
+
+    if(l >= r) {
+        return l + (REQUEST_LENGTH / REQUEST_WEIGHT);
+    } else {
+        return r + (REQUEST_LENGTH / REQUEST_WEIGHT);
+    }
+}
+
 
 /*
  * sfq scheduler
@@ -214,6 +230,8 @@ static int sfq_dispatch(struct request_queue *q, int force){
 
 static void sfq_exit_queue(struct elevator_queue *e){
 	struct sfq_data *nd = e->elevator_data;
+
+	// BUG_ON(!list_empty(&nd->queue));
 	kfree(nd);
 }
 

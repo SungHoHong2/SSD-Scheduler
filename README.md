@@ -3,11 +3,15 @@
 ### In a Nutshell
 1. heap algorithm sorts the queue for requests.
 2. virtual_time only uses logical_time
+3. limit the number of concurrent tasks(Depth)
 
-### Question to the Professor
+### [2017-06-28] Adding Depth
 - When assigning jobs for each read and write,
-  - ex) 16 jobs and run it you will see one job running both read and write
-  - so if you want 16 jobs of read and write, you only run 16 jobs on FIO? or run 32 of them on fio?
+
+
+### [2017-06-28] Optimizing the SFQ-Scheduler
+  - the results have indicated that larger the block-size, the larger the overhead.
+  - the main reason is the increase size in the virtual_time. currently the virtual_time adds up to 100 and I believe changing the increase number from 100 to 1 will fasten the sorting issue.
 
 
 ### FIO parameters used in the Evaluation
