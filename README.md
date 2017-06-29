@@ -20,21 +20,17 @@
   [Q] If the depth does not represent the number of dispatched requests
       How do we verify the number of depth in the scheduler?
 
-  
 
   [P] Preliminary Solution
   - maybe lets try maintaining them to 16 or something
+
+  [A] restrict the number of PID maybe? since that is considered a task.
+
 ```
 
 
 ### [2017-06-28] Adding Depth
 - When assigning jobs for each read and write,
-
-
-### [2017-06-28] Optimizing the SFQ-Scheduler
-  - the results have indicated that larger the block-size, the larger the overhead.
-  - the main reason is the increase size in the virtual_time. currently the virtual_time adds up to 100 and I believe changing the increase number from 100 to 1 will fasten the sorting issue.
-
 
 ### FIO parameters used in the Evaluation
 1. direct:1 non-buffered I/O, involves reading and writing data one element at a time. since all data accesses are resolved by the I/O device immediatedly, there is no disagree with the data actually in the storage.
