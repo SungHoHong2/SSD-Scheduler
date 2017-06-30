@@ -22,17 +22,22 @@
 #define RCHILD(x) 2 * x + 2
 #define PARENT(x) (x - 1) / 2
 
+// Total Depth = 64
+#define REQUEST_DEPTH 64;
+
 
 typedef struct sfq_request {
 
     // SFQ Algorithm
     int start_tag;
     int finish_tag;
-
     pid_t pid;
+
+    // Assign requests
     struct request *rq;
 
 } sfq_request;
+
 
 
 typedef struct sfq_data {
@@ -40,8 +45,11 @@ typedef struct sfq_data {
   int virtual_time;
 
   // Heap Sort
-  int size ;
+  int size;
   sfq_request **requests;
+
+  // [CHARA] int depth
+  int depth;
 
 } sfq_data;
 
@@ -94,8 +102,11 @@ static int sfq_init_queue(struct request_queue *q, struct elevator_type *e){
 
   // initialize size of the heap array
   sfqd->size = 0;
-	eq->elevator_data = sfqd;
 
+  // [CHARA] initialize the depth to 0
+  sfqd->depth = 0;
+
+	eq->elevator_data = sfqd;
 
 	spin_lock_irq(q->queue_lock);
 	q->elevator = eq;
@@ -170,16 +181,21 @@ static int sfq_dispatch(struct request_queue *q, int force){
   struct sfq_request *sfqr;
   struct request *rq;
 
+
+  // [CHARA] check also the number of depth
   if(sfqd && sfqd->size>0){
 
-    // printk("SET DISPATCH: size: %d\n",sfqd->size);
+    // [CHARA] increase the depth -> depth++;
+    sfqd->depth++;
+
+    printk("DISPATCH: depth: %d\n",sfqd->depth);
 
     sfqr = sfqd->requests[0];
     rq = sfqr->rq;
 
       if(sfqd->size>1){
 
-         // printk("SET DISPATCH: pid: %d, size: %d\n",sfqd->requests[0]->pid, sfqd->size);
+         // printk("STACKED DISPATCH: pid: %d, size: %d\n",sfqd->requests[0]->pid, sfqd->size);
           sfqd->requests[0] = sfqd->requests[--(sfqd->size)];
           sfqd->requests = (sfq_request **)krealloc(sfqd->requests, sfqd->size * sizeof(sfq_request *), GFP_KERNEL) ;
 
@@ -191,7 +207,7 @@ static int sfq_dispatch(struct request_queue *q, int force){
 
       } else {
 
-        // printk("FIRST DISPATCH: pid: %d, size: %d\n",sfqd->requests[0]->pid, sfqd->size);
+        // printk("INITIAL DISPATCH: pid: %d, size: %d\n",sfqd->requests[0]->pid, sfqd->size);
         sfqd->requests[0] = sfqd->requests[--(sfqd->size)];
 
           if(rq){
@@ -206,6 +222,16 @@ static int sfq_dispatch(struct request_queue *q, int force){
 }
 
 
+static void sfq_completed(struct request_queue *q, struct request *rq){
+	struct sfq_data *sfqd = q->elevator->elevator_data;
+
+  sfqd->depth--;
+  printk("COMPLETE: depth: %d\n",sfqd->depth);
+
+}
+
+
+
 
 static void sfq_exit_queue(struct elevator_queue *e){
 	struct sfq_data *nd = e->elevator_data;
@@ -216,6 +242,7 @@ static void sfq_exit_queue(struct elevator_queue *e){
 static struct elevator_type elevator_sfq = {
 	.ops = {
     .elevator_exit_fn		= sfq_exit_queue,
+    .elevator_completed_req_fn      = sfq_completed,
 		.elevator_dispatch_fn		= sfq_dispatch,
 		.elevator_add_req_fn		= sfq_add_request,
     .elevator_set_req_fn = sfq_set_request,

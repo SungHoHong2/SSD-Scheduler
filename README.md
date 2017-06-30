@@ -3,34 +3,23 @@
 ### In a Nutshell
 1. heap algorithm sorts the queue for requests.
 2. virtual_time only uses logical_time
-3. limit the number of concurrent tasks(Depth)
-
-### Questions
-```
-  [Q] About the Depth
-   - is the number of dispatched requests represent the depth?
-   - or the IO-depth in FIO represent the depth
-   - if FIO is capable of setting up the depth, there is nothing to implement in the SFQ scheduler
-   - Professor said quote "I believe by adapting the depth dynamically we can achieve better
-     results than the throttling approach."
-
-  [Q] Difference between FIO's IO-depth and the depth mentioned in the SFQ(D)
-   - If FIO's IO-Depth is something different what is the difference?
-
-  [Q] If the depth does not represent the number of dispatched requests
-      How do we verify the number of depth in the scheduler?
+3. limit the number of concurrent I/O requests(Depth)
 
 
-  [P] Preliminary Solution
-  - maybe lets try maintaining them to 16 or something
 
-  [A] restrict the number of PID maybe? since that is considered a task.
+### Depth Performance
+- the number of allowed I/O requests that are dispatched
+- [Evaluation] check the overall I/O throughput based on the number of allowed Depth
+  - 4KB read 32jobs
+  - 4KB write 32jobs
+  - 128KB read 32jobs
+  - 128KB write 32jobs
+  - The IO patterns mentioned below (mixed read & write with 32jobs)  
+  - [test result data](2017_06_30_depth_results)
+- [Evaluation] compare the best performance with the NOOP, CFQ and SFQ
+  - The IO patterns mentioned below (mixed read & write with 32jobs)    
 
-```
 
-
-### [2017-06-28] Adding Depth
-- When assigning jobs for each read and write,
 
 ### FIO parameters used in the Evaluation
 1. direct:1 non-buffered I/O, involves reading and writing data one element at a time. since all data accesses are resolved by the I/O device immediatedly, there is no disagree with the data actually in the storage.
