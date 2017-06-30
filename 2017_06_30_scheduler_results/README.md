@@ -1,63 +1,85 @@
-## I/O benchmarks for evaluating the Depth Performance
-- evaluate the results based on different depth
-  - depths: [ 1, 4, 8, 16, 32, 64 ]
+## 1_ I/O benchmarks for evaluation
+- explains the four cases of scenarios.
+- each benchmark contains a number of tasks issuing I/O requests of different types and sizes
 
-#### 32 read (running alone) with 4KB
-- filename: 32_4_read.fio
+#### 1 read (running alone) with 4KB
+- filename: 1_4_read.fio
 
 ```
 [read_one_4]
 filename=/dev/sdb
 bs=4k
-numjobs=32
+numjobs=1
 direct=1
 rw=read
 runtime=20
 
 ```
 
-#### 32 write (running alone) with 4KB
-- filename: 32_4_write.fio
+#### 1 write (running alone) with 4KB
+- filename: 1_4_write.fio
 
 ```
 [write_one_4]
 filename=/dev/sdb
 bs=4k
-numjobs=32
+numjobs=1
 direct=1
 rw=write
 runtime=20
 
 ```
 
-#### 32 read (running alone) with 128KB
-- filename: 32_128_read.fio
+#### 1 read (running alone) with 128KB
+- filename: 1_128_read.fio
 
 ```
 [read_one_128]
 filename=/dev/sdb
 bs=128k
-numjobs=32
+numjobs=1
 direct=1
 rw=read
 runtime=20
 
 ```
 
-#### 32 write (running alone) with 128KB
-- filename: 32_128_write.fio
+#### 1 write (running alone) with 128KB
+- filename: 1_128_write.fio
 
 ```
 [write_one_128]
 filename=/dev/sdb
 bs=128k
-numjobs=32
+numjobs=1
 direct=1
 rw=write
 runtime=20
 
 ```
 
+
+
+#### 1 read and 1 write with 4KB
+- filename: 1_1_4_read_write.fio
+
+```
+[global]
+filename=/dev/sdb
+runtime=20
+direct=1
+
+[reader_4]
+bs=4k
+numjobs=1
+rw=read
+
+[writer_4]
+bs=4k
+numjobs=1
+rw=write
+
+```
 
 #### 16 read and 16 write with 4KB
 - filename: 16_4_16_4_read_write.fio

@@ -6,56 +6,12 @@
 3. limit the number of concurrent I/O requests(Depth)
 
 
-
 ### Depth Performance
 - the number of allowed I/O requests that are dispatched
 - [Evaluation] check the overall I/O throughput based on the number of allowed Depth
-  - 4KB read 32jobs
-  - 4KB write 32jobs
-  - 128KB read 32jobs
-  - 128KB write 32jobs
-  - The IO patterns mentioned below (mixed read & write with 32jobs)  
-  - [test result data](2017_06_30_depth_results)
+  - [test result of depth](2017_06_30_depth_results)
 - [Evaluation] compare the best performance with the NOOP, CFQ and SFQ
-  - The IO patterns mentioned below (mixed read & write with 32jobs)    
-
-
-
-### FIO parameters used in the Evaluation
-1. direct:1 non-buffered I/O, involves reading and writing data one element at a time. since all data accesses are resolved by the I/O device immediatedly, there is no disagree with the data actually in the storage.
-2. direct:0 buffered I/O, reading or writing the data in chunks. The entire buffer is written to the device at once.
-3. thread: Fio defualts to forking jobs, however if this option is given fio will use POSIX threads, pthread_create(3) instead of forking processes
-4. runtime, tell fio to terminate processing after the specified period of time.
-
-
-### Evaluating the Scheduler
-1. IO slowdown ratio
-   - average IO latency normalized to that when running alone.
-   - each task should experience a factor of n slowdown compared to running-alone.
-2. raw data of block size 256k
-3. bs (block size)
-   - block size for I/O units ex) default 4k
-   - bs= int,[int]
-   - readers and writers can be specified seperately    
-4. bsrange (block size range)
-   - specify the range of block size
-   - bsrange=1k-4k
-5. bssplit
-   - allow finer grained control of the block sizes issued. Weight various block sizes for exact control of the issued IO for a job that has mixed block sizes
-   - bssplit=4k/10:64k/50:32k/40
-   - 50$ 64k blocks, 10% 4kblocks, 40% 32k blocks
-   - the format is identicla to what the bs option accepts, the read and write parts are sepearted with a comma     
-
-
-### Evaluation on Task Fairness
-- Scheduler S1 achieves better fairness than scheduler S2, if the slowest task under S1 makes more progress than the slowest task does under S2.
-
-
-### IO Patterns
-- a concurrent run with a reader continuously issuing 4KB reads and a writer continuously issuing 4 KB writes
-- a concurrent run with sixteen 4KB readers and sixteen 4KB writers
-- a concurrent run with sixteen 4KB readers and sixteen 128KB readers
-- a concurrent run with sixteen 4KB writers and sixteen 128KB writers
+  - [test result of schedulers](2017_06_30_scheduler_results)
 
 
 ### Rules of SFQ
