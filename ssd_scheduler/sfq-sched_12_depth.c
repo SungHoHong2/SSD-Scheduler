@@ -23,7 +23,7 @@
 #define PARENT(x) (x - 1) / 2
 
 // Total Depth = 64
-#define REQUEST_DEPTH 1
+#define REQUEST_DEPTH 64
 
 
 typedef struct sfq_request {
@@ -112,7 +112,7 @@ static int sfq_init_queue(struct request_queue *q, struct elevator_type *e){
 	q->elevator = eq;
 	spin_unlock_irq(q->queue_lock);
 
-  printk("INIT_SFQ 200 DEPTH: %d\n", REQUEST_DEPTH);
+  printk("INIT_SFQ 200\n");
 	return 0;
 }
 
