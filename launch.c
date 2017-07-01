@@ -23,7 +23,7 @@
 #define PARENT(x) (x - 1) / 2
 
 // Total Depth [MIN: 28  32  36  40  44  48  52  56  60  MAX:64]
-#define REQUEST_DEPTH 28
+#define REQUEST_DEPTH 36
 
 
 typedef struct sfq_request {
