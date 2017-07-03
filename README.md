@@ -5,6 +5,27 @@
 2. virtual_time only uses logical_time
 3. limit the number of concurrent I/O requests(Depth)
 
+### Question
+```
+Check whether the scheduler runs without heapify
+and then check whether it runs with depth 1
+-> if this works the depth problem is due to too many recursion
+
+[A] Currently I have tried with depth 1 without the heapify (the main reason of recursion)
+    - but the FIO wont work
+[A] Attempt to try with the noop
+    - dont work with 64jobs but yes it works with 32 jobs with 1 depth
+
+[A] random read & write works with 1 depth
+
+[C] So the reason to this is that there is a limit that the schduler limits the number of recursion that can be handled within the I/O Scheduler.
+So If below 1 depth is desired, we may be able to tackle this problem by limiting the number of heap and place the rest of the requests in the linked-list.
+
+[C] check whether the min-heap array causes a problem in the noop because I don't think it causes
+problem. check whether fully stacked up number causes the problem
+
+```
+
 
 ### Depth Performance
 - the number of allowed I/O requests that are dispatched

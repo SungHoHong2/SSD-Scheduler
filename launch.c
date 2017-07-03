@@ -23,8 +23,8 @@
 #define PARENT(x) (x - 1) / 2
 
 // Total Depth [MIN: 28  32  36  40  44  48  52  56  60  MAX:64]
-#define REQUEST_DEPTH 36
-
+// Estimated Efficient number [36(WRITE) - 40(READ)]
+#define REQUEST_DEPTH 40
 
 typedef struct sfq_request {
 
@@ -199,6 +199,7 @@ static int sfq_dispatch(struct request_queue *q, int force){
           sfqd->requests = (sfq_request **)krealloc(sfqd->requests, sfqd->size * sizeof(sfq_request *), GFP_KERNEL) ;
 
         if(rq){
+
           heapify(sfqd, 0);
           elv_dispatch_sort(q, rq);
           return 1;

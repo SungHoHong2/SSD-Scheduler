@@ -13,11 +13,11 @@ int main(){
     string file_contents;
     string file_name, search_keyword, search_keyword_2;
 
-    file_name = "sfq_16_4_16_128_read";
+    file_name = "sfq_16_4_16_128_write";
     // search_keyword = "io=";
-      search_keyword = "clat (usec): min=";
-      search_keyword_2 = "clat (msec): min=";
-  //    search_keyword = "99.99th=[";
+      // search_keyword = "clat (usec): min=";
+      // search_keyword_2 = "clat (msec): min=";
+      search_keyword = "99.99th=[";
 
     cout << file_name << endl;
     fin.open(file_name+".txt");
@@ -29,10 +29,10 @@ int main(){
         file_contents.push_back('\n');
       }
 
-      if (str.find(search_keyword_2) != string::npos) {
-        file_contents += str;
-        file_contents.push_back('\n');
-      }
+      // if (str.find(search_keyword_2) != string::npos) {
+      //   file_contents += str;
+      //   file_contents.push_back('\n');
+      // }
 
     }
     fin.close();

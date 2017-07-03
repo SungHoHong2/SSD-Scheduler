@@ -11,13 +11,12 @@ int main(){
 
     string str;
     string file_contents;
-    string file_name, search_keyword, search_keyword_2;
+    string file_name, search_keyword, search_keyword_2 = "ttttt";
 
-    file_name = "sfq_16_4_16_128_read";
+    file_name = "sfq_16_4_16_128_write";
     // search_keyword = "io=";
-      search_keyword = "clat (usec): min=";
-      search_keyword_2 = "clat (msec): min=";
-  //    search_keyword = "99.99th=[";
+    // search_keyword = "clat (usec): min="; search_keyword_2 = "clat (msec): min=";
+     search_keyword = "99.99th=[";
 
     cout << file_name << endl;
     fin.open(file_name+".txt");
