@@ -9,12 +9,12 @@ fio -filename=/dev/sdb -direct=1 -thread -rw=read -bs=4k -numjobs=32 -name=mytes
 ```
 
 #### Dispatch Function
-1. [MODIFIED] check whether the value of depth is within the limited number
+1. **[MODIFIED]** check whether the value of depth is within the limited number
    - if not return 0    
 2. select the first I/O request from the linked-list   
 3. remove the selected I/O request from the linked-list
 4. dispatch the request
-5. [MODIFIED] increase the depth value
+5. **[MODIFIED]** increase the depth value
 
 ```c
 
@@ -41,7 +41,7 @@ static int noop_dispatch(struct request_queue *q, int force){
 
 
 #### Completed Function
-1. [MODIFIED] decrease the number when the I/O request is completed
+1. **[MODIFIED]** decrease the number when the I/O request is completed
 
 ```c
 
