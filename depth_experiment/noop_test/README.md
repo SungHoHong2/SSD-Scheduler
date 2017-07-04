@@ -1,7 +1,8 @@
 ### Depth Experiment with NOOP-Scheduler  
 - tested with FIO
 - test subject is NOOP-Scheduler
-- scheduler's depth [I/O request] is limited to 28
+- scheduler's depth [I/O request] is limited to **[1 ~ 27] -> error occurs**
+- scheduler's depth [I/O request] is limited to **[28 ~ ] -> fine**
 
 ```
 fio -filename=/dev/sdb -direct=1 -thread -rw=read -bs=4k -numjobs=32 -name=mytest
