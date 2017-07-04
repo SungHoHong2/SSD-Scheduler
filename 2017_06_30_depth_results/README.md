@@ -130,7 +130,7 @@ rw=write
 - When all tasks experience better performance than the proportional slowdown, we further measure fairness according to the slowdown of the slowest tasks.
 - Specifically, scheduler S1 achieves better fairness than scheduler S2 if the slowest task under S1 makes more progress than the slowest task under S2.
 
-#### implementation
+#### - implementation
 ```
 - ( avg of I/O of concurrent tasks / I/O of one task running alone )
 - ( I/O performance of the slowest task / I/O of one task running alone )
@@ -139,7 +139,7 @@ rw=write
 
 ## 3_ Evaluation of Responsiveness
 
-#### implementation
+#### - implementation
 ```
 - ( avg of worst case (99.9 percentile) I/O request )
 ```
