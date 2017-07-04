@@ -24,7 +24,7 @@
 
 // Total Depth [MIN: 28  32  36  40  44  48  52  56  60  MAX:64]
 // Estimated Efficient number [36(WRITE) - 40(READ)]
-#define REQUEST_DEPTH 2
+#define REQUEST_DEPTH 28
 
 typedef struct sfq_request {
 
