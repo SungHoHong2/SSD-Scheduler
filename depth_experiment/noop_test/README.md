@@ -16,7 +16,7 @@ fio -filename=/dev/sdb -direct=1 -thread -rw=read -bs=4k -numjobs=32 -name=mytes
 4. dispatch the request
 5. [MODIFIED] increase the depth value
 
-```
+```c
 
 static int noop_dispatch(struct request_queue *q, int force){
 	struct noop_data *nd = q->elevator->elevator_data;
@@ -43,7 +43,7 @@ static int noop_dispatch(struct request_queue *q, int force){
 #### Completed Function
 1. [MODIFIED] decrease the number when the I/O request is completed
 
-```
+```c
 
 static void noop_completed(struct request_queue *q, struct request *rq){
 	struct noop_data *nd = q->elevator->elevator_data;
