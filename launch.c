@@ -9,35 +9,47 @@
 #include <linux/slab.h>
 #include <linux/init.h>
 
-#define REQUEST_DEPTH 28
+#define REQUEST_DEPTH 1
 
 struct noop_data {
 	struct list_head queue;
+	int complete_flag;
 	int depth;
 };
 
 static void noop_completed(struct request_queue *q, struct request *rq){
 	struct noop_data *nd = q->elevator->elevator_data;
-  printk("COMPLETE: depth: %d\n",nd->depth);
-  nd->depth--;
+
+		  printk("COMPLETE flag: %d  depth: %d\n",nd->complete_flag, nd->depth);
+      nd->complete_flag = 1;
+			nd->depth--;
+
 }
 
 static int noop_dispatch(struct request_queue *q, int force){
 	struct noop_data *nd = q->elevator->elevator_data;
 	struct request *rq;
 
-  if(nd && nd->depth>REQUEST_DEPTH) return 0;
 
-        printk("DISPATCH: depth: %d\n",nd->depth);
+    if(!nd || nd->complete_flag==0 || nd->depth>REQUEST_DEPTH){
+				return 0;
+    }
 
-      	rq = list_first_entry_or_null(&nd->queue, struct request, queuelist);
-      	if (rq) {
-      		list_del_init(&rq->queuelist);
-      		elv_dispatch_sort(q, rq);
-          nd->depth++;
+		printk("------------- flag: %d  depth: %d\n",nd->complete_flag, nd->depth);
 
-      		return 1;
-      	}
+
+		rq = list_first_entry_or_null(&nd->queue, struct request, queuelist);
+
+		if (rq) {
+		   printk("DISPATCH flag: %d  depth: %d\n",nd->complete_flag, nd->depth);
+			 list_del_init(&rq->queuelist);
+			 elv_dispatch_sort(q, rq);
+
+			 nd->complete_flag = 0;
+	     nd->depth++;
+			 return 1;
+		}
+
 	return 0;
 }
 
@@ -45,7 +57,6 @@ static void noop_add_request(struct request_queue *q, struct request *rq){
 	struct noop_data *nd = q->elevator->elevator_data;
   list_add_tail(&rq->queuelist, &nd->queue);
 }
-
 
 static int noop_init_queue(struct request_queue *q, struct elevator_type *e){
 	struct noop_data *nd;
@@ -63,6 +74,7 @@ static int noop_init_queue(struct request_queue *q, struct elevator_type *e){
 
 	eq->elevator_data = nd;
 
+  nd->complete_flag = 1;
 	nd->depth = 0;
 	INIT_LIST_HEAD(&nd->queue);
 

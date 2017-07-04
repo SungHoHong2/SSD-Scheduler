@@ -7,10 +7,10 @@
 
 ### Question
 ```
-# testing when the I/O depth is one
-  jobs = 1 - 10 : no error
-  jobs = 10 - 20 : no error
 
+# added the complete_flag in oder to make the dispatch and complete called sequentially
+# number of jobs available on the test
+  - 1, 2, 5, 7,
 
 ```
 
