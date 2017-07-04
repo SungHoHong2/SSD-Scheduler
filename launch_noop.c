@@ -1,7 +1,8 @@
 /*
  * elevator noop
+   when the noop runs with 64jobs with 1 depth it freezes
+	 when the noop runs with 32jobs with 1 depth it works
  */
-
 #include <linux/blkdev.h>
 #include <linux/elevator.h>
 #include <linux/bio.h>
@@ -9,7 +10,7 @@
 #include <linux/slab.h>
 #include <linux/init.h>
 
-#define REQUEST_DEPTH 28
+#define REQUEST_DEPTH 2
 
 struct noop_data {
 	struct list_head queue;
@@ -18,36 +19,36 @@ struct noop_data {
 
 static void noop_completed(struct request_queue *q, struct request *rq){
 	struct noop_data *nd = q->elevator->elevator_data;
-  printk("COMPLETE: depth: %d\n",nd->depth);
   nd->depth--;
 }
 
-static int noop_dispatch(struct request_queue *q, int force){
+static int noop_dispatch(struct request_queue *q, int force)
+{
 	struct noop_data *nd = q->elevator->elevator_data;
 	struct request *rq;
 
-  if(nd && nd->depth>REQUEST_DEPTH) return 0;
+    if(nd->depth<=REQUEST_DEPTH){
 
-        printk("DISPATCH: depth: %d\n",nd->depth);
-
-      	rq = list_first_entry_or_null(&nd->queue, struct request, queuelist);
-      	if (rq) {
-      		list_del_init(&rq->queuelist);
-      		elv_dispatch_sort(q, rq);
-          nd->depth++;
-
-      		return 1;
-      	}
+  	rq = list_first_entry_or_null(&nd->queue, struct request, queuelist);
+  	if (rq) {
+      nd->depth++;
+  		list_del_init(&rq->queuelist);
+  		elv_dispatch_sort(q, rq);
+  		return 1;
+  	}
+  }
 	return 0;
 }
 
-static void noop_add_request(struct request_queue *q, struct request *rq){
+static void noop_add_request(struct request_queue *q, struct request *rq)
+{
 	struct noop_data *nd = q->elevator->elevator_data;
-  list_add_tail(&rq->queuelist, &nd->queue);
+	list_add_tail(&rq->queuelist, &nd->queue);
 }
 
 
-static int noop_init_queue(struct request_queue *q, struct elevator_type *e){
+static int noop_init_queue(struct request_queue *q, struct elevator_type *e)
+{
 	struct noop_data *nd;
 	struct elevator_queue *eq;
 
@@ -75,8 +76,10 @@ static int noop_init_queue(struct request_queue *q, struct elevator_type *e){
 	return 0;
 }
 
-static void noop_exit_queue(struct elevator_queue *e){
+static void noop_exit_queue(struct elevator_queue *e)
+{
 	struct noop_data *nd = e->elevator_data;
+
 	BUG_ON(!list_empty(&nd->queue));
 	kfree(nd);
 }
@@ -93,11 +96,13 @@ static struct elevator_type elevator_noop = {
 	.elevator_owner = THIS_MODULE,
 };
 
-static int __init noop_init(void){
+static int __init noop_init(void)
+{
 	return elv_register(&elevator_noop);
 }
 
-static void __exit noop_exit(void){
+static void __exit noop_exit(void)
+{
 	elv_unregister(&elevator_noop);
 }
 
