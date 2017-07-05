@@ -1,13 +1,10 @@
 ### Depth Experiment with NOOP-Scheduler  
 - tested with FIO
-  - FIO's job number more than 10 **-> error occurs**
-- test subject is NOOP-Scheduler
-  - scheduler's depth [I/O request] is limited to **[1 ~ 27] -> error occurs**
-  - scheduler's depth [I/O request] is limited to **[28 ~ ] -> fine**
+  - FIO's job number more than 7 **-> error occurs**
+
 
 ```
-fio -filename=/dev/sdb -direct=1 -thread -rw=read -bs=4k -numjobs=32 -name=mytest
-
+fio -filename=/dev/sdb -direct=1 -thread -rw=read -bs=4k -numjobs=7 -name=mytest
 ```
 
 #### Dispatch Function
