@@ -26,12 +26,12 @@ static int noop_dispatch(struct request_queue *q, int force){
   	struct request *rq;
 
       if(!nd || nd->complete_flag==0 || nd->depth>REQUEST_DEPTH){
-  				return 0;
+      	return 0;
       }
 
-  		rq = list_first_entry_or_null(&nd->queue, struct request, queuelist);
+      rq = list_first_entry_or_null(&nd->queue, struct request, queuelist);
 
-  		if (rq) {
+      if (rq) {
             printk("DISPATCH flag: %d  depth: %d\n",nd->complete_flag, nd->depth);
             list_del_init(&rq->queuelist);
             elv_dispatch_sort(q, rq);
@@ -39,7 +39,7 @@ static int noop_dispatch(struct request_queue *q, int force){
             nd->depth++;
             nd->complete_flag = 0;
             return 1;
-  		}
+      }
 
   	return 0;
   }
@@ -56,7 +56,7 @@ static int noop_dispatch(struct request_queue *q, int force){
 static void noop_completed(struct request_queue *q, struct request *rq){
 	struct noop_data *nd = q->elevator->elevator_data;
 
-		  printk("COMPLETE flag: %d  depth: %d\n",nd->complete_flag, nd->depth);
+      printk("COMPLETE flag: %d  depth: %d\n",nd->complete_flag, nd->depth);
       nd->complete_flag = 1;
       nd->depth--;
 
