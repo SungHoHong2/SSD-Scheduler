@@ -177,6 +177,9 @@ static void elevator_release(struct kobject *kobj)
 	kfree(e);
 }
 
+
+
+
 int elevator_init(struct request_queue *q, char *name)
 {
 	struct elevator_type *e = NULL;
@@ -230,6 +233,7 @@ int elevator_init(struct request_queue *q, char *name)
 	return err;
 }
 EXPORT_SYMBOL(elevator_init);
+
 
 void elevator_exit(struct elevator_queue *e)
 {
@@ -596,6 +600,9 @@ void __elv_add_request(struct request_queue *q, struct request *rq, int where)
 	blk_pm_add_request(q, rq);
 
 	rq->q = q;
+
+  // check the type of the add request the scheduler performs
+	
 
 	if (rq->cmd_flags & REQ_SOFTBARRIER) {
 		/* barriers are scheduling boundary, update end_sector */
