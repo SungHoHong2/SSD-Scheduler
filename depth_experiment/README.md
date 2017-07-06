@@ -15,8 +15,9 @@
 
 
 #### Analysis of Elevator-Framework
-
-
+ - elevator.h has the interface functions that are overlapped with the used-schedulers
+   - cfq, noop etc
+ - actual functions used in elevator.c are only register and unregister
 
 
 #### Analysis of CFQ Scheduler
