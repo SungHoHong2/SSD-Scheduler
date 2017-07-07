@@ -36,6 +36,9 @@ typedef struct sfq_request {
     // Assign requests
     struct request *rq;
 
+		// assuring dispatch-complete
+    int complete_flag;
+
 } sfq_request;
 
 
@@ -50,6 +53,10 @@ typedef struct sfq_data {
 
   // number of outstanding I/O requests
   int depth;
+
+  // outstanding request
+	sfq_request *curr_sfqr;
+
 
 } sfq_data;
 
@@ -112,7 +119,9 @@ static int sfq_init_queue(struct request_queue *q, struct elevator_type *e){
 	q->elevator = eq;
 	spin_unlock_irq(q->queue_lock);
 
-  printk("INIT_SFQ 200 DEPTH: %d\n", REQUEST_DEPTH);
+  printk("INIT_SFQ NEO DEPTH: 3\n");
+  //148727,153683 write /media/sf_SSD-Scheduler/depth_experiment/sfq_test/sfq_test_03.txt
+
 	return 0;
 }
 
@@ -125,6 +134,7 @@ static int sfq_set_request(struct request_queue *q, struct request *rq, struct b
 
      sfqr = (struct sfq_request*)kmalloc(sizeof(struct sfq_request), gfp_mask);
      sfqr->pid = current->pid;
+		 sfqr->complete_flag = 1;
      sfqr->start_tag = sfqd->virtual_time;
 
      // update the virtual_time with the smallest outstanding request
@@ -183,13 +193,16 @@ static int sfq_dispatch(struct request_queue *q, int force){
 
 
   // check the number of depth
-  if(sfqd && sfqd->size>0 && sfqd->depth<=REQUEST_DEPTH){
+  if(sfqd && sfqd->size>0) { //&& sfqd->depth<=REQUEST_DEPTH){
 
 
-    printk("DISPATCH: depth: %d\n",sfqd->depth);
+    // printk("DISPATCH: depth: %d\n", sfqd->depth);
 
     sfqr = sfqd->requests[0];
     rq = sfqr->rq;
+
+    if(sfqr->complete_flag == 0) return 0;
+
 
       if(sfqd->size>1){
 
@@ -199,11 +212,13 @@ static int sfq_dispatch(struct request_queue *q, int force){
 
         if(rq){
 
-          printk("DISPATCH: rq: %ld\n",rq->start_time);
-          heapify(sfqd, 0);
-          elv_dispatch_sort(q, rq);
-          sfqd->depth++;
-          return 1;
+            printk("DISPATCH: PID: %d\n", sfqr->pid);
+            heapify(sfqd, 0);
+            elv_dispatch_sort(q, rq);
+  					sfqd->curr_sfqr = sfqr;
+  					sfqr->complete_flag = 0;
+            sfqd->depth++;
+            return 1;
         }
 
       } else {
@@ -212,9 +227,13 @@ static int sfq_dispatch(struct request_queue *q, int force){
         sfqd->requests[0] = sfqd->requests[--(sfqd->size)];
 
           if(rq){
-            elv_dispatch_sort(q, rq);
-            sfqd->depth++;
-            return 1;
+
+  						printk("DISPATCH: PID: %d\n", sfqr->pid);
+              elv_dispatch_sort(q, rq);
+  						sfqr->complete_flag = 0;
+  						sfqd->curr_sfqr = sfqr;
+              sfqd->depth++;
+              return 1;
           }
 
       }
@@ -227,8 +246,9 @@ static int sfq_dispatch(struct request_queue *q, int force){
 static void sfq_completed(struct request_queue *q, struct request *rq){
 	struct sfq_data *sfqd = q->elevator->elevator_data;
 
-  sfqd->depth--;
-  // printk("COMPLETE: depth: %d\n",sfqd->depth);
+	 printk("COMPLETE: PID: %d\n",sfqd->curr_sfqr->pid);
+   sfqd->depth--;
+	 sfqd->curr_sfqr->complete_flag = 1;
 
 }
 

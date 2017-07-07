@@ -9,54 +9,77 @@
 #include <linux/slab.h>
 #include <linux/init.h>
 
-#define REQUEST_DEPTH 1
+#define REQUEST_DEPTH 10
 
 struct noop_data {
 	struct list_head queue;
-	int complete_flag;
 	int depth;
+	struct noop_request *curr_request;
+  int complete_flag;
+
 };
+
+struct noop_request{
+	pid_t pid;
+  struct request *rq;
+  struct list_head lists;
+};
+
 
 static void noop_completed(struct request_queue *q, struct request *rq){
 	struct noop_data *nd = q->elevator->elevator_data;
+  struct noop_request *nr = nd->curr_request;
 
-		  printk("COMPLETE flag: %d  depth: %d\n",nd->complete_flag, nd->depth);
-      nd->complete_flag = 1;
-			nd->depth--;
-
+  printk("COMPLETE: PID: %d DEPTH: %d\n",nr->pid, nd->depth);
+  nd->complete_flag = 1;
+  nd->depth--;
 }
 
-static int noop_dispatch(struct request_queue *q, int force){
+static int noop_dispatch(struct request_queue *q, int force)
+{
 	struct noop_data *nd = q->elevator->elevator_data;
-	struct request *rq;
+  struct noop_request *nr;
+	// struct request *rq;
 
+    if(nd->depth<=REQUEST_DEPTH ){
 
-    if(!nd || nd->complete_flag==0 || nd->depth>REQUEST_DEPTH){
-				return 0;
-    }
+    nr = list_first_entry_or_null(&nd->queue, struct noop_request, lists);
+  	// rq = list_first_entry_or_null(&nd->queue, struct request, queuelist);
+    if (nr) {
 
-		printk("------------- flag: %d  depth: %d\n",nd->complete_flag, nd->depth);
+      if(nd->complete_flag==0) return 0;
 
-
-		rq = list_first_entry_or_null(&nd->queue, struct request, queuelist);
-
-		if (rq) {
-		   printk("DISPATCH flag: %d  depth: %d\n",nd->complete_flag, nd->depth);
-			 list_del_init(&rq->queuelist);
-			 elv_dispatch_sort(q, rq);
-
-			 nd->complete_flag = 0;
-	     nd->depth++;
-			 return 1;
-		}
-
+      printk("DISPATCH: PID: %d DEPTH: %d\n", nr->pid, nd->depth);
+  		list_del_init(&nr->lists);
+  		elv_dispatch_sort(q, nr->rq);
+      nd->depth++;
+      nd->curr_request = nr;
+      nd->complete_flag = 0;
+  		return 1;
+  	}
+  }
 	return 0;
 }
 
 static void noop_add_request(struct request_queue *q, struct request *rq){
 	struct noop_data *nd = q->elevator->elevator_data;
-  list_add_tail(&rq->queuelist, &nd->queue);
+  struct noop_request *nr = rq->elv.priv[0];
+                       nr->rq = rq;
+
+  list_add_tail(&nr->lists, &nd->queue);
+	// list_add_tail(&rq->queuelist, &nd->queue);
 }
+
+
+static int noop_set_request(struct request_queue *q, struct request *rq, struct bio *bio, gfp_t gfp_mask){
+  // struct noop_data *nd = q->elevator->elevator_data;
+  struct noop_request *nr;
+  nr = (struct noop_request*)kmalloc(sizeof(struct noop_request), gfp_mask);
+  nr->pid = current->pid;
+  rq->elv.priv[0] = nr;
+  return 0;
+}
+
 
 static int noop_init_queue(struct request_queue *q, struct elevator_type *e){
 	struct noop_data *nd;
@@ -83,12 +106,16 @@ static int noop_init_queue(struct request_queue *q, struct elevator_type *e){
 	spin_unlock_irq(q->queue_lock);
 
 
-  printk("NOOP EXPERIMENT %d\n",REQUEST_DEPTH);
+  printk("NOOP EXPERIMENT ERROR FIND 2\n");
+  //354166,378580 write /media/sf_SSD-Scheduler/depth_experiment/noop_test/noop_test_06.txt
+
 	return 0;
 }
 
-static void noop_exit_queue(struct elevator_queue *e){
+static void noop_exit_queue(struct elevator_queue *e)
+{
 	struct noop_data *nd = e->elevator_data;
+
 	BUG_ON(!list_empty(&nd->queue));
 	kfree(nd);
 }
@@ -99,17 +126,20 @@ static struct elevator_type elevator_noop = {
 		.elevator_dispatch_fn		= noop_dispatch,
 		.elevator_add_req_fn		= noop_add_request,
 		.elevator_init_fn		= noop_init_queue,
+    .elevator_set_req_fn = noop_set_request,
 		.elevator_exit_fn		= noop_exit_queue,
 	},
 	.elevator_name = "noop_test",
 	.elevator_owner = THIS_MODULE,
 };
 
-static int __init noop_init(void){
+static int __init noop_init(void)
+{
 	return elv_register(&elevator_noop);
 }
 
-static void __exit noop_exit(void){
+static void __exit noop_exit(void)
+{
 	elv_unregister(&elevator_noop);
 }
 

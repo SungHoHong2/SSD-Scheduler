@@ -164,3 +164,83 @@ void elv_put_request(struct request_queue *q, struct request *rq){
 - Allocates time slice for each queue
 - Priorities are taken into account
 - may idle if quantum not expired - anticipation
+
+
+#### - ADD_REQUEST
+
+```
+static void cfq_insert_request(struct request_queue *q, struct request *rq)
+{
+	struct cfq_data *cfqd = q->elevator->elevator_data;
+	struct cfq_queue *cfqq = (struct cfq_queue *) ((rq)->elv.priv[0]);
+
+
+  /* add logs for cfq */
+	cfq_log_cfqq(cfqd, cfqq, "insert_request");  
+
+  /* mystery of icq */  
+  cfq_init_prio_data(cfqq, RQ_CIC(rq));
+
+  /* track time for request */
+  rq->fifo_time = ktime_get_ns() + cfqd->cfq_fifo_expire[rq_is_sync(rq)];
+
+
+  /* add the request in the linked_list */
+  list_add_tail(&rq->queuelist, &cfqq->fifo);
+
+  /* add the request in the rb_tree */
+	cfq_add_rq_rb(rq);
+
+
+	cfqg_stats_update_io_add(RQ_CFQG(rq), cfqd->serving_group, req_op(rq),
+				 rq->cmd_flags);
+	cfq_rq_enqueued(cfqd, cfqq, rq);
+}
+
+```
+
+
+#### - DISPATCH_REQUEST
+
+```
+
+static int cfq_dispatch_requests(struct request_queue *q, int force)
+{
+	struct cfq_data *cfqd = q->elevator->elevator_data;
+	struct cfq_queue *cfqq;
+
+	if (!cfqd->busy_queues)
+		return 0;
+
+	if (unlikely(force))
+		return cfq_forced_dispatch(cfqd);
+
+	cfqq = cfq_select_queue(cfqd);
+	if (!cfqq)
+		return 0;
+
+	/*
+	 * Dispatch a request from this cfqq, if it is allowed
+	 */
+	if (!cfq_dispatch_request(cfqd, cfqq))
+		return 0;
+
+	cfqq->slice_dispatch++;
+	cfq_clear_cfqq_must_dispatch(cfqq);
+
+	/*
+	 * expire an async queue immediately if it has used up its slice. idle
+	 * queue always expire after 1 dispatch round.
+	 */
+	if (cfqd->busy_queues > 1 && ((!cfq_cfqq_sync(cfqq) &&
+	    cfqq->slice_dispatch >= cfq_prio_to_maxrq(cfqd, cfqq)) ||
+	    cfq_class_idle(cfqq))) {
+		cfqq->slice_end = ktime_get_ns() + 1;
+		cfq_slice_expired(cfqd, 0);
+	}
+
+	cfq_log_cfqq(cfqd, cfqq, "dispatched a request");
+	return 1;
+}
+
+```

@@ -15,7 +15,16 @@
 struct noop_data {
 	struct list_head queue;
 	int depth;
+	struct noop_request *curr_request
+
 };
+
+struct noop_request{
+	pid_t pid;
+	int complete_flag;
+  struct list_head lists;
+}
+
 
 static void noop_completed(struct request_queue *q, struct request *rq){
 	struct noop_data *nd = q->elevator->elevator_data;

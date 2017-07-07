@@ -1,0 +1,101 @@
+Jul  6 19:27:24 sungho-VirtualBox kernel: [  362.968716] DISPATCH: PID: 3066
+Jul  6 19:27:24 sungho-VirtualBox kernel: [  362.968993] COMPLETE: PID: 3066
+Jul  6 19:27:24 sungho-VirtualBox kernel: [  362.968995] DISPATCH: PID: 3073
+Jul  6 19:27:24 sungho-VirtualBox kernel: [  362.968998] ------------[ cut here ]------------
+Jul  6 19:27:24 sungho-VirtualBox kernel: [  362.969010] WARNING: CPU: 0 PID: 0 at drivers/ata/libata-core.c:5266 ata_qc_issue+0x31f/0x330
+Jul  6 19:27:24 sungho-VirtualBox kernel: [  362.969013] Modules linked in: launch(OE) nls_utf8 isofs vboxsf(OE) vboxvideo(OE) ttm snd_intel8x0 snd_ac97_codec drm_kms_helper ac97_bus snd_pcm drm snd_seq_midi snd_seq_midi_event snd_rawmidi snd_seq vboxguest(OE) snd_seq_device snd_timer crct10dif_pclmul snd joydev crc32_pclmul ghash_clmulni_intel aesni_intel fb_sys_fops syscopyarea aes_x86_64 sysfillrect lrw soundcore sysimgblt gf128mul glue_helper i2c_piix4 input_leds ablk_helper serio_raw cryptd mac_hid parport_pc ppdev lp parport autofs4 hid_generic usbhid hid psmouse ahci fjes e1000 video libahci pata_acpi
+Jul  6 19:27:24 sungho-VirtualBox kernel: [  362.969052] CPU: 0 PID: 0 Comm: swapper/0 Tainted: G           OE   4.8.8SungHoHong+ #17
+Jul  6 19:27:24 sungho-VirtualBox kernel: [  362.969053] Hardware name: innotek GmbH VirtualBox/VirtualBox, BIOS VirtualBox 12/01/2006
+Jul  6 19:27:24 sungho-VirtualBox kernel: [  362.969054]  0000000000000086 07086aa382644a2e ffff92de39c03bb0 ffffffffaf3fe913
+Jul  6 19:27:24 sungho-VirtualBox kernel: [  362.969057]  0000000000000000 0000000000000000 ffff92de39c03bf0 ffffffffaf081fbb
+Jul  6 19:27:24 sungho-VirtualBox kernel: [  362.969059]  0000149239c03bd8 ffff92ddf4814000 0000000000000006 ffff92ddf4815e80
+Jul  6 19:27:24 sungho-VirtualBox kernel: [  362.969061] Call Trace:
+Jul  6 19:27:24 sungho-VirtualBox kernel: [  362.969062]  <IRQ>  [<ffffffffaf3fe913>] dump_stack+0x63/0x90
+Jul  6 19:27:24 sungho-VirtualBox kernel: [  362.969071]  [<ffffffffaf081fbb>] __warn+0xcb/0xf0
+Jul  6 19:27:24 sungho-VirtualBox kernel: [  362.969073]  [<ffffffffaf0820ed>] warn_slowpath_null+0x1d/0x20
+Jul  6 19:27:24 sungho-VirtualBox kernel: [  362.969074]  [<ffffffffaf5f016f>] ata_qc_issue+0x31f/0x330
+Jul  6 19:27:24 sungho-VirtualBox kernel: [  362.969076]  [<ffffffffaf5f6783>] ? ata_scsi_rw_xlat+0x193/0x250
+Jul  6 19:27:24 sungho-VirtualBox kernel: [  362.969077]  [<ffffffffaf5f65f0>] ? ata_scsiop_inq_b6+0x50/0x50
+Jul  6 19:27:24 sungho-VirtualBox kernel: [  362.969079]  [<ffffffffaf5f68f2>] ata_scsi_translate+0xb2/0x1a0
+Jul  6 19:27:24 sungho-VirtualBox kernel: [  362.969080]  [<ffffffffaf5f9c52>] ata_scsi_queuecmd+0x92/0x1e0
+Jul  6 19:27:24 sungho-VirtualBox kernel: [  362.969081]  [<ffffffffaf5d2101>] scsi_dispatch_cmd+0xe1/0x240
+Jul  6 19:27:24 sungho-VirtualBox kernel: [  362.969083]  [<ffffffffaf5d4e3c>] scsi_request_fn+0x47c/0x620
+Jul  6 19:27:24 sungho-VirtualBox kernel: [  362.969088]  [<ffffffffaf203a63>] ? kmem_cache_free+0x1e3/0x1f0
+Jul  6 19:27:24 sungho-VirtualBox kernel: [  362.969090]  [<ffffffffaf3c96c3>] __blk_run_queue+0x33/0x40
+Jul  6 19:27:24 sungho-VirtualBox kernel: [  362.969092]  [<ffffffffaf3c96f6>] blk_run_queue+0x26/0x40
+Jul  6 19:27:24 sungho-VirtualBox kernel: [  362.969095]  [<ffffffffaf5d1a00>] scsi_run_queue+0x250/0x2e0
+Jul  6 19:27:24 sungho-VirtualBox kernel: [  362.969096]  [<ffffffffaf5cb2f7>] ? scsi_host_free_command.isra.11+0x47/0x50
+Jul  6 19:27:24 sungho-VirtualBox kernel: [  362.969098]  [<ffffffffaf5d1d54>] scsi_end_request+0x134/0x1c0
+Jul  6 19:27:24 sungho-VirtualBox kernel: [  362.969099]  [<ffffffffaf5d5216>] scsi_io_completion+0x1b6/0x690
+Jul  6 19:27:24 sungho-VirtualBox kernel: [  362.969100]  [<ffffffffaf5cbe2f>] scsi_finish_command+0xcf/0x120
+Jul  6 19:27:24 sungho-VirtualBox kernel: [  362.969102]  [<ffffffffaf5d4994>] scsi_softirq_done+0x124/0x150
+Jul  6 19:27:24 sungho-VirtualBox kernel: [  362.969104]  [<ffffffffaf3d518b>] blk_done_softirq+0x8b/0xb0
+Jul  6 19:27:24 sungho-VirtualBox kernel: [  362.969108]  [<ffffffffaf862046>] __do_softirq+0xf6/0x280
+Jul  6 19:27:24 sungho-VirtualBox kernel: [  362.969110]  [<ffffffffaf087c63>] irq_exit+0xa3/0xb0
+Jul  6 19:27:24 sungho-VirtualBox kernel: [  362.969112]  [<ffffffffaf050b73>] smp_call_function_single_interrupt+0x33/0x40
+Jul  6 19:27:24 sungho-VirtualBox kernel: [  362.969113]  [<ffffffffaf861712>] call_function_single_interrupt+0x82/0x90
+Jul  6 19:27:24 sungho-VirtualBox kernel: [  362.969114]  <EOI>  [<ffffffffaf0641c6>] ? native_safe_halt+0x6/0x10
+Jul  6 19:27:24 sungho-VirtualBox kernel: [  362.969119]  [<ffffffffaf037dee>] default_idle+0x1e/0xd0
+Jul  6 19:27:24 sungho-VirtualBox kernel: [  362.969120]  [<ffffffffaf03856f>] arch_cpu_idle+0xf/0x20
+Jul  6 19:27:24 sungho-VirtualBox kernel: [  362.969122]  [<ffffffffaf0c62ba>] default_idle_call+0x2a/0x40
+Jul  6 19:27:24 sungho-VirtualBox kernel: [  362.969123]  [<ffffffffaf0c65ba>] cpu_startup_entry+0x2ea/0x350
+Jul  6 19:27:24 sungho-VirtualBox kernel: [  362.969125]  [<ffffffffaf851f47>] rest_init+0x77/0x80
+Jul  6 19:27:24 sungho-VirtualBox kernel: [  362.969132]  [<ffffffffaff7ffdc>] start_kernel+0x466/0x487
+Jul  6 19:27:24 sungho-VirtualBox kernel: [  362.969133]  [<ffffffffaff7f120>] ? early_idt_handler_array+0x120/0x120
+Jul  6 19:27:24 sungho-VirtualBox kernel: [  362.969134]  [<ffffffffaff7f2d5>] x86_64_start_reservations+0x24/0x26
+Jul  6 19:27:24 sungho-VirtualBox kernel: [  362.969135]  [<ffffffffaff7f41a>] x86_64_start_kernel+0x143/0x166
+Jul  6 19:27:24 sungho-VirtualBox kernel: [  362.969135] ---[ end trace 8c0cf60d5e97584a ]---
+Jul  6 19:27:24 sungho-VirtualBox kernel: [  362.979172] ata4.00: exception Emask 0x0 SAct 0x4000 SErr 0x0 action 0x6
+Jul  6 19:27:24 sungho-VirtualBox kernel: [  362.979178] ata4.00: failed command: READ FPDMA QUEUED
+Jul  6 19:27:24 sungho-VirtualBox kernel: [  362.979181] ata4.00: cmd 60/10:70:d0:07:00/00:00:00:00:00/40 tag 14 ncq dma 8192 in
+Jul  6 19:27:24 sungho-VirtualBox kernel: [  362.979181]          res 00/00:01:00:00:00/00:00:00:00:00/00 Emask 0x42 (HSM violation)
+Jul  6 19:27:24 sungho-VirtualBox kernel: [  362.979188] ata4: hard resetting link
+Jul  6 19:27:24 sungho-VirtualBox kernel: [  363.307670] ata4: SATA link up 3.0 Gbps (SStatus 123 SControl 300)
+Jul  6 19:27:24 sungho-VirtualBox kernel: [  363.308143] ata4.00: configured for UDMA/133
+Jul  6 19:27:24 sungho-VirtualBox kernel: [  363.308159] ata4: EH complete
+Jul  6 19:27:24 sungho-VirtualBox kernel: [  363.319371] ata4.00: exception Emask 0x0 SAct 0x10000 SErr 0x0 action 0x6
+Jul  6 19:27:24 sungho-VirtualBox kernel: [  363.319374] ata4.00: failed command: READ FPDMA QUEUED
+Jul  6 19:27:24 sungho-VirtualBox kernel: [  363.319377] ata4.00: cmd 60/10:80:d0:07:00/00:00:00:00:00/40 tag 16 ncq dma 8192 in
+Jul  6 19:27:24 sungho-VirtualBox kernel: [  363.319377]          res 00/00:00:00:00:00/00:00:00:00:00/a0 Emask 0x42 (HSM violation)
+Jul  6 19:27:24 sungho-VirtualBox kernel: [  363.319382] ata4: hard resetting link
+Jul  6 19:27:24 sungho-VirtualBox kernel: [  363.635009] ata4: SATA link up 3.0 Gbps (SStatus 123 SControl 300)
+Jul  6 19:27:24 sungho-VirtualBox kernel: [  363.635366] ata4.00: configured for UDMA/133
+Jul  6 19:27:24 sungho-VirtualBox kernel: [  363.635383] ata4: EH complete
+Jul  6 19:27:24 sungho-VirtualBox kernel: [  363.646983] ata4.00: exception Emask 0x0 SAct 0x100000 SErr 0x0 action 0x6
+Jul  6 19:27:24 sungho-VirtualBox kernel: [  363.646988] ata4.00: failed command: READ FPDMA QUEUED
+Jul  6 19:27:24 sungho-VirtualBox kernel: [  363.646991] ata4.00: cmd 60/10:a0:d0:07:00/00:00:00:00:00/40 tag 20 ncq dma 8192 in
+Jul  6 19:27:24 sungho-VirtualBox kernel: [  363.646991]          res 00/00:00:00:00:00/00:00:00:00:00/a0 Emask 0x42 (HSM violation)
+Jul  6 19:27:24 sungho-VirtualBox kernel: [  363.646997] ata4: hard resetting link
+Jul  6 19:27:25 sungho-VirtualBox kernel: [  363.959849] ata4: SATA link up 3.0 Gbps (SStatus 123 SControl 300)
+Jul  6 19:27:25 sungho-VirtualBox kernel: [  363.960370] ata4.00: configured for UDMA/133
+Jul  6 19:27:25 sungho-VirtualBox kernel: [  363.960389] ata4: EH complete
+Jul  6 19:27:25 sungho-VirtualBox kernel: [  363.972878] ata4.00: NCQ disabled due to excessive errors
+Jul  6 19:27:25 sungho-VirtualBox kernel: [  363.972880] ata4.00: exception Emask 0x0 SAct 0x800000 SErr 0x0 action 0x6
+Jul  6 19:27:25 sungho-VirtualBox kernel: [  363.972884] ata4.00: failed command: READ FPDMA QUEUED
+Jul  6 19:27:25 sungho-VirtualBox kernel: [  363.972887] ata4.00: cmd 60/10:b8:d0:07:00/00:00:00:00:00/40 tag 23 ncq dma 8192 in
+Jul  6 19:27:25 sungho-VirtualBox kernel: [  363.972887]          res 00/00:00:00:00:00/00:00:00:00:00/a0 Emask 0x42 (HSM violation)
+Jul  6 19:27:25 sungho-VirtualBox kernel: [  363.972892] ata4: hard resetting link
+Jul  6 19:27:25 sungho-VirtualBox kernel: [  364.284445] ata4: SATA link up 3.0 Gbps (SStatus 123 SControl 300)
+Jul  6 19:27:25 sungho-VirtualBox kernel: [  364.284946] ata4.00: configured for UDMA/133
+Jul  6 19:27:25 sungho-VirtualBox kernel: [  364.284964] ata4: EH complete
+Jul  6 19:27:25 sungho-VirtualBox kernel: [  364.294643] ata4.00: exception Emask 0x0 SAct 0x0 SErr 0x0 action 0x6
+Jul  6 19:27:25 sungho-VirtualBox kernel: [  364.294648] ata4.00: failed command: READ DMA
+Jul  6 19:27:25 sungho-VirtualBox kernel: [  364.294651] ata4.00: cmd c8/00:10:d0:07:00/00:00:00:00:00/e0 tag 5 dma 8192 in
+Jul  6 19:27:25 sungho-VirtualBox kernel: [  364.294651]          res 00/00:00:00:00:00/00:00:00:00:00/a0 Emask 0x42 (HSM violation)
+Jul  6 19:27:25 sungho-VirtualBox kernel: [  364.294656] ata4: hard resetting link
+Jul  6 19:27:25 sungho-VirtualBox kernel: [  364.610560] ata4: SATA link up 3.0 Gbps (SStatus 123 SControl 300)
+Jul  6 19:27:25 sungho-VirtualBox kernel: [  364.611007] ata4.00: configured for UDMA/133
+Jul  6 19:27:25 sungho-VirtualBox kernel: [  364.611016] ata4: EH complete
+Jul  6 19:27:25 sungho-VirtualBox kernel: [  364.622459] ata4: limiting SATA link speed to 1.5 Gbps
+Jul  6 19:27:25 sungho-VirtualBox kernel: [  364.622462] ata4.00: exception Emask 0x0 SAct 0x0 SErr 0x0 action 0x6
+Jul  6 19:27:25 sungho-VirtualBox kernel: [  364.622466] ata4.00: failed command: READ DMA
+Jul  6 19:27:25 sungho-VirtualBox kernel: [  364.622469] ata4.00: cmd c8/00:10:d0:07:00/00:00:00:00:00/e0 tag 8 dma 8192 in
+Jul  6 19:27:25 sungho-VirtualBox kernel: [  364.622469]          res 00/00:00:00:00:00/00:00:00:00:00/a0 Emask 0x42 (HSM violation)
+Jul  6 19:27:25 sungho-VirtualBox kernel: [  364.622474] ata4: hard resetting link
+Jul  6 19:27:26 sungho-VirtualBox kernel: [  364.939740] ata4: SATA link up 1.5 Gbps (SStatus 113 SControl 310)
+Jul  6 19:27:26 sungho-VirtualBox kernel: [  364.940221] ata4.00: configured for UDMA/133
+Jul  6 19:27:26 sungho-VirtualBox kernel: [  364.940241] COMPLETE: PID: 3073
+Jul  6 19:27:26 sungho-VirtualBox kernel: [  364.940247] ata4: EH complete
+Jul  6 19:27:26 sungho-VirtualBox kernel: [  364.940253] DISPATCH: PID: 3061
+Jul  6 19:27:26 sungho-VirtualBox kernel: [  364.941001] COMPLETE: PID: 3061
+Jul  6 19:27:26 sungho-VirtualBox kernel: [  364.941027] DISPATCH: PID: 3065
