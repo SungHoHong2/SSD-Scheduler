@@ -1,195 +1,22 @@
-/*
- * elevator noop
-   when the noop runs with 64jobs with 1 depth it freezes
-	 when the noop runs with 32jobs with 1 depth it works
- */
-
-#include <linux/module.h>
-#include <linux/slab.h>
-#include <linux/blkdev.h>
-#include <linux/elevator.h>
-#include <linux/ktime.h>
-#include <linux/rbtree.h>
-#include <linux/ioprio.h>
-#include <linux/blktrace_api.h>
-#include <linux/blk-cgroup.h>
-#include "blk.h"
-
-/*
- * tunables
- */
- /* max queue in one round of service */
- static const int cfq_quantum = 8;
- static const u64 cfq_fifo_expire[2] = { NSEC_PER_SEC / 4, NSEC_PER_SEC / 8 };
-
- /* maximum backwards seek, in KiB */
- static const int cfq_back_max = 16 * 1024;
-
- /* penalty of a backwards seek */
- static const int cfq_back_penalty = 2;
- static const u64 cfq_slice_sync = NSEC_PER_SEC / 10;
- static u64 cfq_slice_async = NSEC_PER_SEC / 25;
- static const int cfq_slice_async_rq = 2;
+### CFQ Scheduler
 
 
- static u64 cfq_slice_idle = NSEC_PER_SEC / 125;
-
- /*
- slice_idle
- ----------
- This specifies how long CFQ should idle for next request on certain cfq queues
- (for sequential workloads) and service trees (for random workloads) before
- queue is expired and CFQ selects next queue to dispatch from.
- */
-
- static u64 cfq_group_idle = NSEC_PER_SEC / 125;
- static const u64 cfq_target_latency = (u64)NSEC_PER_SEC * 3/10; /* 300 ms */
- static const int cfq_hist_divisor = 4;
-
- /*
-  * offset from end of service tree
-  */
- #define CFQ_IDLE_DELAY		(NSEC_PER_SEC / 5)
-
- /*
-  * below this threshold, we consider thinktime immediate
-  */
- #define CFQ_MIN_TT		(2 * NSEC_PER_SEC / HZ)
+#### Saving attributes in the CFQ
+1. declare the attributes using function MACRO
+2. send it to the elevator as an array
 
 
- #define CFQ_SLICE_SCALE		(5)
- #define CFQ_HW_QUEUE_MIN	(5)
- #define CFQ_SERVICE_SHIFT       12
+```
+I have no idea why the macros are used and added in the attributes in the cfq scheduler. What is the purpose?
+I believe that it is used for tuning the attributes of cfq, but in that case how do we use it?
 
- #define CFQQ_SEEK_THR		(sector_t)(8 * 100)
- #define CFQQ_CLOSE_THR		(sector_t)(8 * 1024)
- #define CFQQ_SECT_THR_NONROT	(sector_t)(2 * 32)
- #define CFQQ_SEEKY(cfqq)	(hweight32(cfqq->seek_history) > 32/8)
+- currently have asked the stack-overflow
 
+```
 
- // FRISK
- #define REQUEST_DEPTH 10
+##### - DECLARED CFQ ATTRIBUTES
 
-
-  /*
-   * Per block device queue structure
-   */
-  struct cfq_data {
-
-  	/*
-  	 * tunables, see top of file
-  	 */
-  	unsigned int cfq_quantum;
-  	unsigned int cfq_back_penalty;
-  	unsigned int cfq_back_max;
-  	unsigned int cfq_slice_async_rq;
-  	unsigned int cfq_latency;
-
-		u64 cfq_fifo_expire[2];
-		u64 cfq_slice[2];
-		u64 cfq_slice_idle;
-		u64 cfq_group_idle;
-		u64 cfq_target_latency;
-
-
-
-
-
-		// FRISK
-		struct list_head queue;
-	 	int depth;
-	 	struct cfq_request *curr_request;
-
-  };
-
-	// FRISK
-	struct cfq_request{
-		pid_t pid;
-		int complete_flag;
-	  struct list_head lists;
-	};
-
-
-
-static void cfq_completed(struct request_queue *q, struct request *rq){
-	struct cfq_data *nd = q->elevator->elevator_data;
-  nd->depth--;
-}
-
-static int cfq_dispatch(struct request_queue *q, int force)
-{
-	struct cfq_data *cfqd = q->elevator->elevator_data;
-	struct request *rq;
-
-    if(cfqd->depth<=REQUEST_DEPTH){
-
-  	rq = list_first_entry_or_null(&cfqd->queue, struct request, queuelist);
-  	if (rq) {
-
-      printk("TEST cfq_quantum: %d \n",cfqd->cfq_quantum);
-
-
-      cfqd->depth++;
-  		list_del_init(&rq->queuelist);
-  		elv_dispatch_sort(q, rq);
-  		return 1;
-  	}
-  }
-	return 0;
-}
-
-static void cfq_add_request(struct request_queue *q, struct request *rq)
-{
-	struct cfq_data *nd = q->elevator->elevator_data;
-	list_add_tail(&rq->queuelist, &nd->queue);
-}
-
-
-static int cfq_init_queue(struct request_queue *q, struct elevator_type *e)
-{
-	struct cfq_data *nd;
-	struct elevator_queue *eq;
-
-	eq = elevator_alloc(q, e);
-	if (!eq)
-		return -ENOMEM;
-
-	nd = kmalloc_node(sizeof(*nd), GFP_KERNEL, q->node);
-	if (!nd) {
-		kobject_put(&eq->kobj);
-		return -ENOMEM;
-	}
-
-	eq->elevator_data = nd;
-
-	nd->depth = 0;
-	INIT_LIST_HEAD(&nd->queue);
-
-	spin_lock_irq(q->queue_lock);
-	q->elevator = eq;
-	spin_unlock_irq(q->queue_lock);
-
-
-  printk("CFQ EXPERIMENT %d\n",REQUEST_DEPTH);
-	return 0;
-}
-
-static void cfq_exit_queue(struct elevator_queue *e)
-{
-	struct cfq_data *nd = e->elevator_data;
-
-	BUG_ON(!list_empty(&nd->queue));
-	kfree(nd);
-}
-
-
-
-
-
-/*
- * CFQ ATTRIBUTES
- */
-
+```
 static ssize_t
 cfq_var_show(unsigned int var, char *page){
  return sprintf(page, "%u\n", var);
@@ -324,8 +151,11 @@ static struct elv_fs_entry cfq_attrs[] = {
 	CFQ_ATTR(target_latency_us),
 	__ATTR_NULL
 };
+```
 
+##### - SEND TO THE ELEVATOR AS AN ARRAY
 
+```
 static struct elevator_type elevator_noop = {
 	.ops = {
 		.elevator_completed_req_fn  = cfq_completed,
@@ -338,19 +168,4 @@ static struct elevator_type elevator_noop = {
 	.elevator_name = "cfq_test",
 	.elevator_owner = THIS_MODULE,
 };
-
-static int __init cfq_init(void){
-	return elv_register(&elevator_noop);
-}
-
-static void __exit cfq_exit(void){
-	elv_unregister(&elevator_noop);
-}
-
-module_init(cfq_init);
-module_exit(cfq_exit);
-
-
-MODULE_AUTHOR("Jens Axboe");
-MODULE_LICENSE("GPL");
-MODULE_DESCRIPTION("No-op IO scheduler");
+```

@@ -228,12 +228,12 @@ static int sfq_dispatch(struct request_queue *q, int force){
 
           if(rq){
 
-  						printk("DISPATCH: PID: %d\n", sfqr->pid);
-              elv_dispatch_sort(q, rq);
-  						sfqr->complete_flag = 0;
-  						sfqd->curr_sfqr = sfqr;
-              sfqd->depth++;
-              return 1;
+  					printk("DISPATCH: PID: %d\n", sfqr->pid);
+            elv_dispatch_sort(q, rq);
+  					sfqr->complete_flag = 0;
+  					sfqd->curr_sfqr = sfqr;
+            sfqd->depth++;
+            return 1;
           }
 
       }

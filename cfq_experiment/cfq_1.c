@@ -67,9 +67,6 @@
  #define CFQQ_SEEKY(cfqq)	(hweight32(cfqq->seek_history) > 32/8)
 
 
- // FRISK
- #define REQUEST_DEPTH 10
-
 
   /*
    * Per block device queue structure
@@ -91,45 +88,42 @@
 		u64 cfq_group_idle;
 		u64 cfq_target_latency;
 
-
-
-
-
-		// FRISK
-		struct list_head queue;
-	 	int depth;
-	 	struct cfq_request *curr_request;
-
   };
 
-	// FRISK
-	struct cfq_request{
-		pid_t pid;
-		int complete_flag;
-	  struct list_head lists;
-	};
 
 
 
-static void cfq_completed(struct request_queue *q, struct request *rq){
-	struct cfq_data *nd = q->elevator->elevator_data;
+
+#define REQUEST_DEPTH 10
+
+struct noop_data {
+	struct list_head queue;
+	int depth;
+	struct noop_request *curr_request;
+};
+
+struct noop_request{
+	pid_t pid;
+	int complete_flag;
+  struct list_head lists;
+};
+
+
+static void noop_completed(struct request_queue *q, struct request *rq){
+	struct noop_data *nd = q->elevator->elevator_data;
   nd->depth--;
 }
 
-static int cfq_dispatch(struct request_queue *q, int force)
+static int noop_dispatch(struct request_queue *q, int force)
 {
-	struct cfq_data *cfqd = q->elevator->elevator_data;
+	struct noop_data *nd = q->elevator->elevator_data;
 	struct request *rq;
 
-    if(cfqd->depth<=REQUEST_DEPTH){
+    if(nd->depth<=REQUEST_DEPTH){
 
-  	rq = list_first_entry_or_null(&cfqd->queue, struct request, queuelist);
+  	rq = list_first_entry_or_null(&nd->queue, struct request, queuelist);
   	if (rq) {
-
-      printk("TEST cfq_quantum: %d \n",cfqd->cfq_quantum);
-
-
-      cfqd->depth++;
+      nd->depth++;
   		list_del_init(&rq->queuelist);
   		elv_dispatch_sort(q, rq);
   		return 1;
@@ -138,16 +132,16 @@ static int cfq_dispatch(struct request_queue *q, int force)
 	return 0;
 }
 
-static void cfq_add_request(struct request_queue *q, struct request *rq)
+static void noop_add_request(struct request_queue *q, struct request *rq)
 {
-	struct cfq_data *nd = q->elevator->elevator_data;
+	struct noop_data *nd = q->elevator->elevator_data;
 	list_add_tail(&rq->queuelist, &nd->queue);
 }
 
 
-static int cfq_init_queue(struct request_queue *q, struct elevator_type *e)
+static int noop_init_queue(struct request_queue *q, struct elevator_type *e)
 {
-	struct cfq_data *nd;
+	struct noop_data *nd;
 	struct elevator_queue *eq;
 
 	eq = elevator_alloc(q, e);
@@ -174,9 +168,9 @@ static int cfq_init_queue(struct request_queue *q, struct elevator_type *e)
 	return 0;
 }
 
-static void cfq_exit_queue(struct elevator_queue *e)
+static void noop_exit_queue(struct elevator_queue *e)
 {
-	struct cfq_data *nd = e->elevator_data;
+	struct noop_data *nd = e->elevator_data;
 
 	BUG_ON(!list_empty(&nd->queue));
 	kfree(nd);
@@ -184,11 +178,6 @@ static void cfq_exit_queue(struct elevator_queue *e)
 
 
 
-
-
-/*
- * CFQ ATTRIBUTES
- */
 
 static ssize_t
 cfq_var_show(unsigned int var, char *page){
@@ -202,6 +191,7 @@ cfq_var_store(unsigned int *var, const char *page, size_t count){
  *var = simple_strtoul(p, &p, 10);
  return count;
 }
+
 
 #define SHOW_FUNCTION(__FUNC, __VAR, __CONV)				\
 static ssize_t __FUNC(struct elevator_queue *e, char *page)		\
@@ -242,6 +232,7 @@ USEC_SHOW_FUNCTION(cfq_slice_sync_us_show, cfqd->cfq_slice[1]);
 USEC_SHOW_FUNCTION(cfq_slice_async_us_show, cfqd->cfq_slice[0]);
 USEC_SHOW_FUNCTION(cfq_target_latency_us_show, cfqd->cfq_target_latency);
 #undef USEC_SHOW_FUNCTION
+
 
 
 #define STORE_FUNCTION(__FUNC, __PTR, MIN, MAX, __CONV)			\
@@ -328,27 +319,29 @@ static struct elv_fs_entry cfq_attrs[] = {
 
 static struct elevator_type elevator_noop = {
 	.ops = {
-		.elevator_completed_req_fn  = cfq_completed,
-		.elevator_dispatch_fn		= cfq_dispatch,
-		.elevator_add_req_fn		= cfq_add_request,
-		.elevator_init_fn		= cfq_init_queue,
-		.elevator_exit_fn		= cfq_exit_queue,
+		.elevator_completed_req_fn  = noop_completed,
+		.elevator_dispatch_fn		= noop_dispatch,
+		.elevator_add_req_fn		= noop_add_request,
+		.elevator_init_fn		= noop_init_queue,
+		.elevator_exit_fn		= noop_exit_queue,
 	},
 	.elevator_attrs =	cfq_attrs,
 	.elevator_name = "cfq_test",
 	.elevator_owner = THIS_MODULE,
 };
 
-static int __init cfq_init(void){
+static int __init noop_init(void)
+{
 	return elv_register(&elevator_noop);
 }
 
-static void __exit cfq_exit(void){
+static void __exit noop_exit(void)
+{
 	elv_unregister(&elevator_noop);
 }
 
-module_init(cfq_init);
-module_exit(cfq_exit);
+module_init(noop_init);
+module_exit(noop_exit);
 
 
 MODULE_AUTHOR("Jens Axboe");

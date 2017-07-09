@@ -4856,7 +4856,7 @@ static struct elevator_type iosched_cfq = {
 	.icq_size	=	sizeof(struct cfq_io_cq),
 	.icq_align	=	__alignof__(struct cfq_io_cq),
 	.elevator_attrs =	cfq_attrs,
-	.elevator_name	=	"cfq",
+	.elevator_name	=	"test_cfq",
 	.elevator_owner =	THIS_MODULE,
 };
 
