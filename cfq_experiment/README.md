@@ -40,18 +40,6 @@ static ssize_t __FUNC(struct elevator_queue *e, char *page)		\
  return cfq_var_show(__data, (page));				\
 }
 
-SHOW_FUNCTION(cfq_quantum_show, cfqd->cfq_quantum, 0);
-SHOW_FUNCTION(cfq_fifo_expire_sync_show, cfqd->cfq_fifo_expire[1], 1);
-SHOW_FUNCTION(cfq_fifo_expire_async_show, cfqd->cfq_fifo_expire[0], 1);
-SHOW_FUNCTION(cfq_back_seek_max_show, cfqd->cfq_back_max, 0);
-SHOW_FUNCTION(cfq_back_seek_penalty_show, cfqd->cfq_back_penalty, 0);
-SHOW_FUNCTION(cfq_slice_idle_show, cfqd->cfq_slice_idle, 1);
-SHOW_FUNCTION(cfq_group_idle_show, cfqd->cfq_group_idle, 1);
-SHOW_FUNCTION(cfq_slice_sync_show, cfqd->cfq_slice[1], 1);
-SHOW_FUNCTION(cfq_slice_async_show, cfqd->cfq_slice[0], 1);
-SHOW_FUNCTION(cfq_slice_async_rq_show, cfqd->cfq_slice_async_rq, 0);
-SHOW_FUNCTION(cfq_low_latency_show, cfqd->cfq_latency, 0);
-SHOW_FUNCTION(cfq_target_latency_show, cfqd->cfq_target_latency, 1);
 #undef SHOW_FUNCTION
 
 
@@ -63,11 +51,6 @@ static ssize_t __FUNC(struct elevator_queue *e, char *page)		\
 	__data = div_u64(__data, NSEC_PER_USEC);			\
 	return cfq_var_show(__data, (page));				\
 }
-USEC_SHOW_FUNCTION(cfq_slice_idle_us_show, cfqd->cfq_slice_idle);
-USEC_SHOW_FUNCTION(cfq_group_idle_us_show, cfqd->cfq_group_idle);
-USEC_SHOW_FUNCTION(cfq_slice_sync_us_show, cfqd->cfq_slice[1]);
-USEC_SHOW_FUNCTION(cfq_slice_async_us_show, cfqd->cfq_slice[0]);
-USEC_SHOW_FUNCTION(cfq_target_latency_us_show, cfqd->cfq_target_latency);
 #undef USEC_SHOW_FUNCTION
 
 
@@ -87,23 +70,6 @@ static ssize_t __FUNC(struct elevator_queue *e, const char *page, size_t count)	
 	 *(__PTR) = __data;					\
  return ret;							\
 }
-
-STORE_FUNCTION(cfq_quantum_store, &cfqd->cfq_quantum, 1, UINT_MAX, 0);
-STORE_FUNCTION(cfq_fifo_expire_sync_store, &cfqd->cfq_fifo_expire[1], 1,
-	 UINT_MAX, 1);
-STORE_FUNCTION(cfq_fifo_expire_async_store, &cfqd->cfq_fifo_expire[0], 1,
-	 UINT_MAX, 1);
-STORE_FUNCTION(cfq_back_seek_max_store, &cfqd->cfq_back_max, 0, UINT_MAX, 0);
-STORE_FUNCTION(cfq_back_seek_penalty_store, &cfqd->cfq_back_penalty, 1,
-	 UINT_MAX, 0);
-STORE_FUNCTION(cfq_slice_idle_store, &cfqd->cfq_slice_idle, 0, UINT_MAX, 1);
-STORE_FUNCTION(cfq_group_idle_store, &cfqd->cfq_group_idle, 0, UINT_MAX, 1);
-STORE_FUNCTION(cfq_slice_sync_store, &cfqd->cfq_slice[1], 1, UINT_MAX, 1);
-STORE_FUNCTION(cfq_slice_async_store, &cfqd->cfq_slice[0], 1, UINT_MAX, 1);
-STORE_FUNCTION(cfq_slice_async_rq_store, &cfqd->cfq_slice_async_rq, 1,
-	 UINT_MAX, 0);
-STORE_FUNCTION(cfq_low_latency_store, &cfqd->cfq_latency, 0, 1, 0);
-STORE_FUNCTION(cfq_target_latency_store, &cfqd->cfq_target_latency, 1, UINT_MAX, 1);
 #undef STORE_FUNCTION
 
 
@@ -120,11 +86,6 @@ static ssize_t __FUNC(struct elevator_queue *e, const char *page, size_t count)	
  *(__PTR) = (u64)__data * NSEC_PER_USEC;				\
  return ret;							\
 }
-USEC_STORE_FUNCTION(cfq_slice_idle_us_store, &cfqd->cfq_slice_idle, 0, UINT_MAX);
-USEC_STORE_FUNCTION(cfq_group_idle_us_store, &cfqd->cfq_group_idle, 0, UINT_MAX);
-USEC_STORE_FUNCTION(cfq_slice_sync_us_store, &cfqd->cfq_slice[1], 1, UINT_MAX);
-USEC_STORE_FUNCTION(cfq_slice_async_us_store, &cfqd->cfq_slice[0], 1, UINT_MAX);
-USEC_STORE_FUNCTION(cfq_target_latency_us_store, &cfqd->cfq_target_latency, 1, UINT_MAX);
 #undef USEC_STORE_FUNCTION
 
 
@@ -133,22 +94,7 @@ USEC_STORE_FUNCTION(cfq_target_latency_us_store, &cfqd->cfq_target_latency, 1, U
 
 static struct elv_fs_entry cfq_attrs[] = {
 	CFQ_ATTR(quantum),
-	CFQ_ATTR(fifo_expire_sync),
-	CFQ_ATTR(fifo_expire_async),
-	CFQ_ATTR(back_seek_max),
-	CFQ_ATTR(back_seek_penalty),
-	CFQ_ATTR(slice_sync),
-	CFQ_ATTR(slice_sync_us),
-	CFQ_ATTR(slice_async),
-	CFQ_ATTR(slice_async_us),
-	CFQ_ATTR(slice_async_rq),
-	CFQ_ATTR(slice_idle),
-	CFQ_ATTR(slice_idle_us),
-	CFQ_ATTR(group_idle),
-	CFQ_ATTR(group_idle_us),
-	CFQ_ATTR(low_latency),
-	CFQ_ATTR(target_latency),
-	CFQ_ATTR(target_latency_us),
+  ...
 	__ATTR_NULL
 };
 ```
@@ -168,4 +114,12 @@ static struct elevator_type elevator_noop = {
 	.elevator_name = "cfq_test",
 	.elevator_owner = THIS_MODULE,
 };
+```
+
+
+##### - INIT CFQ GLOBAL DATA
+
+```
+
+
 ```
