@@ -1,5 +1,6 @@
 ### CFQ Scheduler
-
+- find how scheduler can invoke dispatch right after the complete function
+- as a result we can ensure the sequence of dispatch & complete
 
 #### Saving attributes in the CFQ
 1. declare the attributes using function MACRO
@@ -117,9 +118,27 @@ static struct elevator_type elevator_noop = {
 ```
 
 
-##### - INIT CFQ GLOBAL DATA
-
-```
-
-
-```
+##### - CFQ INIT QUEUE
+1. allocate elevator object
+2. allocate cfq_data
+3. assign cfq_data to elevator
+4. allocate cfq_rb_root
+   - rb_root
+5. allocate cfq_group
+  -  rb_node
+6. initialize root_group
+  - clear node and initialize the time
+  - assign weight
+7. allocate prior_trees
+   - two rb_roots
+8. allocate oom_cfq_queue
+   - static class for cfq_queue
+   - link the cfq_queue with cfq_group
+9. assign hrtimer in cfq_data
+   - idle_slice_timer
+10. check for active_queue in cfq_data
+   - restart the hrtimer
+   - assign it in idle_slice_timer.function  
+11. initialize work for request_queue
+   - request_queue holds the cfq_data
+12. initialize rest for the cfq_data attributes
