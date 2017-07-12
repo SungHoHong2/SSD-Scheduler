@@ -24,7 +24,7 @@
 
 // Total Depth [MIN: 28  32  36  40  44  48  52  56  60  MAX:64]
 // Estimated Efficient number [36(WRITE) - 40(READ)]
-#define REQUEST_DEPTH 1
+#define REQUEST_DEPTH 10
 
 typedef struct sfq_request {
 
@@ -55,8 +55,8 @@ typedef struct sfq_data {
 	sfq_request *curr_sfqr;
 
   // invoking dispatch in complete function
-  struct work_struct unplug_work;
-  struct request_queue *queue;
+  // struct work_struct unplug_work;
+  // struct request_queue *queue;
 
 } sfq_data;
 
@@ -89,15 +89,15 @@ void heapify(sfq_data *hp, int i) {
  * Elevator common functions
  */
 
- static void cfq_kick_queue(struct work_struct *work){
- 	struct cfq_data *cfqd =
- 		container_of(work, struct cfq_data, unplug_work);
- 	struct request_queue *q = cfqd->queue;
-
- 	spin_lock_irq(q->queue_lock);
- 	__blk_run_queue(cfqd->queue);
- 	spin_unlock_irq(q->queue_lock);
- }
+ // static void cfq_kick_queue(struct work_struct *work){
+ // 	struct cfq_data *cfqd =
+ // 		container_of(work, struct cfq_data, unplug_work);
+ // 	struct request_queue *q = cfqd->queue;
+ //
+ // 	spin_lock_irq(q->queue_lock);
+ // 	__blk_run_queue(cfqd->queue);
+ // 	spin_unlock_irq(q->queue_lock);
+ // }
 
 
 
@@ -209,7 +209,7 @@ static int sfq_dispatch(struct request_queue *q, int force){
   struct request *rq;
 
   // check the number of depth
-  if(sfqd && sfqd->size>0 && sfqd->depth<=REQUEST_DEPTH){
+  if(sfqd && sfqd->size>0){ // && sfqd->depth<=REQUEST_DEPTH){
 
     // printk("DISPATCH: depth: %d\n", sfqd->depth);
 
@@ -224,7 +224,7 @@ static int sfq_dispatch(struct request_queue *q, int force){
     }
 
     if(rq){
-			printk("DISPATCH: PID: %d\n", sfqr->pid);
+			// printk("DISPATCH: PID: %d\n", sfqr->pid);
       elv_dispatch_sort(q, rq);
       sfqd->curr_sfqr = sfqr;
       sfqd->depth++;
@@ -237,7 +237,7 @@ static int sfq_dispatch(struct request_queue *q, int force){
 
 static void sfq_completed(struct request_queue *q, struct request *rq){
 	 struct sfq_data *sfqd = q->elevator->elevator_data;
-	 printk("COMPLETE: PID: %d\n",sfqd->curr_sfqr->pid);
+	 // printk("COMPLETE: PID: %d\n",sfqd->curr_sfqr->pid);
 
    if((--sfqd->depth)>0){
       // invoke the dispatch again

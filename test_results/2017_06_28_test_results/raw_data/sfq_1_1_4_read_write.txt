@@ -1,0 +1,54 @@
+root@sungho-VirtualBox:/home/sungho/Operating-System/test_results# fio 1_1_4_read_write.fio 
+reader_4: (g=0): rw=read, bs=4K-4K/4K-4K/4K-4K, ioengine=sync, iodepth=1
+writer_4: (g=0): rw=write, bs=4K-4K/4K-4K/4K-4K, ioengine=sync, iodepth=1
+fio-2.2.10
+Starting 2 processes
+Jobs: 2 (f=2): [R(1),W(1)] [100.0% done] [48747KB/48539KB/0KB /s] [12.2K/12.2K/0 iops] [eta 00m:00s]
+reader_4: (groupid=0, jobs=1): err= 0: pid=5208: Wed Jun 28 15:29:30 2017
+  read : io=963100KB, bw=48153KB/s, iops=12038, runt= 20001msec
+    clat (usec): min=32, max=19478, avg=81.63, stdev=77.97
+     lat (usec): min=33, max=19478, avg=81.78, stdev=77.98
+    clat percentiles (usec):
+     |  1.00th=[   49],  5.00th=[   62], 10.00th=[   65], 20.00th=[   68],
+     | 30.00th=[   70], 40.00th=[   75], 50.00th=[   77], 60.00th=[   78],
+     | 70.00th=[   80], 80.00th=[   81], 90.00th=[   95], 95.00th=[  115],
+     | 99.00th=[  215], 99.50th=[  266], 99.90th=[  422], 99.95th=[ 1012],
+     | 99.99th=[ 4448]
+    bw (KB  /s): min=43816, max=49968, per=100.00%, avg=48164.10, stdev=1257.35
+    lat (usec) : 50=1.03%, 100=90.56%, 250=7.81%, 500=0.53%, 750=0.02%
+    lat (usec) : 1000=0.01%
+    lat (msec) : 2=0.03%, 4=0.01%, 10=0.02%, 20=0.01%
+  cpu          : usr=0.64%, sys=31.46%, ctx=240920, majf=0, minf=12
+  IO depths    : 1=100.0%, 2=0.0%, 4=0.0%, 8=0.0%, 16=0.0%, 32=0.0%, >=64=0.0%
+     submit    : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.0%
+     complete  : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.0%
+     issued    : total=r=240775/w=0/d=0, short=r=0/w=0/d=0, drop=r=0/w=0/d=0
+     latency   : target=0, window=0, percentile=100.00%, depth=1
+writer_4: (groupid=0, jobs=1): err= 0: pid=5209: Wed Jun 28 15:29:30 2017
+  write: io=965676KB, bw=48281KB/s, iops=12070, runt= 20001msec
+    clat (usec): min=40, max=4291, avg=81.38, stdev=34.02
+     lat (usec): min=40, max=4292, avg=81.58, stdev=34.05
+    clat percentiles (usec):
+     |  1.00th=[   60],  5.00th=[   63], 10.00th=[   66], 20.00th=[   68],
+     | 30.00th=[   70], 40.00th=[   73], 50.00th=[   77], 60.00th=[   79],
+     | 70.00th=[   81], 80.00th=[   82], 90.00th=[   96], 95.00th=[  116],
+     | 99.00th=[  219], 99.50th=[  266], 99.90th=[  370], 99.95th=[  438],
+     | 99.99th=[ 1176]
+    bw (KB  /s): min=44184, max=49384, per=100.00%, avg=48287.18, stdev=1012.14
+    lat (usec) : 50=0.04%, 100=91.19%, 250=8.15%, 500=0.59%, 750=0.01%
+    lat (usec) : 1000=0.01%
+    lat (msec) : 2=0.01%, 4=0.01%, 10=0.01%
+  cpu          : usr=0.60%, sys=15.48%, ctx=241485, majf=0, minf=11
+  IO depths    : 1=100.0%, 2=0.0%, 4=0.0%, 8=0.0%, 16=0.0%, 32=0.0%, >=64=0.0%
+     submit    : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.0%
+     complete  : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.0%
+     issued    : total=r=0/w=241419/d=0, short=r=0/w=0/d=0, drop=r=0/w=0/d=0
+     latency   : target=0, window=0, percentile=100.00%, depth=1
+
+Run status group 0 (all jobs):
+   READ: io=963100KB, aggrb=48152KB/s, minb=48152KB/s, maxb=48152KB/s, mint=20001msec, maxt=20001msec
+  WRITE: io=965676KB, aggrb=48281KB/s, minb=48281KB/s, maxb=48281KB/s, mint=20001msec, maxt=20001msec
+
+Disk stats (read/write):
+  sdb: ios=239883/240396, merge=0/0, ticks=17968/18472, in_queue=36392, util=95.24%
+

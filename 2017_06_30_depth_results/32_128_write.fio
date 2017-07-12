@@ -1,7 +1,0 @@
-[write_one_128]
-filename=/dev/sdb
-bs=128k
-numjobs=32
-direct=1
-rw=write
-runtime=20

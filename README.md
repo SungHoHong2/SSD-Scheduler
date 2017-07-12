@@ -8,9 +8,20 @@
 ### Question
 ```
 
-# added the complete_flag in oder to make the dispatch and complete called sequentially
-# number of jobs available on the test
-  - 1, 2, 5, 7,
+# need to guarantee that the dispatch is run when the complete function finishes
+  - probably this might be the one to take care of the problem
+
+/*
+ * scheduler run of queue, if there are requests pending and no one in the
+ * driver that will restart queueing
+ */
+static inline void cfq_schedule_dispatch(struct cfq_data *cfqd)
+{
+	if (cfqd->busy_queues) {
+		cfq_log(cfqd, "schedule dispatch");
+		kblockd_schedule_work(&cfqd->unplug_work);
+	}
+}  
 
 ```
 
@@ -18,9 +29,9 @@
 ### Depth Performance
 - the number of allowed I/O requests that are dispatched
 - [Evaluation] check the overall I/O throughput based on the number of allowed Depth
-  - [test result of depth](2017_06_30_depth_results)
+  - [test result of depth](test_results/2017_06_30_depth_results)
 - [Evaluation] compare the best performance with the NOOP, CFQ and SFQ
-  - [test result of schedulers](2017_06_30_scheduler_results)
+  - [test result of schedulers](test_results/2017_06_30_scheduler_results)
 
 
 ### Rules of SFQ

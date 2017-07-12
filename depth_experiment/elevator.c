@@ -177,9 +177,6 @@ static void elevator_release(struct kobject *kobj)
 	kfree(e);
 }
 
-
-
-
 int elevator_init(struct request_queue *q, char *name)
 {
 	struct elevator_type *e = NULL;
@@ -233,7 +230,6 @@ int elevator_init(struct request_queue *q, char *name)
 	return err;
 }
 EXPORT_SYMBOL(elevator_init);
-
 
 void elevator_exit(struct elevator_queue *e)
 {
@@ -601,9 +597,6 @@ void __elv_add_request(struct request_queue *q, struct request *rq, int where)
 
 	rq->q = q;
 
-  // check the type of the add request the scheduler performs
-	
-
 	if (rq->cmd_flags & REQ_SOFTBARRIER) {
 		/* barriers are scheduling boundary, update end_sector */
 		if (rq->cmd_type == REQ_TYPE_FS) {
@@ -705,8 +698,6 @@ struct request *elv_former_request(struct request_queue *q, struct request *rq)
 	return NULL;
 }
 
-
-
 int elv_set_request(struct request_queue *q, struct request *rq,
 		    struct bio *bio, gfp_t gfp_mask)
 {
@@ -716,9 +707,6 @@ int elv_set_request(struct request_queue *q, struct request *rq,
 		return e->type->ops.elevator_set_req_fn(q, rq, bio, gfp_mask);
 	return 0;
 }
-
-
-
 
 void elv_put_request(struct request_queue *q, struct request *rq)
 {
@@ -875,7 +863,7 @@ int elv_register(struct elevator_type *e)
 								def);
 	return 0;
 }
-EXPORT_SYMBOL_GPL(elv_register); // used to be accessible from modules
+EXPORT_SYMBOL_GPL(elv_register);
 
 void elv_unregister(struct elevator_type *e)
 {
@@ -894,4 +882,167 @@ void elv_unregister(struct elevator_type *e)
 		e->icq_cache = NULL;
 	}
 }
-EXPORT_SYMBOL_GPL(elv_unregister); // used to be accessible from modules
+EXPORT_SYMBOL_GPL(elv_unregister);
+
+/*
+ * switch to new_e io scheduler. be careful not to introduce deadlocks -
+ * we don't free the old io scheduler, before we have allocated what we
+ * need for the new one. this way we have a chance of going back to the old
+ * one, if the new one fails init for some reason.
+ */
+static int elevator_switch(struct request_queue *q, struct elevator_type *new_e)
+{
+	struct elevator_queue *old = q->elevator;
+	bool registered = old->registered;
+	int err;
+
+	/*
+	 * Turn on BYPASS and drain all requests w/ elevator private data.
+	 * Block layer doesn't call into a quiesced elevator - all requests
+	 * are directly put on the dispatch list without elevator data
+	 * using INSERT_BACK.  All requests have SOFTBARRIER set and no
+	 * merge happens either.
+	 */
+	blk_queue_bypass_start(q);
+
+	/* unregister and clear all auxiliary data of the old elevator */
+	if (registered)
+		elv_unregister_queue(q);
+
+	spin_lock_irq(q->queue_lock);
+	ioc_clear_queue(q);
+	spin_unlock_irq(q->queue_lock);
+
+	/* allocate, init and register new elevator */
+	err = new_e->ops.elevator_init_fn(q, new_e);
+	if (err)
+		goto fail_init;
+
+	if (registered) {
+		err = elv_register_queue(q);
+		if (err)
+			goto fail_register;
+	}
+
+	/* done, kill the old one and finish */
+	elevator_exit(old);
+	blk_queue_bypass_end(q);
+
+	blk_add_trace_msg(q, "elv switch: %s", new_e->elevator_name);
+
+	return 0;
+
+fail_register:
+	elevator_exit(q->elevator);
+fail_init:
+	/* switch failed, restore and re-register old elevator */
+	q->elevator = old;
+	elv_register_queue(q);
+	blk_queue_bypass_end(q);
+
+	return err;
+}
+
+/*
+ * Switch this queue to the given IO scheduler.
+ */
+static int __elevator_change(struct request_queue *q, const char *name)
+{
+	char elevator_name[ELV_NAME_MAX];
+	struct elevator_type *e;
+
+	if (!q->elevator)
+		return -ENXIO;
+
+	strlcpy(elevator_name, name, sizeof(elevator_name));
+	e = elevator_get(strstrip(elevator_name), true);
+	if (!e) {
+		printk(KERN_ERR "elevator: type %s not found\n", elevator_name);
+		return -EINVAL;
+	}
+
+	if (!strcmp(elevator_name, q->elevator->type->elevator_name)) {
+		elevator_put(e);
+		return 0;
+	}
+
+	return elevator_switch(q, e);
+}
+
+int elevator_change(struct request_queue *q, const char *name)
+{
+	int ret;
+
+	/* Protect q->elevator from elevator_init() */
+	mutex_lock(&q->sysfs_lock);
+	ret = __elevator_change(q, name);
+	mutex_unlock(&q->sysfs_lock);
+
+	return ret;
+}
+EXPORT_SYMBOL(elevator_change);
+
+ssize_t elv_iosched_store(struct request_queue *q, const char *name,
+			  size_t count)
+{
+	int ret;
+
+	if (!q->elevator)
+		return count;
+
+	ret = __elevator_change(q, name);
+	if (!ret)
+		return count;
+
+	printk(KERN_ERR "elevator: switch to %s failed\n", name);
+	return ret;
+}
+
+ssize_t elv_iosched_show(struct request_queue *q, char *name)
+{
+	struct elevator_queue *e = q->elevator;
+	struct elevator_type *elv;
+	struct elevator_type *__e;
+	int len = 0;
+
+	if (!q->elevator || !blk_queue_stackable(q))
+		return sprintf(name, "none\n");
+
+	elv = e->type;
+
+	spin_lock(&elv_list_lock);
+	list_for_each_entry(__e, &elv_list, list) {
+		if (!strcmp(elv->elevator_name, __e->elevator_name))
+			len += sprintf(name+len, "[%s] ", elv->elevator_name);
+		else
+			len += sprintf(name+len, "%s ", __e->elevator_name);
+	}
+	spin_unlock(&elv_list_lock);
+
+	len += sprintf(len+name, "\n");
+	return len;
+}
+
+struct request *elv_rb_former_request(struct request_queue *q,
+				      struct request *rq)
+{
+	struct rb_node *rbprev = rb_prev(&rq->rb_node);
+
+	if (rbprev)
+		return rb_entry_rq(rbprev);
+
+	return NULL;
+}
+EXPORT_SYMBOL(elv_rb_former_request);
+
+struct request *elv_rb_latter_request(struct request_queue *q,
+				      struct request *rq)
+{
+	struct rb_node *rbnext = rb_next(&rq->rb_node);
+
+	if (rbnext)
+		return rb_entry_rq(rbnext);
+
+	return NULL;
+}
+EXPORT_SYMBOL(elv_rb_latter_request);
