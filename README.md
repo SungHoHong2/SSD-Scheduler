@@ -5,25 +5,17 @@
 2. virtual_time only uses logical_time
 3. limit the number of concurrent I/O requests(Depth)
 
-### Question
+### Pending Question
 ```
+intensive number of jobs will give me an error
+   - suspecting the bad sector problem
+   - trying to find whether there is a method of preventing the bad sector.
 
-# need to guarantee that the dispatch is run when the complete function finishes
-  - probably this might be the one to take care of the problem
+try out tracking each of the requests by number. and check whether
 
-/*
- * scheduler run of queue, if there are requests pending and no one in the
- * driver that will restart queueing
- */
-static inline void cfq_schedule_dispatch(struct cfq_data *cfqd)
-{
-	if (cfqd->busy_queues) {
-		cfq_log(cfqd, "schedule dispatch");
-		kblockd_schedule_work(&cfqd->unplug_work);
-	}
-}  
 
 ```
+[link to the error ](https://unix.stackexchange.com/questions/43681/kde-causes-read-fpdma-queued-error)
 
 
 ### Depth Performance

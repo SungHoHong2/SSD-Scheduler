@@ -927,7 +927,7 @@ static inline bool cfq_bio_sync(struct bio *bio)
  */
 static inline void cfq_schedule_dispatch(struct cfq_data *cfqd)
 {
-	
+
 	if (cfqd->busy_queues) {
 		cfq_log(cfqd, "schedule dispatch");
 		kblockd_schedule_work(&cfqd->unplug_work);
