@@ -10,25 +10,39 @@
 #include <linux/slab.h>
 #include <linux/init.h>
 
-#define REQUEST_DEPTH 10
+#define REQUEST_DEPTH 1
 
 struct noop_data {
 	struct list_head queue;
 	int depth;
-	struct noop_request *curr_request
+
+	// invoking dispatch in complete function
+	struct hrtimer idle_slice_timer;
+	struct work_struct unplug_work;
+	struct request_queue *queue;
 
 };
 
-struct noop_request{
-	pid_t pid;
-	int complete_flag;
-  struct list_head lists;
-}
+
+// static void noop_kick_queue(struct work_struct *work){
+//  struct sfq_data *nd =
+// 	 container_of(work, struct sfq_data, unplug_work);
+//  struct request_queue *q = nd->queue;
+//
+//  spin_lock_irq(q->queue_lock);
+//  __blk_run_queue(nd->queue);
+//  spin_unlock_irq(q->queue_lock);
+// }
+//
 
 
 static void noop_completed(struct request_queue *q, struct request *rq){
 	struct noop_data *nd = q->elevator->elevator_data;
   nd->depth--;
+
+	// if(nd->depth>0){
+	// 	 kblockd_schedule_work(&nd->unplug_work);
+	// }
 }
 
 static int noop_dispatch(struct request_queue *q, int force)
@@ -36,7 +50,7 @@ static int noop_dispatch(struct request_queue *q, int force)
 	struct noop_data *nd = q->elevator->elevator_data;
 	struct request *rq;
 
-    if(nd->depth<=REQUEST_DEPTH){
+  if(nd->depth<=REQUEST_DEPTH){
 
   	rq = list_first_entry_or_null(&nd->queue, struct request, queuelist);
   	if (rq) {
@@ -75,6 +89,9 @@ static int noop_init_queue(struct request_queue *q, struct elevator_type *e)
 
 	nd->depth = 0;
 	INIT_LIST_HEAD(&nd->queue);
+
+	// nd->queue = q;
+  // INIT_WORK(&nd->unplug_work, noop_kick_queue);
 
 	spin_lock_irq(q->queue_lock);
 	q->elevator = eq;
