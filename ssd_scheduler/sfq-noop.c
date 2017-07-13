@@ -36,8 +36,9 @@ typedef struct sfq_request {
     // Assign requests
     struct request *rq;
 
-    struct list_head stack_list;
     struct sfq_data *sfqd;
+
+    struct list_head sfqr_queue;
 
 } sfq_request;
 
@@ -62,10 +63,6 @@ typedef struct sfq_data {
   struct hrtimer idle_slice_timer;
   struct work_struct unplug_work;
   struct request_queue *queue;
-
-
-  struct list_head sfqr_queue;
-
 
 } sfq_data;
 
@@ -128,8 +125,6 @@ static int sfq_init_queue(struct request_queue *q, struct elevator_type *e){
 		return -ENOMEM;
 	}
 
-
-
   // initialize virtual time
   sfqd->virtual_time = 0;
   sfqd->requests = (sfq_request **)kmalloc(sizeof(sfq_request *), GFP_KERNEL);
@@ -143,16 +138,13 @@ static int sfq_init_queue(struct request_queue *q, struct elevator_type *e){
   // insurance for invoking dispatch during pending requests
   sfqd->queue = q;
   INIT_WORK(&sfqd->unplug_work, sfq_kick_queue);
-  INIT_LIST_HEAD(&sfqd->sfqr_queue);
-  INIT_LIST_HEAD(&sfqd->stack_queue);
-
 
 	eq->elevator_data = sfqd;
 	spin_lock_irq(q->queue_lock);
 	q->elevator = eq;
 	spin_unlock_irq(q->queue_lock);
 
-  printk("INIT_SFQ NOOP TEST \n");
+  printk("INIT_SFQ BRAVE_NEW_WORLD_02 DEPTH: %d\n", REQUEST_DEPTH);
   //613392,735228 write /media/sf_SSD-Scheduler/test_results/2017_07_11_depth_results/sfq_test_02.txt
 
 	return 0;
@@ -169,24 +161,21 @@ static int sfq_set_request(struct request_queue *q, struct request *rq, struct b
      sfqr->pid = current->pid;
      sfqr->start_tag = sfqd->virtual_time;
      sfqr->sfqd = sfqd;
+     INIT_LIST_HEAD(&sfqr->sfqr_queue);
 
 
-     
+     // update the virtual_time with the smallest outstanding request
+     if(sfqd && sfqd->size>0 && sfqd->requests[0] && sfqd->requests[0]->start_tag >=0){
+        latest_finish_tag = sfqd->requests[(sfqd->size)-1]->finish_tag;
+        if(sfqd->virtual_time < latest_finish_tag){
+              sfqd->virtual_time = latest_finish_tag;
+        }
+        sfqr->start_tag = sfqd->virtual_time;
+     }
 
-    //
-    //
-    //  // update the virtual_time with the smallest outstanding request
-    //  if(sfqd && sfqd->size>0 && sfqd->requests[0] && sfqd->requests[0]->start_tag >=0){
-    //     latest_finish_tag = sfqd->requests[(sfqd->size)-1]->finish_tag;
-    //     if(sfqd->virtual_time < latest_finish_tag){
-    //           sfqd->virtual_time = latest_finish_tag;
-    //     }
-    //     sfqr->start_tag = sfqd->virtual_time;
-    //  }
-    //
-    //
-    // sfqr->finish_tag = sfqr->start_tag + ( REQUEST_LENGTH / REQUEST_WEIGHT );
-    // rq->elv.priv[0] = sfqr;
+
+    sfqr->finish_tag = sfqr->start_tag + ( REQUEST_LENGTH / REQUEST_WEIGHT );
+    rq->elv.priv[0] = sfqr;
 
     // if(sfqd && sfqr)
     // printk("SET_REQUEST[ virtual_time : %d,  pid: %d, start_tag : %d] \n", sfqd->virtual_time, sfqr->pid, sfqr->start_tag);
@@ -203,27 +192,24 @@ static void sfq_add_request(struct request_queue *q, struct request *rq){
    // assign the request -> sfq_request struct
    if(sfqr->start_tag >= 0){
 
-  //  if(sfqd->size) {
-  //      sfqd->requests = (sfq_request **)krealloc(sfqd->requests, (sfqd->size + 1) * sizeof(sfq_request *), GFP_KERNEL) ;
-  //  }
-   //
-  //  i = (sfqd->size)++ ;
-   //
-  //  while(i && sfqr->start_tag < sfqd->requests[PARENT(i)]->start_tag) {
-  //      sfqd->requests[i] = sfqd->requests[PARENT(i)] ;
-  //      i = PARENT(i) ;
-  //  }
+   if(sfqd->size) {
+       sfqd->requests = (sfq_request **)krealloc(sfqd->requests, (sfqd->size + 1) * sizeof(sfq_request *), GFP_KERNEL) ;
+   }
 
+   i = (sfqd->size)++ ;
 
-  list_add_tail(&rq->queuelist, &sfqd->stack_queue);
+   while(i && sfqr->start_tag < sfqd->requests[PARENT(i)]->start_tag) {
+       sfqd->requests[i] = sfqd->requests[PARENT(i)] ;
+       i = PARENT(i) ;
+   }
 
+   // FRISK
+   sfqr->rq = rq;
+   list_add_tail(&rq->queuelist, &sfqr->sfqr_queue);
+   sfqd->requests[i] = sfqr ;
 
-
-  //  sfqd->requests[i] = sfqr ;
   }
-  printk("ADD_REQUEST[ size: %d  ] \n",sfqd->size);
-  list_add_tail(&rq->queuelist, &sfqd->sfqr_queue);
-
+  // printk("ADD_REQUEST[ virtual_time : %d,  size: %d  ] \n", sfqd->virtual_time, sfqd->size);
 }
 
 
@@ -232,42 +218,70 @@ static int sfq_dispatch(struct request_queue *q, int force){
   struct sfq_request *sfqr;
   struct request *rq;
 
-  // // check the number of depth
-  // if(sfqd && sfqd->size>0){
-  //
-  //   // sfqr = sfqd->requests[0];
-  //   // rq = sfqr->rq;
-  //   sfqd->requests[0] = sfqd->requests[--(sfqd->size)];
-  //
-  //   if(sfqd->size>1){
-  //       sfqd->requests = (sfq_request **)krealloc(sfqd->requests, sfqd->size * sizeof(sfq_request *), GFP_KERNEL) ;
-  //       heapify(sfqd, 0);
-  //   }
-  // }
+  // check the number of depth
+  if(sfqd && sfqd->size>0 && sfqd->depth<=REQUEST_DEPTH){
+
+    sfqr = sfqd->requests[0];
+    rq = sfqr->rq;
+    sfqd->requests[0] = sfqd->requests[--(sfqd->size)];
+
+    if(sfqd->size>1){
+        sfqd->requests = (sfq_request **)krealloc(sfqd->requests, sfqd->size * sizeof(sfq_request *), GFP_KERNEL) ;
+        heapify(sfqd, 0);
+    }
+
+    // FRISK
+    rq = list_first_entry_or_null(&sfqr->sfqr_queue, struct request, queuelist);
+  	if (rq) {
+      // printk("DISPATCH: DEPTH: %d\n", sfqd->depth);
+  		list_del_init(&rq->queuelist);
+  		elv_dispatch_sort(q, rq);
+      sfqd->curr_sfqr = sfqr;
+      sfqd->depth++;
+  		return 1;
+  	}
 
 
-  rq = list_first_entry_or_null(&sfqd->sfqr_queue, struct request, queuelist);
-  if (rq) {
-    // printk("DISPATCH: DEPTH: %d\n", sfqd->depth);
-    list_del_init(&rq->queuelist);
-    elv_dispatch_sort(q, rq);
-    sfqd->curr_sfqr = sfqr;
-    sfqd->depth++;
-    return 1;
+    // if(rq && sfqr){
+		// //	printk("DISPATCH: PID: %d  DEPTH: %d\n", sfqr->pid, sfqd->depth);
+    //   elv_dispatch_sort(q, rq);
+    //   sfqd->curr_sfqr = sfqr;
+    //   sfqd->depth++;
+    //   return 1;
+    // }
   }
-
   return 0;
 }
 
 
-// static void sfq_completed(struct request_queue *q, struct request *rq){
-// 	 struct sfq_data *sfqd = q->elevator->elevator_data;
-// 	 // printk("COMPLETE: PID: %d  DEPTH: %d\n",sfqd->curr_sfqr->pid, sfqd->depth);
-//    if(sfqd->size>0){
-//       // invoke the dispatch again
-//       kblockd_schedule_work(&sfqd->unplug_work);
-//    }
-// }
+static void sfq_completed(struct request_queue *q, struct request *rq){
+	 struct sfq_data *sfqd = q->elevator->elevator_data;
+	 // printk("COMPLETE: PID: %d  DEPTH: %d\n",sfqd->curr_sfqr->pid, sfqd->depth);
+
+   if((--sfqd->depth)>0){
+      // invoke the dispatch again
+      kblockd_schedule_work(&sfqd->unplug_work);
+
+   }
+
+}
+
+
+static void sfq_put_request(struct request *rq){
+  struct sfq_request *sfqr = rq->elv.priv[0];
+  struct sfq_data *sfqd= sfqr->sfqd;
+
+  // printk("PUT: PID: %d DEPTH: %d\n",sfqr->pid, sfqd->depth);
+
+  if(sfqd->depth>0){
+     // invoke the dispatch again
+     kblockd_schedule_work(&sfqd->unplug_work);
+  }
+	// if (sfqr && (sfqr->complete_flag)) {
+  //       kfree(sfqr);
+  //       rq->elv.priv[0] = NULL;
+	// }
+}
 
 
 
@@ -281,7 +295,8 @@ static void sfq_exit_queue(struct elevator_queue *e){
 static struct elevator_type elevator_sfq = {
 	.ops = {
     .elevator_exit_fn		= sfq_exit_queue,
-  //  .elevator_completed_req_fn  = sfq_completed,
+    .elevator_put_req_fn =		sfq_put_request,
+    .elevator_completed_req_fn  = sfq_completed,
 		.elevator_dispatch_fn		= sfq_dispatch,
 		.elevator_add_req_fn		= sfq_add_request,
     .elevator_set_req_fn = sfq_set_request,

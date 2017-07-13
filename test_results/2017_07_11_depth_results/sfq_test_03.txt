@@ -1,0 +1,92 @@
+[Jul12 16:06] io scheduler sfq registered
+[  +1.998967] INIT_SFQ BRAVE_NEW_WORLD_02 DEPTH: 1
+[ +19.962248] ------------[ cut here ]------------
+[  +0.000015] WARNING: CPU: 1 PID: 0 at drivers/ata/libata-core.c:5266 ata_qc_issue+0x31f/0x330
+[  +0.000001] Modules linked in: launch(OE) nls_utf8 isofs vboxsf(OE) vboxvideo(OE) ttm snd_intel8x0 snd_ac97_codec drm_kms_helper ac97_bus snd_pcm drm snd_seq_midi snd_seq_midi_event snd_rawmidi snd_seq vboxguest(OE) snd_seq_device snd_timer crct10dif_pclmul crc32_pclmul snd ghash_clmulni_intel aesni_intel joydev aes_x86_64 lrw gf128mul glue_helper soundcore fb_sys_fops ablk_helper syscopyarea input_leds sysfillrect cryptd sysimgblt serio_raw i2c_piix4 mac_hid parport_pc ppdev lp parport autofs4 hid_generic usbhid hid psmouse e1000 ahci libahci fjes pata_acpi video
+[  +0.000065] CPU: 1 PID: 0 Comm: swapper/1 Tainted: G           OE   4.8.8SungHoHong+ #17
+[  +0.000001] Hardware name: innotek GmbH VirtualBox/VirtualBox, BIOS VirtualBox 12/01/2006
+[  +0.000001]  0000000000000086 323f9b2180fb8215 ffff8b4479d03b88 ffffffff863fe913
+[  +0.000002]  0000000000000000 0000000000000000 ffff8b4479d03bc8 ffffffff86081fbb
+[  +0.000002]  0000149279d03bb0 ffff8b4435aa0000 0000000000000006 ffff8b4435aa1e80
+[  +0.000002] Call Trace:
+[  +0.000000]  <IRQ>  [<ffffffff863fe913>] dump_stack+0x63/0x90
+[  +0.000010]  [<ffffffff86081fbb>] __warn+0xcb/0xf0
+[  +0.000001]  [<ffffffff860820ed>] warn_slowpath_null+0x1d/0x20
+[  +0.000001]  [<ffffffff865f016f>] ata_qc_issue+0x31f/0x330
+[  +0.000001]  [<ffffffff865f6783>] ? ata_scsi_rw_xlat+0x193/0x250
+[  +0.000002]  [<ffffffff865f65f0>] ? ata_scsiop_inq_b6+0x50/0x50
+[  +0.000001]  [<ffffffff865f68f2>] ata_scsi_translate+0xb2/0x1a0
+[  +0.000001]  [<ffffffff865f9c52>] ata_scsi_queuecmd+0x92/0x1e0
+[  +0.000002]  [<ffffffff865d2101>] scsi_dispatch_cmd+0xe1/0x240
+[  +0.000001]  [<ffffffff865d4e3c>] scsi_request_fn+0x47c/0x620
+[  +0.000003]  [<ffffffff863c96c3>] __blk_run_queue+0x33/0x40
+[  +0.000001]  [<ffffffff863c96f6>] blk_run_queue+0x26/0x40
+[  +0.000002]  [<ffffffff865d1a00>] scsi_run_queue+0x250/0x2e0
+[  +0.000002]  [<ffffffff865cb2f7>] ? scsi_host_free_command.isra.11+0x47/0x50
+[  +0.000001]  [<ffffffff865d1d54>] scsi_end_request+0x134/0x1c0
+[  +0.000001]  [<ffffffff865d5216>] scsi_io_completion+0x1b6/0x690
+[  +0.000004]  [<ffffffffc0331e94>] ? ahci_handle_port_intr+0x74/0xc0 [libahci]
+[  +0.000001]  [<ffffffff865cbe2f>] scsi_finish_command+0xcf/0x120
+[  +0.000001]  [<ffffffff865d4994>] scsi_softirq_done+0x124/0x150
+[  +0.000001]  [<ffffffff863d518b>] blk_done_softirq+0x8b/0xb0
+[  +0.000005]  [<ffffffff86862046>] __do_softirq+0xf6/0x280
+[  +0.000001]  [<ffffffff86087c63>] irq_exit+0xa3/0xb0
+[  +0.000001]  [<ffffffff86861da4>] do_IRQ+0x54/0xd0
+[  +0.000002]  [<ffffffff8685fe82>] common_interrupt+0x82/0x82
+[  +0.000001]  <EOI>  [<ffffffff860641c6>] ? native_safe_halt+0x6/0x10
+[  +0.000004]  [<ffffffff86037dee>] default_idle+0x1e/0xd0
+[  +0.000001]  [<ffffffff8603856f>] arch_cpu_idle+0xf/0x20
+[  +0.000002]  [<ffffffff860c62ba>] default_idle_call+0x2a/0x40
+[  +0.000001]  [<ffffffff860c65ba>] cpu_startup_entry+0x2ea/0x350
+[  +0.000002]  [<ffffffff86051591>] start_secondary+0x151/0x190
+[  +0.000001] ---[ end trace 30f74076ada9b164 ]---
+[  +0.011169] ata4.00: exception Emask 0x0 SAct 0x8000 SErr 0x0 action 0x6
+[  +0.000004] ata4.00: failed command: READ FPDMA QUEUED
+[  +0.000003] ata4.00: cmd 60/10:78:80:2a:00/00:00:00:00:00/40 tag 15 ncq dma 8192 in
+                       res 00/00:01:00:00:00/00:00:00:00:00/00 Emask 0x42 (HSM violation)
+[  +0.000005] ata4: hard resetting link
+[  +0.319043] ata4: SATA link up 3.0 Gbps (SStatus 123 SControl 300)
+[  +0.000251] ata4.00: configured for UDMA/133
+[  +0.000006] ata4: EH complete
+[  +0.008509] ata4.00: exception Emask 0x0 SAct 0x10000000 SErr 0x0 action 0x6
+[  +0.000005] ata4.00: failed command: READ FPDMA QUEUED
+[  +0.000003] ata4.00: cmd 60/10:e0:80:2a:00/00:00:00:00:00/40 tag 28 ncq dma 8192 in
+                       res 00/00:00:00:00:00/00:00:00:00:00/a0 Emask 0x42 (HSM violation)
+[  +0.000005] ata4: hard resetting link
+[  +0.313177] ata4: SATA link up 3.0 Gbps (SStatus 123 SControl 300)
+[  +0.000366] ata4.00: configured for UDMA/133
+[  +0.000007] ata4: EH complete
+[  +0.010347] ata4.00: exception Emask 0x0 SAct 0x200000 SErr 0x0 action 0x6
+[  +0.000005] ata4.00: failed command: READ FPDMA QUEUED
+[  +0.000003] ata4.00: cmd 60/10:a8:80:2a:00/00:00:00:00:00/40 tag 21 ncq dma 8192 in
+                       res 00/00:00:00:00:00/00:00:00:00:00/a0 Emask 0x42 (HSM violation)
+[  +0.000006] ata4: hard resetting link
+[  +0.314635] ata4: SATA link up 3.0 Gbps (SStatus 123 SControl 300)
+[  +0.000231] ata4.00: configured for UDMA/133
+[  +0.000009] ata4: EH complete
+[  +0.008744] ata4.00: NCQ disabled due to excessive errors
+[  +0.000002] ata4.00: exception Emask 0x0 SAct 0x1000 SErr 0x0 action 0x6
+[  +0.000004] ata4.00: failed command: READ FPDMA QUEUED
+[  +0.000003] ata4.00: cmd 60/10:60:80:2a:00/00:00:00:00:00/40 tag 12 ncq dma 8192 in
+                       res 00/00:00:00:00:00/00:00:00:00:00/a0 Emask 0x42 (HSM violation)
+[  +0.000005] ata4: hard resetting link
+[  +0.316644] ata4: SATA link up 3.0 Gbps (SStatus 123 SControl 300)
+[  +0.000271] ata4.00: configured for UDMA/133
+[  +0.000008] ata4: EH complete
+[  +0.010779] ata4.00: exception Emask 0x0 SAct 0x0 SErr 0x0 action 0x6
+[  +0.000004] ata4.00: failed command: READ DMA
+[  +0.000003] ata4.00: cmd c8/00:10:80:2a:00/00:00:00:00:00/e0 tag 0 dma 8192 in
+                       res 00/00:00:00:00:00/00:00:00:00:00/a0 Emask 0x42 (HSM violation)
+[  +0.000006] ata4: hard resetting link
+[  +0.312689] ata4: SATA link up 3.0 Gbps (SStatus 123 SControl 300)
+[  +0.000272] ata4.00: configured for UDMA/133
+[  +0.000011] ata4: EH complete
+[  +0.011089] ata4: limiting SATA link speed to 1.5 Gbps
+[  +0.000003] ata4.00: exception Emask 0x0 SAct 0x0 SErr 0x0 action 0x6
+[  +0.000004] ata4.00: failed command: READ DMA
+[  +0.000003] ata4.00: cmd c8/00:10:80:2a:00/00:00:00:00:00/e0 tag 3 dma 8192 in
+                       res 00/00:00:00:00:00/00:00:00:00:00/a0 Emask 0x42 (HSM violation)
+[  +0.000009] ata4: hard resetting link
+[  +0.315672] ata4: SATA link up 1.5 Gbps (SStatus 113 SControl 310)
+[  +0.000269] ata4.00: configured for UDMA/133
+[  +0.000013] ata4: EH complete

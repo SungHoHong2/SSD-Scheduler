@@ -13,7 +13,7 @@
 #define REQUEST_DEPTH 1
 
 struct noop_data {
-	struct list_head queue;
+	struct list_head noop_queue;
 	int depth;
 
 	// invoking dispatch in complete function
@@ -24,25 +24,26 @@ struct noop_data {
 };
 
 
-// static void noop_kick_queue(struct work_struct *work){
-//  struct sfq_data *nd =
-// 	 container_of(work, struct sfq_data, unplug_work);
-//  struct request_queue *q = nd->queue;
-//
-//  spin_lock_irq(q->queue_lock);
-//  __blk_run_queue(nd->queue);
-//  spin_unlock_irq(q->queue_lock);
-// }
-//
+static void noop_kick_queue(struct work_struct *work){
+ struct noop_data *nd =
+	 container_of(work, struct noop_data, unplug_work);
+ struct request_queue *q = nd->queue;
+
+ spin_lock_irq(q->queue_lock);
+ __blk_run_queue(nd->queue);
+ spin_unlock_irq(q->queue_lock);
+}
+
 
 
 static void noop_completed(struct request_queue *q, struct request *rq){
 	struct noop_data *nd = q->elevator->elevator_data;
+  // printk("COMPLETE: DEPTH: %d\n", nd->depth);
   nd->depth--;
 
-	// if(nd->depth>0){
-	// 	 kblockd_schedule_work(&nd->unplug_work);
-	// }
+	if(nd->depth>0){
+		 kblockd_schedule_work(&nd->unplug_work);
+	}
 }
 
 static int noop_dispatch(struct request_queue *q, int force)
@@ -52,11 +53,12 @@ static int noop_dispatch(struct request_queue *q, int force)
 
   if(nd->depth<=REQUEST_DEPTH){
 
-  	rq = list_first_entry_or_null(&nd->queue, struct request, queuelist);
+  	rq = list_first_entry_or_null(&nd->noop_queue, struct request, queuelist);
   	if (rq) {
-      nd->depth++;
+      // printk("DISPATCH: DEPTH: %d\n", nd->depth);
   		list_del_init(&rq->queuelist);
   		elv_dispatch_sort(q, rq);
+      nd->depth++;
   		return 1;
   	}
   }
@@ -66,7 +68,7 @@ static int noop_dispatch(struct request_queue *q, int force)
 static void noop_add_request(struct request_queue *q, struct request *rq)
 {
 	struct noop_data *nd = q->elevator->elevator_data;
-	list_add_tail(&rq->queuelist, &nd->queue);
+	list_add_tail(&rq->queuelist, &nd->noop_queue);
 }
 
 
@@ -88,10 +90,10 @@ static int noop_init_queue(struct request_queue *q, struct elevator_type *e)
 	eq->elevator_data = nd;
 
 	nd->depth = 0;
-	INIT_LIST_HEAD(&nd->queue);
+	INIT_LIST_HEAD(&nd->noop_queue);
 
-	// nd->queue = q;
-  // INIT_WORK(&nd->unplug_work, noop_kick_queue);
+	nd->queue = q;
+  INIT_WORK(&nd->unplug_work, noop_kick_queue);
 
 	spin_lock_irq(q->queue_lock);
 	q->elevator = eq;
@@ -106,7 +108,7 @@ static void noop_exit_queue(struct elevator_queue *e)
 {
 	struct noop_data *nd = e->elevator_data;
 
-	BUG_ON(!list_empty(&nd->queue));
+	BUG_ON(!list_empty(&nd->noop_queue));
 	kfree(nd);
 }
 
