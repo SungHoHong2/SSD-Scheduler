@@ -22,6 +22,8 @@
 #define RCHILD(x) 2 * x + 2
 #define PARENT(x) (x - 1) / 2
 
+#define ARRAY_CHUNCK 100
+
 // Total Depth [MIN:1 - MAX:64]
 // Estimated Efficient number [36(WRITE) - 40(READ)]
 #define REQUEST_DEPTH 1
@@ -64,6 +66,8 @@ typedef struct sfq_data {
   struct work_struct unplug_work;
   struct request_queue *queue;
 
+  int array_length;
+
 } sfq_data;
 
 
@@ -72,14 +76,14 @@ typedef struct sfq_data {
  * Heap Sorting Common Function
  */
 
-void heap_swap(sfq_request *n1, sfq_request *n2) {
+static void heap_swap(sfq_request *n1, sfq_request *n2) {
     sfq_request temp = *n1 ;
     *n1 = *n2 ;
     *n2 = temp ;
 }
 
 // find the smallest node at index i by comparing parent, left and right child
-void heapify(sfq_data *hp, int i) {
+static void heapify(sfq_data *hp, int i) {
     int smallest = (LCHILD(i) < hp->size && hp->requests[LCHILD(i)]->start_tag < hp->requests[i]->start_tag) ? LCHILD(i) : i ;
     if(RCHILD(i) < hp->size && hp->requests[RCHILD(i)]->start_tag < hp->requests[smallest]->start_tag) {
         smallest = RCHILD(i) ;
@@ -88,6 +92,26 @@ void heapify(sfq_data *hp, int i) {
         heap_swap(hp->requests[i], hp->requests[smallest]) ;
         heapify(hp, smallest) ;
     }
+}
+
+static void heap_insert(struct sfq_data *sfqd, struct sfq_request *sfqr, struct request *rq){
+	 int i;
+   if(sfqr->start_tag >= 0){
+     if(sfqd->size > sfqd->array_length) {
+        // sfqd->requests = (sfq_request **)krealloc(sfqd->requests, (sfqd->size + 1) * sizeof(sfq_request *), GFP_KERNEL) ;
+        sfqd->array_length += ARRAY_CHUNCK;
+        sfqd->requests = (sfq_request **)krealloc(sfqd->requests, sfqd->array_length * sizeof(sfq_request *), GFP_KERNEL) ;
+
+     }
+     i = (sfqd->size)++ ;
+     while(i && sfqr->start_tag < sfqd->requests[PARENT(i)]->start_tag) {
+         sfqd->requests[i] = sfqd->requests[PARENT(i)] ;
+         i = PARENT(i) ;
+     }
+     sfqr->rq = rq;
+     sfqd->requests[i] = sfqr ;
+
+   }
 }
 
 
@@ -127,13 +151,15 @@ static int sfq_init_queue(struct request_queue *q, struct elevator_type *e){
 
   // initialize virtual time
   sfqd->virtual_time = 0;
-  sfqd->requests = (sfq_request **)kmalloc(sizeof(sfq_request *), GFP_KERNEL);
+  sfqd->requests = (sfq_request **)kmalloc(sizeof(sfq_request *)*ARRAY_CHUNCK, GFP_KERNEL);
 
   // initialize size of the heap array
   sfqd->size = 0;
 
   // initialize the depth to 0
   sfqd->depth = 0;
+
+  sfqd->array_length = ARRAY_CHUNCK;
 
   // insurance for invoking dispatch during pending requests
   sfqd->queue = q;
@@ -144,7 +170,7 @@ static int sfq_init_queue(struct request_queue *q, struct elevator_type *e){
 	q->elevator = eq;
 	spin_unlock_irq(q->queue_lock);
 
-  printk("INIT_SFQ BRAVE_NEW_WORLD_02 DEPTH: %d\n", REQUEST_DEPTH);
+  printk("INIT_SFQ FORMER LATTER DEPTH: %d\n", REQUEST_DEPTH);
   //613392,735228 write /media/sf_SSD-Scheduler/test_results/2017_07_11_depth_results/sfq_test_02.txt
 
 	return 0;
@@ -186,26 +212,12 @@ static int sfq_set_request(struct request_queue *q, struct request *rq, struct b
 static void sfq_add_request(struct request_queue *q, struct request *rq){
 	struct sfq_data *sfqd = q->elevator->elevator_data;
   struct sfq_request *sfqr = rq->elv.priv[0];
-  int i;
 
    // assign the request -> sfq_request struct
-   if(sfqr->start_tag >= 0){
+   heap_insert(sfqd, sfqr, rq);
 
-   if(sfqd->size) {
-       sfqd->requests = (sfq_request **)krealloc(sfqd->requests, (sfqd->size + 1) * sizeof(sfq_request *), GFP_KERNEL) ;
-   }
 
-   i = (sfqd->size)++ ;
 
-   while(i && sfqr->start_tag < sfqd->requests[PARENT(i)]->start_tag) {
-       sfqd->requests[i] = sfqd->requests[PARENT(i)] ;
-       i = PARENT(i) ;
-   }
-
-   sfqr->rq = rq;
-   sfqd->requests[i] = sfqr ;
-
-  }
   // printk("ADD_REQUEST[ virtual_time : %d,  size: %d  ] \n", sfqd->virtual_time, sfqd->size);
 }
 
@@ -223,7 +235,7 @@ static int sfq_dispatch(struct request_queue *q, int force){
     sfqd->requests[0] = sfqd->requests[--(sfqd->size)];
 
     if(sfqd->size>1){
-        sfqd->requests = (sfq_request **)krealloc(sfqd->requests, sfqd->size * sizeof(sfq_request *), GFP_KERNEL) ;
+        // sfqd->requests = (sfq_request **)krealloc(sfqd->requests, sfqd->size * sizeof(sfq_request *), GFP_KERNEL) ;
         heapify(sfqd, 0);
     }
 
@@ -242,8 +254,8 @@ static int sfq_dispatch(struct request_queue *q, int force){
 static void sfq_completed(struct request_queue *q, struct request *rq){
 	 struct sfq_data *sfqd = q->elevator->elevator_data;
 	  // printk("COMPLETE: PID: %d  DEPTH: %d\n",sfqd->curr_sfqr->pid, sfqd->depth);
-
-   if((--sfqd->depth)>0){
+   sfqd->depth--;
+   if(sfqd->size>0){
       // invoke the dispatch again
       kblockd_schedule_work(&sfqd->unplug_work);
       sfqd->curr_sfqr->complete_flag = 1;
@@ -259,17 +271,44 @@ static void sfq_put_request(struct request *rq){
 
   // printk("PUT: PID: %d DEPTH: %d\n",sfqr->pid, sfqd->depth);
 
-  if(sfqd->depth>0){
+  if(sfqd->size>0){
      // invoke the dispatch again
      kblockd_schedule_work(&sfqd->unplug_work);
   }
-	// if (sfqr && (sfqr->complete_flag)) {
-  //       kfree(sfqr);
-  //       rq->elv.priv[0] = NULL;
-	// }
 }
 
 
+// static struct request *
+// sfq_former_request(struct request_queue *q, struct request *rq){
+// 	struct sfq_data *sfqd = q->elevator->elevator_data;
+//
+// 	if (sfqd->size && rq->queuelist.prev == sfqd->requests[0]->rq)
+// 		return NULL;
+// 	return list_prev_entry(rq, queuelist);
+// }
+
+// static struct request *
+// sfq_latter_request(struct request_queue *q, struct request *rq){
+// 	struct sfq_data *sfqd = q->elevator->elevator_data;
+//   struct sfq_request *sfqr;
+//
+//   printk("FORMER DEPTH: %d\n", sfqd->depth);
+//
+//     if(sfqd && sfqd->size>0 && sfqd->depth<=REQUEST_DEPTH){
+//
+//       sfqr = sfqd->requests[0];
+//       rq = sfqr->rq;
+//       sfqd->requests[0] = sfqd->requests[--(sfqd->size)];
+//
+//       if(sfqd->size>1){
+//           sfqd->requests = (sfq_request **)krealloc(sfqd->requests, sfqd->size * sizeof(sfq_request *), GFP_KERNEL) ;
+//           heapify(sfqd, 0);
+//       }
+//         return rq;
+//     }
+// 	return NULL;
+// }
+//
 
 
 static void sfq_exit_queue(struct elevator_queue *e){
@@ -283,6 +322,8 @@ static struct elevator_type elevator_sfq = {
     .elevator_exit_fn		= sfq_exit_queue,
     .elevator_put_req_fn =		sfq_put_request,
     .elevator_completed_req_fn  = sfq_completed,
+		// .elevator_former_req_fn		= sfq_former_request,
+		// .elevator_latter_req_fn		= sfq_latter_request,
 		.elevator_dispatch_fn		= sfq_dispatch,
 		.elevator_add_req_fn		= sfq_add_request,
     .elevator_set_req_fn = sfq_set_request,
