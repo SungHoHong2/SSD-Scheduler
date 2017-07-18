@@ -13,7 +13,7 @@
    - all levels are full, and last level has no gaps on the left.
 
 
- * delete (don't need tracking need to remember the last node)
+ * search + delete (don't need tracking need to remember the last node)
    - only need remove the root
    - switch the root with the last node
    - heapify
@@ -27,10 +27,11 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
-#include <stdlib.h>
 
+#define LCHILD(x) 2 * x + 1
+#define RCHILD(x) 2 * x + 2
 #define PARENT(x) (x - 1) / 2
+
 
 struct node{
   int data;
@@ -48,45 +49,49 @@ struct track_node{
 // keep track of total number of nodes
 static int total_nodes;
 struct node *latest_node;
+struct node *rtn_node;
+
 
 void swap(struct node *n1, struct node *n2) {
     int temp;
+
     temp = n1->data;
     n1->data = n2->data;
     n2->data = temp;
+
 }
 
 
 void heapify_upward(struct node *selected_node){
    struct node *smallest;
 
+
    if(!selected_node) goto skip_heapify;
 
-   if(selected_node->parent) selected_node = selected_node->parent;
+   if(!(selected_node->parent)) goto skip_heapify;
 
-    // printf("\t\tselected_node %d\n",selected_node->data);
-    // if(selected_node->left) printf("\t\tselected_node left %d\n",selected_node->left->data);
-    // if(selected_node->right) printf("\t\tselected_node right %d\n",selected_node->right->data);
 
-   if(selected_node->left && (selected_node->left->data<selected_node->data)){
+  //  printf("---->heapify upward BEGIN \n");
+   selected_node = selected_node->parent;
+
+   // Chara
+   // you need to compare all of the childs and choose the smallest
+
+   if(selected_node->left && (selected_node->left->data<=selected_node->data)){
         smallest = selected_node->left;
-   }
-
-   if(smallest && (selected_node->right) && (selected_node->right->data<smallest->data)){
-        smallest = selected_node->right;
-   } else if((selected_node->right) && (selected_node->right->data<selected_node->data)){
+   }else if((selected_node->right) && (selected_node->right->data<=selected_node->data)){
         smallest = selected_node->right;
    }
 
 
-    // printf("heapify upward\n");
    if(smallest && (smallest->data != selected_node->data)){
-    //  printf("\t\tswap before:  selected: %d  smallest: %d  \n", selected_node->data, smallest->data);
+       //printf("---->heapify swap before:  selected: %d  smallest: %d  \n", selected_node->data, smallest->data);
      swap(smallest, selected_node);
-    //  printf("\t\tswap after:  selected: %d  smallest: %d  \n", selected_node->data, smallest->data);
      printf("");
+      // printf("---->heapify swap after:  selected: %d  smallest: %d  \n", selected_node->data, smallest->data);
      heapify_upward(selected_node);
    }
+    //  printf("---->heapify END \n");
 
    skip_heapify: ;
 
@@ -95,32 +100,29 @@ void heapify_upward(struct node *selected_node){
 
 void heapify_downward(struct node *selected_node){
    struct node *smallest;
-   int s = 0;
-
 
    if(!selected_node) goto skip_heapify;
 
-   smallest = selected_node;
 
-  //  printf("selected_node: %d  \n", smallest->data);
-
-   if(selected_node->left && selected_node->left->data && (selected_node->left->data<=smallest->data)){
+   if(selected_node->left && (selected_node->left->data<=selected_node->data)){
         smallest = selected_node->left;
-            // printf("selected_node left %d  \n", selected_node->left->data);
+          // printf("selected_node left %d  \n", selected_node->left->data);
    }
 
    if(smallest && (selected_node->right) && (selected_node->right->data<=smallest->data)){
         smallest = selected_node->right;
-          // printf("selected_node right %d  \n", selected_node->right->data);
+        // printf("selected_node right %d  \n", selected_node->right->data);
    }
 
-    // printf("heapify downward\n");
-   if(smallest && (smallest->data) && (smallest->data != selected_node->data)){
-      // printf("\t\tswap before:  selected: %d  smallest: %d  \n", selected_node->data, smallest->data);
-      swap(smallest, selected_node);
-      // printf("\t\tswap after:  selected: %d  smallest: %d  \n", selected_node->data, smallest->data);
+
+   if(smallest && (smallest->data != selected_node->data)){
+      //printf("---->heapify swap before:  selected: %d  smallest: %d  \n", selected_node->data, smallest->data);
+     swap(smallest, selected_node);
+     printf("");
+     // printf("---->heapify swap after:  selected: %d  smallest: %d  \n", selected_node->data, smallest->data);
      heapify_downward(smallest);
    }
+
 
    skip_heapify: ;
 
@@ -193,28 +195,29 @@ void insert_node(struct node *root, int data){
     child_node = root;
     td = tracking_nodes(total_nodes);
 
-    //  printf("insert_node\n");
+    // printf("insert_node\n");
+    // printf("tracking_path\n");
     while(td->right){
       temp = td;
       td = td->right;
       free(temp);
 
       if(td->path){
-          // printf("\t\ttarget_path left\n");
+          // printf("target_path left\n");
           if(!(child_node->left)){
               child_node->left = new_node;
               new_node->parent = child_node;
           }
           child_node = child_node->left;
       }else{
-          // printf("\t\ttarget_path right\n");
+          // printf("target_path right\n");
           if(!(child_node->right)){
               child_node->right = new_node;
               new_node->parent = child_node;
           }
           child_node = child_node->right;
       }
-          // printf("\t\tthe data: %d\n", child_node->data);
+      // printf("the data: %d\n", child_node->data);
     }
 
     heapify_upward(child_node);
@@ -233,7 +236,8 @@ void refresh_latest_node(struct node *root){
   td = tracking_nodes(total_nodes);
 
   // printf("refresh_latest_node  tracking_nodes %d \n",total_nodes );
-  // printf("refresh_latest_node\n");
+
+  // printf("tracking_path\n");
   while(td->right){
     temp = td;
     td = td->right;
@@ -258,25 +262,21 @@ void refresh_latest_node(struct node *root){
   latest_node->left = latest_node->right = NULL;
 }
 
-int swap_and_delete(struct node *root, struct node *latest_node){
+int swap_and_delete(struct node *n1, struct node *n2){
   int data;
-  int rtn = root->data;
+  int rtn = n1->data;
 
-  data = latest_node->data;
-  root->data = data;
+  data = n2->data;
+  n1->data = data;
 
 
-  if(latest_node->parent){
-      if(total_nodes%2) latest_node->parent->left = NULL;
-      else  latest_node->parent->right = NULL;
+  if(n2->parent){
+      if(total_nodes%2) n2->parent->left = NULL;
+      else  n2->parent->right = NULL;
   }
 
-  latest_node = NULL;
+  free(n2);
   total_nodes--;
-
-  // printf("swap_and_delete\n");
-  // printf("\t\troot %d \n", root->data);
-
   return rtn;
 }
 
@@ -284,9 +284,9 @@ int swap_and_delete(struct node *root, struct node *latest_node){
 int root_entry(struct node *root){
   struct node *temp = root;
   int rtn;
-
-  // printf("\t\troot %d latest_node %d\n", root->data, latest_node->data);
+  // printf("root %d latest_node %d\n", root->data, latest_node->data);
   rtn = swap_and_delete(root, latest_node);
+  // printf("root %d latest_node %d\n", root->data, latest_node->data);
   heapify_downward(root);
 
   return rtn;
@@ -296,92 +296,53 @@ int root_entry(struct node *root){
 
 int main(){
 
-  clock_t start = clock();
-
   struct node *root;
   int rtn;
   total_nodes = -1;
-
-  // BEST CASE
-  // root = get_new_node(1);
-  // int i;
-  // for(i=2; i<=100000; i++){
-  //   insert_node(root, i);
-  // }
-  //  while(total_nodes!=0){
-  //        rtn = root_entry(root);
-  //        refresh_latest_node(root);
-  //        printf("data taken out: %d\n", rtn);
-  //  }
-
-
-  // WORST CASE
-  // root = get_new_node(100000);
-  //
-  // int i;
-  // for(i=99999; i>=1; i--){
-  //   insert_node(root, i);
-  // }
-  //  while(total_nodes!=0){
-  //        rtn = root_entry(root);
-  //        refresh_latest_node(root);
-  //        printf("data taken out: %d\n", rtn);
-  //  }
-  //
-
-  // int array[10] = {5,6,11,6,10,8,3,2,9,8};
-  //
-  // root = get_new_node(array[0]);
-  //
-  // printf("root: %d\n", root->data);
-  //
-  // int i;
-  // for(i=1; i<10; i++){
-  //   insert_node(root, array[i]);
-  // }
-  //  while(total_nodes!=0){
-  //        rtn = root_entry(root);
-  //        refresh_latest_node(root);
-  //        printf("data taken out: %d\n", rtn);
-  //  }
-
-
-
-  int index = 100000;
-  srand(time(NULL));
-  root = get_new_node((rand()%index)+2);
-  // printf("data added in: %d\n", root->data);
+  root = get_new_node(6);
 
   int i;
-  int s;
-  for(i=2; i<=index; i++){
-    s =(rand()%index)+2;
-    // printf("data added in: %d\n", s);
-    insert_node(root, s);
+  for(i=5; i>=1; i--){
+    insert_node(root, i);
   }
-   while(total_nodes!=0){
+
+   printf("current root: %d\n", root->data);
+
+   for(i=0; i<=7; i++){
+     if(total_nodes>0){
          rtn = root_entry(root);
          refresh_latest_node(root);
          printf("data taken out: %d\n", rtn);
+     }
    }
 
-  clock_t end = clock();
-  float seconds = (float)(end - start) / CLOCKS_PER_SEC;
-  printf("duration time %f\n", seconds);
+   printf("current root: %d\n", root->data);
+
+
+
+
+
+
+
+
 
 
   //
-  // data taken out: 2
-  // data taken out: 3
-  // data taken out: 5
-  // data taken out: 6
-  // data taken out: 6
-  // data taken out: 8
-  // data taken out: 8
-  // data taken out: 9
-  // data taken out: 10
-
-
+  // refresh_latest_node(root);
+  // temp = root_entry(root);
+  // printf("data taken out: %d\n", temp->data);
+  //
+  //
+  // refresh_latest_node(root);
+  //
+  // temp = root_entry(root);
+  // printf("data taken out: %d\n", temp->data);
+  //
+  //
+  // refresh_latest_node(root);
+  //
+  //
+  // printf("data remove ------- END\n");
 
   return 0;
 }

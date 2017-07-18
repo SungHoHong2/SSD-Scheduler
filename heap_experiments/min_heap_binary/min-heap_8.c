@@ -84,7 +84,6 @@ void heapify_upward(struct node *selected_node){
     //  printf("\t\tswap before:  selected: %d  smallest: %d  \n", selected_node->data, smallest->data);
      swap(smallest, selected_node);
     //  printf("\t\tswap after:  selected: %d  smallest: %d  \n", selected_node->data, smallest->data);
-     printf("");
      heapify_upward(selected_node);
    }
 
@@ -102,23 +101,21 @@ void heapify_downward(struct node *selected_node){
 
    smallest = selected_node;
 
-  //  printf("selected_node: %d  \n", smallest->data);
-
    if(selected_node->left && selected_node->left->data && (selected_node->left->data<=smallest->data)){
         smallest = selected_node->left;
-            // printf("selected_node left %d  \n", selected_node->left->data);
+          //  printf("selected_node left %d  \n", selected_node->left->data);
    }
 
    if(smallest && (selected_node->right) && (selected_node->right->data<=smallest->data)){
         smallest = selected_node->right;
-          // printf("selected_node right %d  \n", selected_node->right->data);
+        //  printf("selected_node right %d  \n", selected_node->right->data);
    }
 
-    // printf("heapify downward\n");
+  //  printf("heapify downward\n");
    if(smallest && (smallest->data) && (smallest->data != selected_node->data)){
-      // printf("\t\tswap before:  selected: %d  smallest: %d  \n", selected_node->data, smallest->data);
-      swap(smallest, selected_node);
-      // printf("\t\tswap after:  selected: %d  smallest: %d  \n", selected_node->data, smallest->data);
+    //  printf("\t\tswap before:  selected: %d  smallest: %d  \n", selected_node->data, smallest->data);
+     swap(smallest, selected_node);
+    //  printf("\t\tswap after:  selected: %d  smallest: %d  \n", selected_node->data, smallest->data);
      heapify_downward(smallest);
    }
 
@@ -233,7 +230,7 @@ void refresh_latest_node(struct node *root){
   td = tracking_nodes(total_nodes);
 
   // printf("refresh_latest_node  tracking_nodes %d \n",total_nodes );
-  // printf("refresh_latest_node\n");
+  // printf("tracking_path\n");
   while(td->right){
     temp = td;
     td = td->right;
@@ -329,35 +326,15 @@ int main(){
   //  }
   //
 
-  // int array[10] = {5,6,11,6,10,8,3,2,9,8};
-  //
-  // root = get_new_node(array[0]);
-  //
-  // printf("root: %d\n", root->data);
-  //
-  // int i;
-  // for(i=1; i<10; i++){
-  //   insert_node(root, array[i]);
-  // }
-  //  while(total_nodes!=0){
-  //        rtn = root_entry(root);
-  //        refresh_latest_node(root);
-  //        printf("data taken out: %d\n", rtn);
-  //  }
+  int array[10] = {8,7,8,8,11,7,11,14,9,14,4,7,11 };
 
+  root = get_new_node(array[0]);
 
-
-  int index = 100000;
-  srand(time(NULL));
-  root = get_new_node((rand()%index)+2);
-  // printf("data added in: %d\n", root->data);
+  printf("root: %d\n", root->data);
 
   int i;
-  int s;
-  for(i=2; i<=index; i++){
-    s =(rand()%index)+2;
-    // printf("data added in: %d\n", s);
-    insert_node(root, s);
+  for(i=1; i<13; i++){
+    insert_node(root, array[i]);
   }
    while(total_nodes!=0){
          rtn = root_entry(root);
@@ -365,23 +342,36 @@ int main(){
          printf("data taken out: %d\n", rtn);
    }
 
-  clock_t end = clock();
-  float seconds = (float)(end - start) / CLOCKS_PER_SEC;
-  printf("duration time %f\n", seconds);
 
 
+  // int index = 10;
+  // srand(time(NULL));
+  // root = get_new_node((rand()%index)+2);
+  // printf("data added in: %d\n", root->data);
   //
-  // data taken out: 2
-  // data taken out: 3
-  // data taken out: 5
-  // data taken out: 6
-  // data taken out: 6
-  // data taken out: 8
-  // data taken out: 8
-  // data taken out: 9
-  // data taken out: 10
+  // int i;
+  // int s;
+  // for(i=2; i<=index; i++){
+  //   s =(rand()%index)+2;
+  //   printf("data added in: %d\n", s);
+  //   insert_node(root, s);
+  // }
+  //  while(total_nodes!=0){
+  //        rtn = root_entry(root);
+  //        refresh_latest_node(root);
+  //        printf("data taken out: %d\n", rtn);
+  //  }
+  //
+  // clock_t end = clock();
+  // float seconds = (float)(end - start) / CLOCKS_PER_SEC;
+  // printf("duration time %f\n", seconds);
 
 
+
+      // should only be called once
+        // returns a pseudo-random integer between 0 and RAND_MAX
+
+  //  printf("%d", r);
 
   return 0;
 }

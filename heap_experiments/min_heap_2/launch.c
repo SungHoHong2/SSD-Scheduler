@@ -1,62 +1,60 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include "minHeap.h"
 
 
 int main(void){
 
+  clock_t start = clock();
+
   minHeap *hp =  (minHeap *)malloc(sizeof(minHeap)) ;
   hp->size=0;
 
-  node *n = (node *)malloc(sizeof(node)) ;
-  n->data = 9;
-  insertNode(hp, n);
 
-  n = (node *)malloc(sizeof(node)) ;
-   n->data = 2;
-  insertNode(hp, n);
+  // int i;
+  // for(i=1; i<=100; i++){
+  //   node *n = (node *)malloc(sizeof(node)) ;
+  //   n->data = i;
+  //   insertNode(hp, n);
+  // }
+  //
+  // while(hp->size!=0){
+  //   deleteNode(hp); //remove the smallest node
+  // }
 
-  n = (node *)malloc(sizeof(node)) ;
-  n->data = 0;
-  insertNode(hp, n);
 
-  n = (node *)malloc(sizeof(node)) ;
-  n->data = 3;
-  insertNode(hp, n);
+  // int i;
+  // for(i=100000; i>=1; i--){
+  //   node *n = (node *)malloc(sizeof(node)) ;
+  //   n->data = i;
+  //   insertNode(hp, n);
+  // }
+  //
+  // while(hp->size!=0){
+  //   deleteNode(hp); //remove the smallest node
+  // }
 
-  n = (node *)malloc(sizeof(node)) ;
-  n->data = 1;
-  insertNode(hp, n);
 
-  n = (node *)malloc(sizeof(node)) ;
-  n->data = 8;
-  insertNode(hp, n);
+  int i;
+  int index = 10;
 
-  n = (node *)malloc(sizeof(node)) ;
-  n->data = 3;
-  insertNode(hp, n);
-
-  int i ;
-  for(i = 0; i < hp->size; i++) {
-      printf("%d ", hp->elem_test[i]->data) ;
+  for(i=1; i<=index; i++){
+    node *n = (node *)malloc(sizeof(node)) ;
+    n->data = (rand()%index)+2;
+    insertNode(hp, n);
   }
 
-  printf("\n");
-
-
-  deleteNode(hp); //remove the smallest node
-  deleteNode(hp); //remove the smallest node
-  deleteNode(hp); //remove the smallest node
-  deleteNode(hp); //remove the smallest node
-  deleteNode(hp); //remove the smallest node
-  deleteNode(hp); //remove the smallest node
-
-
-  for(i = 0; i < hp->size; i++) {
-      printf("%d ", hp->elem_test[i]->data) ;
+  while(hp->size!=0){
+    deleteNode(hp); //remove the smallest node
   }
 
-  printf("howdyhowdy\n");
+
+  clock_t end = clock();
+  float seconds = (float)(end - start) / CLOCKS_PER_SEC;
+  printf("duration time %f\n", seconds);
+
+
 
   return 0;
 }
