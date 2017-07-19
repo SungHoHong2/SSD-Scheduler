@@ -23,10 +23,8 @@
 #define RCHILD(x) 2 * x + 2
 #define PARENT(x) (x - 1) / 2
 
-// Total Depth [MIN:1 - MAX:64]
-// Estimated Efficient number [36(WRITE) - 40(READ)]
+// Total Depth
 #define REQUEST_DEPTH 1
-
 
 
 typedef struct sfq_request {
@@ -38,18 +36,29 @@ typedef struct sfq_request {
     // Assign requests
     struct request *rq;
 
-    int complete_flag;
+    // link to head of sfq_queue
+    struct list_head queue;
 
+    // link to global data
     struct sfq_data *sfqd;
+
 
 } sfq_request;
 
 typedef struct sfq_queue {
-  struct list_head queue;
-  pid_t pid;
+
+    // link to head of sfq_data
+    struct list_head queue;
+
+    // head of sfq_request
+    struct list_head queuelist;
+
+    // unique id
+    pid_t pid;
 
 
-}
+} sfq_queue;
+
 
 typedef struct sfq_data {
 
@@ -65,6 +74,9 @@ typedef struct sfq_data {
 
   // tracking  outstanding request
 	sfq_request *curr_sfqr;
+
+  // head of sfq_queue
+  struct list_head queuelist;
 
   // invoking dispatch in complete function
   struct hrtimer idle_slice_timer;
@@ -161,12 +173,15 @@ typedef struct sfq_data {
 
        struct sfq_data *sfqd = q->elevator->elevator_data;
 
-       
+       // check for existing pids
+           // allocate sfq_queue
+           // add pid
+           // initiate linked_list head
 
+       // add it to the private box 1
 
-
-
-
+       // allocate sfq_request
+       // add it to the private box 2
 
        return 0;
   }
@@ -177,10 +192,9 @@ typedef struct sfq_data {
     struct sfq_request *sfqr = rq->elv.priv[0];
 
 
-     sfqr->rq = rq;
-     sfqd->requests[i] = sfqr ;
 
-    }
+
+
     // printk("ADD_REQUEST[ virtual_time : %d,  size: %d  ] \n", sfqd->virtual_time, sfqd->size);
   }
 
