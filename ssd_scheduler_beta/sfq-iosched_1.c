@@ -178,10 +178,26 @@ typedef struct sfq_data {
            // add pid
            // initiate linked_list head
 
-       // add it to the private box 1
-
+       // add sfq_queue to the private box 1
+       // add sfq_queue in queue_head of sfq_data
        // allocate sfq_request
-       // add it to the private box 2
+
+
+       // compare prev_arrival_time with virutal_time
+          // if prev_arrival_time is bigger
+             // start_tag = prev_arrival_time
+          // if virutal_time is bigger
+             // start_tag = virutal_time
+
+       // finish_tag = prev_arrival_time = start_tag + weight
+       // add start_tag and finish_tag in sfq_request
+       // virutal_time = start_tag
+
+       // if the longest_finish_tag is smaller than the finish_tag
+          // prev_arrival_time = finish_tag
+
+
+       // add sfq_request to the private box 2
 
        return 0;
   }
@@ -191,20 +207,50 @@ typedef struct sfq_data {
   	struct sfq_data *sfqd = q->elevator->elevator_data;
     struct sfq_request *sfqr = rq->elv.priv[0];
 
+    // add request in the queue_head of sfq_queue
+    // increase the number of total_requests of sfq_queue
 
-
-
-
-    // printk("ADD_REQUEST[ virtual_time : %d,  size: %d  ] \n", sfqd->virtual_time, sfqd->size);
   }
 
 
   static int sfq_dispatch(struct request_queue *q, int force){
   	struct sfq_data *sfqd = q->elevator->elevator_data;
-    struct sfq_request *sfqr;
-    struct request *rq;
+
+    // check whether sfq_queue all have gotten their turns
 
 
+    // check the limit of dispatch_array
+    // if the dispath_array is available
+      // fill the dispatch_array with the requests from sfq_queue
+      // sort the requests using min-heap
+
+
+    /* example of adding requests
+      if(sfqd->size) {
+          sfqd->requests = (sfq_request **)krealloc(sfqd->requests, (sfqd->size + 1) * sizeof(sfq_request *), GFP_KERNEL) ;
+      }
+
+      i = (sfqd->size)++ ;
+
+      while(i && sfqr->start_tag < sfqd->requests[PARENT(i)]->start_tag) {
+          sfqd->requests[i] = sfqd->requests[PARENT(i)] ;
+          i = PARENT(i) ;
+     */
+
+
+   /* example of removing requests
+       sfqr = sfqd->requests[0];
+       rq = sfqr->rq;
+       sfqd->requests[0] = sfqd->requests[--(sfqd->size)];
+
+       if(sfqd->size>1){
+           sfqd->requests = (sfq_request **)krealloc(sfqd->requests, sfqd->size * sizeof(sfq_request *), GFP_KERNEL) ;
+           heapify(sfqd, 0);
+       }
+    */
+
+
+    // dispatch requests
 
     return 0;
   }
@@ -213,12 +259,14 @@ typedef struct sfq_data {
   static void sfq_completed(struct request_queue *q, struct request *rq){
   	 struct sfq_data *sfqd = q->elevator->elevator_data;
   	  // printk("COMPLETE: PID: %d  DEPTH: %d\n",sfqd->curr_sfqr->pid, sfqd->depth);
-
-
+      // decrease the number of requests in the sfq_queue
+      // allow the queue to be used again
+      //invoke dispatch
   }
 
 
   static void sfq_put_request(struct request *rq){
+      // if there are no more requests remove it from the queue_head of sfq_data
 
   }
 
