@@ -48,8 +48,6 @@ typedef struct sfq_data {
   // total number of sfq_queue
   int sfqq_size;
   int sfqq_total_seek;
-  // total number of sfq_request
-  int sfqr_size;
   // invoking dispatch in complete function
   struct hrtimer idle_slice_timer;
   struct work_struct unplug_work;
@@ -91,8 +89,8 @@ static int sfq_init_queue(struct request_queue *q, struct elevator_type *e){
   sfqd->sfqq_total_seek = 0;
   INIT_LIST_HEAD(&sfqd->queue);
   // insurance for invoking dispatch during pending requests
-  sfqd->rq_queue = q;
-  INIT_WORK(&sfqd->unplug_work, sfq_kick_queue);
+  // sfqd->rq_queue = q;
+  // INIT_WORK(&sfqd->unplug_work, sfq_kick_queue);
   //NOOP
 	INIT_LIST_HEAD(&sfqd->heap_queue);
 	spin_lock_irq(q->queue_lock);
@@ -127,7 +125,7 @@ static int sfq_set_request(struct request_queue *q, struct request *rq, struct b
   rq->elv.priv[0] = sfqq;
   // add to sfq_data
   list_add_tail(&sfqq->queuelist, &sfqd->queue);
-  // printk("\t\tSET_REQUEST PID: %d virtual_time: %d\n", sfqq->pid, sfqd->virtual_time);
+  printk("\t\tSET_REQUEST PID: %d virtual_time: %d\n", sfqq->pid, sfqd->virtual_time);
 
   skip_sfq_queue:
   // allocate sfq_request
@@ -154,7 +152,6 @@ static void sfq_add_request(struct request_queue *q, struct request *rq){
   // printk("ADD_REQUEST PID: %d start_tag: %d\n", sfqq->pid, sfqr->start_tag);
   list_add_tail(&sfqr->queuelist, &sfqq->queue);
   list_add_tail(&rq->queuelist, &sfqd->heap_queue);
-  sfqd->sfqr_size++;
 }
 
 
@@ -178,39 +175,33 @@ static int sfq_dispatch(struct request_queue *q, int force){
       sfqd->os_sfqq = sfqq;
       if(sfqd->sfqq_total_seek == sfqd->sfqq_size){
         sfqd->sfqq_total_seek = 0;
-        goto dispatch_section; // change this
-        // no move on to the next and initialize the data to one
-        // use goto begin_dispatch;
+        goto dispatch_section;
       }
       sfqd->sfqq_total_seek++;
       // printk("NEXT_DISPATCH PID: %d SEEK: %d  SIZE: %d\n", sfqd->os_sfqq->pid, sfqd->sfqq_total_seek, sfqd->sfqq_size);
   }
 
-  // if(list_empty(&sfqq->queue)) return 0;
-
   // dispatch requests into heap-array
   sfqr = list_first_entry_or_null(&sfqq->queue, struct sfq_request, queuelist);
   if(sfqr){
     printk("SFQ-START_TAG: %d PID: %d\n", sfqr->start_tag, sfqd->os_sfqq->pid);
-    // remove request from sfq_queue
     list_del_init(&sfqr->queuelist);
-    // add request into heap_queue
-    // list_add_tail(&sfqr->queuelist, &sfqd->heap_queue);
+
+
+
+    kfree(sfqr);
   }
 
-  // check whether heap-sort is available
-  // if(empty_list(&sfqd->heap_queue)) return 0;
 
-  // perform the heap-sort
 
-  /*
-    sfqr = list_first_entry_or_null(&sfqd->heap_queue, struct request, queuelist);
-    if (sfqr) {
-      list_del_init(&sfqr->queuelist);
-      elv_dispatch_sort(q, sfqr->rq);
-      return 1;
-    }
-  */
+
+  // // select
+  // list_for_each(head,&(sfqd->queue)){
+  //    sfqq = list_entry(head,struct sfq_queue, queuelist);
+  //
+  //
+  //  }
+
 
   dispatch_section:
 	rq = list_first_entry_or_null(&sfqd->heap_queue, struct request, queuelist);
@@ -222,12 +213,30 @@ static int sfq_dispatch(struct request_queue *q, int force){
 	return 0;
 }
 
+
+static struct request *
+sfq_former_request(struct request_queue *q, struct request *rq){
+	struct sfq_data *nd = q->elevator->elevator_data;
+
+  // check whether the request is the immmediate dispatch
+  // in that case we can check whether the request is within the dispatch_array
+	if (rq->queuelist.prev == &nd->heap_queue)
+		return NULL;
+	return list_prev_entry(rq, queuelist);
+}
+
+static struct request *
+sfq_latter_request(struct request_queue *q, struct request *rq){
+	struct sfq_data *nd = q->elevator->elevator_data;
+
+	if (rq->queuelist.next == &nd->heap_queue)
+		return NULL;
+	return list_next_entry(rq, queuelist);
+}
+
+
 static void sfq_completed(struct request_queue *q, struct request *rq){
-  struct sfq_data *sfqd = q->elevator->elevator_data;
-  if((--sfqd->sfqr_size)>0){
-     // invoke the dispatch again
-     kblockd_schedule_work(&sfqd->unplug_work);
-  }
+  //  struct sfq_data *sfqd = q->elevator->elevator_data;
 }
 
 static void sfq_put_request(struct request *rq){
@@ -237,6 +246,7 @@ static void sfq_put_request(struct request *rq){
 
 static void sfq_exit_queue(struct elevator_queue *e){
 	struct sfq_data *nd = e->elevator_data;
+
 	BUG_ON(!list_empty(&nd->heap_queue));
 	kfree(nd);
 }
@@ -247,6 +257,8 @@ static struct elevator_type elevator_noop = {
     .elevator_exit_fn		= sfq_exit_queue,
     .elevator_put_req_fn =		sfq_put_request,
     .elevator_completed_req_fn  = sfq_completed,
+    .elevator_former_req_fn		= sfq_former_request,
+    .elevator_latter_req_fn		= sfq_latter_request,
     .elevator_dispatch_fn		= sfq_dispatch,
     .elevator_add_req_fn		= sfq_add_request,
     .elevator_set_req_fn = sfq_set_request,
