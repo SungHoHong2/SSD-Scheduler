@@ -119,8 +119,7 @@ static int sfq_init_queue(struct request_queue *q, struct elevator_type *e){
   // insurance for invoking dispatch during pending requests
   sfqd->rq_queue = q;
   INIT_WORK(&sfqd->unplug_work, sfq_kick_queue);
-  //NOOP
-	INIT_LIST_HEAD(&sfqd->heap_queue);
+
 	spin_lock_irq(q->queue_lock);
 	q->elevator = eq;
 	spin_unlock_irq(q->queue_lock);
