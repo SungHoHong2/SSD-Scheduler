@@ -1,0 +1,56 @@
+[  +1.675518] INIT_SFQ TESTING_DISPATCH_REQUEST
+
+[  +0.558219] 		CHARA BEGIN
+[  +0.000002] 		CHARA pid: 1360 sfqq_list_empty: 1 sfqr->size: 0
+[  +0.000000] 		CHARA pid: 1360 sfqq_list_empty: 1 sfqr->size: 0
+[  +0.000001] 		CHARA pid: 1360 sfqq_list_empty: 1 sfqr->size: 0
+[  +0.000000] 		CHARA END
+
+
+[  +0.000005] 		CHARA BEGIN
+[  +0.000000] NEXT_DISPATCH PID: 1360 SEEK: 1  SIZE: 1
+[  +0.000001] 		CHARA pid: 1360 sfqq_list_empty: 1 sfqr->size: 0
+[  +0.000000] 		CHARA pid: 1360 sfqq_list_empty: 1 sfqr->size: 0
+[  +0.000000] 		CHARA pid: 1360 sfqq_list_empty: 1 sfqr->size: 0
+[  +0.000001] 		CHARA END
+
+
+[  +0.101649] ADD_REQUEST PID: 3609
+
+
+[  +0.000002] 		CHARA BEGIN
+[  +0.000000] NEXT_DISPATCH PID: 3609 SEEK: 2  SIZE: 2
+[  +0.000001] 		CHARA pid: 3609 sfqq_list_empty: 0 sfqr->size: 1
+[  +0.000000] RQUEST to HEAP_QUEUE: 100 PID: 3609
+[  +0.000001] 		CHARA pid: 3609 sfqq_list_empty: 1 sfqr->size: 1
+[  +0.000000] HEAP_QUEUE DISPATCH PID: 3609
+
+
+[  +0.000029] 		CHARA BEGIN
+[  +0.000000] NEXT_DISPATCH PID: 1360 SEEK: 1  SIZE: 2
+[  +0.000001] 		CHARA pid: 1360 sfqq_list_empty: 1 sfqr->size: 1
+[  +0.000000] 		CHARA pid: 1360 sfqq_list_empty: 1 sfqr->size: 1
+[  +0.000001] 		CHARA pid: 1360 sfqq_list_empty: 1 sfqr->size: 1
+[  +0.000000] 		CHARA END
+
+
+[  +0.024015] COMPLETE BEFORE PID: 1360 sfqr_size 1
+
+
+[  +0.000015] 		CHARA BEGIN
+[  +0.000001] NEXT_DISPATCH PID: 3609 SEEK: 2  SIZE: 2
+[  +0.000000] 		CHARA pid: 3609 sfqq_list_empty: 1 sfqr->size: 0
+[  +0.000001] 		CHARA pid: 3609 sfqq_list_empty: 1 sfqr->size: 0
+[  +0.000000] 		CHARA pid: 3609 sfqq_list_empty: 1 sfqr->size: 0
+[  +0.000001] 		CHARA END
+
+
+[  +0.000049] ADD_REQUEST PID: 3609
+
+
+[  +0.000001] 		CHARA BEGIN
+[  +0.000000] NEXT_DISPATCH PID: 1360 SEEK: 1  SIZE: 2
+[  +0.000001] 		CHARA pid: 1360 sfqq_list_empty: 1 sfqr->size: 1
+[  +0.000000] 		CHARA pid: 1360 sfqq_list_empty: 1 sfqr->size: 1
+[  +0.000000] 		CHARA pid: 1360 sfqq_list_empty: 1 sfqr->size: 1
+[  +0.000001] 		CHARA END

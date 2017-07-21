@@ -9,6 +9,10 @@
 #define REQUEST_LENGTH 100
 // assume all requests are read
 #define REQUEST_WEIGHT 1
+// Heap Sort - Indexing
+#define LCHILD(x) 2 * x + 1
+#define RCHILD(x) 2 * x + 2
+#define PARENT(x) (x - 1) / 2
 
 typedef struct sfq_request {
    // SFQ Algorithm
@@ -50,6 +54,9 @@ typedef struct sfq_data {
   int sfqq_total_seek;
   // total number of sfq_request
   int sfqr_size;
+  // total number of heap_size
+  int heap_size;
+  int heap_limit_size;
   // invoking dispatch in complete function
   struct hrtimer idle_slice_timer;
   struct work_struct unplug_work;
@@ -63,13 +70,29 @@ typedef struct sfq_data {
  static void sfq_kick_queue(struct work_struct *work){
  	struct sfq_data *sfqd =
  		container_of(work, struct sfq_data, unplug_work);
- 	struct request_queue *q = sfqd->queue;
+ 	struct request_queue *q = sfqd->rq_queue;
 
  	spin_lock_irq(q->queue_lock);
- 	__blk_run_queue(sfqd->queue);
+ 	__blk_run_queue(sfqd->rq_queue);
  	spin_unlock_irq(q->queue_lock);
  }
 
+// Heap Sorting Common Function
+ void heap_swap(sfq_request *n1, sfq_request *n2) {
+     sfq_request temp = *n1 ;
+     *n1 = *n2 ;
+     *n2 = temp ;
+ }
+ void heapify(sfq_data *hp, int i) {
+     int smallest = (LCHILD(i) < hp->heap_size && hp->requests[LCHILD(i)]->start_tag < hp->requests[i]->start_tag) ? LCHILD(i) : i ;
+     if(RCHILD(i) < hp->heap_size && hp->requests[RCHILD(i)]->start_tag < hp->requests[smallest]->start_tag) {
+         smallest = RCHILD(i) ;
+     }
+     if(smallest != i) {
+         heap_swap(hp->requests[i], hp->requests[smallest]) ;
+         heapify(hp, smallest) ;
+     }
+ }
 
 
 static int sfq_init_queue(struct request_queue *q, struct elevator_type *e){
@@ -89,6 +112,9 @@ static int sfq_init_queue(struct request_queue *q, struct elevator_type *e){
   sfqd->os_sfqq = NULL;
   sfqd->sfqq_size = 0;
   sfqd->sfqq_total_seek = 0;
+  sfqd->sfqr_size = 0;
+  sfqd->heap_size = 0;
+  sfqd->heap_limit_size = 0;
   INIT_LIST_HEAD(&sfqd->queue);
   // insurance for invoking dispatch during pending requests
   sfqd->rq_queue = q;
@@ -98,8 +124,8 @@ static int sfq_init_queue(struct request_queue *q, struct elevator_type *e){
 	spin_lock_irq(q->queue_lock);
 	q->elevator = eq;
 	spin_unlock_irq(q->queue_lock);
-  printk("INIT_SFQ TESTING_DISPATCH_REQUEST\n");
-  //1179500,1239355 write /media/sf_SSD-Scheduler/test_results/2017_07_19_beta/sfq_test_04.txt
+  printk("INIT_SFQ TESTING_DISPATCH_REQUEST ALPHA\n");
+  //  1729998,2068302 write /media/sf_SSD-Scheduler/test_results/2017_07_19_beta/sfq_test_04.txt
 	return 0;
 }
 
@@ -119,6 +145,16 @@ static int sfq_set_request(struct request_queue *q, struct request *rq, struct b
      }
    }
 
+  // create a heap_queue
+  if(!sfqd->heap_limit_size){
+    sfqd->requests = (sfq_request **)kmalloc(sizeof(sfq_request *), gfp_mask);
+    sfqd->heap_limit_size++;
+  } else {
+    sfqd->requests = (sfq_request **)krealloc(sfqd->requests, (sfqd->heap_limit_size + 1) * sizeof(sfq_request *), GFP_KERNEL);
+    sfqd->heap_limit_size++;
+  }
+  // printk("SET_REQUEST PID: %d heap_limit_size: %d\n", current->pid, sfqd->heap_limit_size);
+
   // allocate sfq_queue
   sfqq = (struct sfq_queue*)kmalloc(sizeof(struct sfq_queue), gfp_mask);
   sfqq->pid = current->pid;
@@ -132,6 +168,15 @@ static int sfq_set_request(struct request_queue *q, struct request *rq, struct b
   skip_sfq_queue:
   // allocate sfq_request
   sfqr = (struct sfq_request*)kmalloc(sizeof(struct sfq_request), gfp_mask);
+  rq->elv.priv[1] = sfqr;
+  return 0;
+}
+
+
+static void sfq_add_request(struct request_queue *q, struct request *rq){
+	struct sfq_data *sfqd = q->elevator->elevator_data;
+  struct sfq_queue *sfqq = rq->elv.priv[0];
+  struct sfq_request *sfqr = rq->elv.priv[1];
   // start_tag = prev_arrival_time(finish_tag) vs virutal_time(start_tag)
   if(sfqd->prev_sfqr && (sfqd->virtual_time < sfqd->prev_sfqr->finish_tag))
       sfqr->start_tag = sfqd->prev_sfqr->finish_tag;
@@ -142,18 +187,9 @@ static int sfq_set_request(struct request_queue *q, struct request *rq, struct b
   sfqd->virtual_time = sfqr->start_tag;
   //previous request
   sfqd->prev_sfqr = sfqr;
-  rq->elv.priv[1] = sfqr;
-  return 0;
-}
-
-
-static void sfq_add_request(struct request_queue *q, struct request *rq){
-	struct sfq_data *sfqd = q->elevator->elevator_data;
-  struct sfq_queue *sfqq = rq->elv.priv[0];
-  struct sfq_request *sfqr = rq->elv.priv[1];
-  // printk("ADD_REQUEST PID: %d start_tag: %d\n", sfqq->pid, sfqr->start_tag);
+  sfqr->rq = rq;
+  // printk("ADD_REQUEST PID: %d\n", sfqq->pid);
   list_add_tail(&sfqr->queuelist, &sfqq->queue);
-  list_add_tail(&rq->queuelist, &sfqd->heap_queue);
   sfqd->sfqr_size++;
 }
 
@@ -164,6 +200,7 @@ static int sfq_dispatch(struct request_queue *q, int force){
   struct sfq_queue *sfqq;
   struct sfq_request *sfqr;
   struct request *rq;
+  int index;
 
   // dispatched for the first time
   if(!(sfqd->os_sfqq)){
@@ -174,56 +211,59 @@ static int sfq_dispatch(struct request_queue *q, int force){
 
   // currently dispatching
   } else {
+  next_dispatch:
       sfqq = list_next_entry(sfqd->os_sfqq, queuelist);
       sfqd->os_sfqq = sfqq;
       if(sfqd->sfqq_total_seek == sfqd->sfqq_size){
         sfqd->sfqq_total_seek = 0;
-        goto dispatch_section; // change this
-        // no move on to the next and initialize the data to one
-        // use goto begin_dispatch;
+        goto next_dispatch;
       }
       sfqd->sfqq_total_seek++;
+
+      // check for left requests
+      if(sfqd->sfqr_size && list_empty(&sfqd->os_sfqq->queue)){
+          kblockd_schedule_work(&sfqd->unplug_work);
+          // if empty proceed to the heap-queue dispatch
+          goto dispatch_section;
+      }
       // printk("NEXT_DISPATCH PID: %d SEEK: %d  SIZE: %d\n", sfqd->os_sfqq->pid, sfqd->sfqq_total_seek, sfqd->sfqq_size);
   }
 
-  // if(list_empty(&sfqq->queue)) return 0;
-
-  // dispatch requests into heap-array
-  sfqr = list_first_entry_or_null(&sfqq->queue, struct sfq_request, queuelist);
+  // transfer requests into heap-queue
+  sfqr = list_first_entry_or_null(&sfqd->os_sfqq->queue, struct sfq_request, queuelist);
   if(sfqr){
-    printk("SFQ-START_TAG: %d PID: %d\n", sfqr->start_tag, sfqd->os_sfqq->pid);
+    // printk("RQUEST to HEAP_QUEUE: %d PID: %d\n", sfqr->start_tag,sfqd->os_sfqq->pid);
     // remove request from sfq_queue
-    list_del_init(&sfqr->queuelist);
-    // add request into heap_queue
-    // list_add_tail(&sfqr->queuelist, &sfqd->heap_queue);
+    if(sfqd->heap_size < sfqd->heap_limit_size-1){
+        list_del_init(&sfqr->queuelist);
+        index = (sfqd->heap_size)++;
+        while(index && sfqr->start_tag < sfqd->requests[PARENT(index)]->start_tag) {
+            sfqd->requests[index] = sfqd->requests[PARENT(index)] ;
+            index = PARENT(index);
+        }
+        sfqd->requests[index] = sfqr;
+    } else{
+        kblockd_schedule_work(&sfqd->unplug_work);
+    }
   }
 
-  // check whether heap-sort is available
-  // if(empty_list(&sfqd->heap_queue)) return 0;
-
   // perform the heap-sort
-
-  /*
-    sfqr = list_first_entry_or_null(&sfqd->heap_queue, struct request, queuelist);
-    if (sfqr) {
-      list_del_init(&sfqr->queuelist);
-      elv_dispatch_sort(q, sfqr->rq);
-      return 1;
-    }
-  */
-
   dispatch_section:
-	rq = list_first_entry_or_null(&sfqd->heap_queue, struct request, queuelist);
-	if (rq) {
-		list_del_init(&rq->queuelist);
-		elv_dispatch_sort(q, rq);
-		return 1;
-	}
+  if(sfqd->heap_size>0){
+      sfqr = sfqd->requests[0];
+      rq = sfqr->rq;
+      sfqd->requests[0] = sfqd->requests[--(sfqd->heap_size)];
+      if(sfqd->heap_size>1) heapify(sfqd, 0);
+      // printk("RQUEST to HEAP_QUEUE pid: %d  heap_size: %d\n", sfqd->os_sfqq->pid, sfqd->heap_size);
+      elv_dispatch_sort(q, rq);
+      return 1;
+  }
 	return 0;
 }
 
 static void sfq_completed(struct request_queue *q, struct request *rq){
   struct sfq_data *sfqd = q->elevator->elevator_data;
+  // printk("COMPLETE BEFORE PID: %d sfqr_size %d\n", sfqd->os_sfqq->pid, sfqd->sfqr_size);
   if((--sfqd->sfqr_size)>0){
      // invoke the dispatch again
      kblockd_schedule_work(&sfqd->unplug_work);
