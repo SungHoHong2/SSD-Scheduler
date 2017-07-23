@@ -9,7 +9,7 @@
 #include <linux/slab.h>
 #include <linux/init.h>
 
-#define REQUEST_DEPTH 1
+#define REQUEST_DEPTH 28
 
 static struct kmem_cache *noop_pool;
 
@@ -28,7 +28,6 @@ struct noop_data {
   struct hrtimer idle_slice_timer;
   struct work_struct unplug_work;
   struct request_queue *rq_queue;
-
 };
 
 
@@ -43,14 +42,6 @@ struct noop_data {
  	spin_unlock_irq(q->queue_lock);
  }
 
- static enum hrtimer_restart noop_idle_slice_timer(struct hrtimer *timer){
-   unsigned long flags;
-   struct noop_data *nd = container_of(timer, struct noop_data, idle_slice_timer);
-   spin_lock_irqsave(nd->rq_queue->queue_lock, flags);
-   if (!list_empty(&nd->queue)) kblockd_schedule_work(&nd->unplug_work);
-   spin_unlock_irqrestore(nd->rq_queue->queue_lock, flags);
-	 return HRTIMER_NORESTART;
- }
 
 
 static int noop_init_queue(struct request_queue *q, struct elevator_type *e){
@@ -74,8 +65,6 @@ static int noop_init_queue(struct request_queue *q, struct elevator_type *e){
   INIT_WORK(&nd->unplug_work, noop_kick_queue);
   noop_pool = KMEM_CACHE(noop_request, 0);
 
-  hrtimer_init(&nd->idle_slice_timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
-  nd->idle_slice_timer.function = noop_idle_slice_timer;
 
 	INIT_LIST_HEAD(&nd->queue);
 
@@ -84,7 +73,7 @@ static int noop_init_queue(struct request_queue *q, struct elevator_type *e){
 	spin_unlock_irq(q->queue_lock);
 
 
-  printk("NOOP EXPERIMEN BETA DEPTH: %d\n",REQUEST_DEPTH);
+  printk("NOOP EXPERIMENT %d\n",REQUEST_DEPTH);
 	return 0;
 }
 
@@ -113,13 +102,10 @@ static int noop_dispatch(struct request_queue *q, int force){
 	struct noop_data *nd = q->elevator->elevator_data;
   // struct noop_request *nr;
 
-  if(nd && nd->depth>REQUEST_DEPTH) return 0;
-
-  hrtimer_try_to_cancel(&nd->idle_slice_timer);
-  nd->out_req = list_first_entry_or_null(&nd->queue, struct noop_request, queuelist);
-
+  // if(nd && nd->depth>REQUEST_DEPTH) return 0;
+	nd->out_req = list_first_entry_or_null(&nd->queue, struct noop_request, queuelist);
 	if (nd->out_req) {
-    // printk("DISPATCH: depth: %d\n",nd->depth);
+    printk("DISPATCH: depth: %d\n",nd->depth);
 		list_del_init(&nd->out_req->queuelist);
 		elv_dispatch_sort(q, nd->out_req->rq);
     nd->depth++;
@@ -131,10 +117,8 @@ static int noop_dispatch(struct request_queue *q, int force){
 static void noop_completed(struct request_queue *q, struct request *rq){
 	struct noop_data *nd = q->elevator->elevator_data;
   // printk("COMPLETE: depth: %d\n",nd->depth);
-  u64 sl = 0;
   nd->depth--;
   if((--nd->nr_size)>0){
-      hrtimer_start(&nd->idle_slice_timer, ns_to_ktime(sl), HRTIMER_MODE_REL);
       kblockd_schedule_work(&nd->unplug_work);
   }
 }
@@ -147,8 +131,6 @@ static void noop_put_request(struct request *rq){
 static void noop_exit_queue(struct elevator_queue *e){
 	struct noop_data *nd = e->elevator_data;
 	BUG_ON(!list_empty(&nd->queue));
-  hrtimer_cancel(&nd->idle_slice_timer);
-  cancel_work_sync(&nd->unplug_work);
 	kfree(nd);
 }
 
