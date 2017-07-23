@@ -13,7 +13,7 @@
 - [Evaluation] compare the best performance with the NOOP, CFQ and SFQ
   - [test result of schedulers](test_results/2017_06_30_scheduler_results)
 - research on congestion errors when introduced with depth
-- [implementation of cache pool and hr-timer](congestion_experiment/noop_with_congestion.c)
+  - [implementation of cache pool and hr-timer](congestion_experiment/noop_with_congestion.c)
 
 
 
