@@ -5,35 +5,6 @@
 2. virtual_time only uses logical_time
 3. limit the number of concurrent I/O requests(Depth)
 
-### Pending Question
-```
-intensive number of jobs will give me an error
-   - suspecting the bad sector problem
-   - trying to find whether there is a method of preventing the bad sector.
-
-
-sfq
-jobs:32 [depth:1] -> stable
-jobs:64 [depth:1] -> error occurs
-
-jobs:32 [depth:600] -> stable
-jobs:64 [depth:600] -> error occurs
-
-
-noop
-jobs:32 [depth:1] ->
-jobs:64 [depth:1] ->
-
-jobs:32 [depth:600] ->
-jobs:64 [depth:600] ->
-        (if error) something is wrong with the congestion
-                   [but I recall that there will be a problem with this] : when not introduced with the kick_queue
-        (if stable) something is wrong with the struct encapsulation
-
-
-```
-[link to the error ](https://unix.stackexchange.com/questions/43681/kde-causes-read-fpdma-queued-error)
-
 
 ### Depth Performance
 - the number of allowed I/O requests that are dispatched
@@ -41,6 +12,9 @@ jobs:64 [depth:600] ->
   - [test result of depth](test_results/2017_06_30_depth_results)
 - [Evaluation] compare the best performance with the NOOP, CFQ and SFQ
   - [test result of schedulers](test_results/2017_06_30_scheduler_results)
+- research on congestion errors when introduced with depth
+- [implementation of cache pool and hr-timer](congestion_experiment/noop_with_congestion.c)
+
 
 
 ### Rules of SFQ
