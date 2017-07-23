@@ -92,7 +92,6 @@ static int noop_set_request(struct request_queue *q, struct request *rq, struct 
   struct noop_data *nd = q->elevator->elevator_data;
   struct noop_request *nr;
   rcu_read_lock();
-  // nr = (struct noop_request*)kmalloc(sizeof(struct noop_request), gfp_mask);
   nr = kmem_cache_alloc_node(noop_pool, GFP_NOWAIT | __GFP_ZERO, nd->rq_queue->node);
   rcu_read_unlock();
 
