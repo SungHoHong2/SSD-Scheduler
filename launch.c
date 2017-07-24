@@ -5,6 +5,7 @@
 #include <linux/slab.h>
 #include <linux/init.h>
 
+// /media/sf_SSD-Scheduler/test_results/2017_07_23_depth/40/32_4_read.txt
 // assume all requests have fixed size
 #define REQUEST_LENGTH 100
 // assume all requests are read
@@ -14,7 +15,7 @@
 #define RCHILD(x) 2 * x + 2
 #define PARENT(x) (x - 1) / 2
 // depth
-#define REQUEST_DEPTH 999
+#define REQUEST_DEPTH 40
 
 static struct kmem_cache *sfq_pool;
 
