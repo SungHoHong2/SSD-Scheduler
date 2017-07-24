@@ -14,7 +14,7 @@
 #define RCHILD(x) 2 * x + 2
 #define PARENT(x) (x - 1) / 2
 // depth
-#define REQUEST_DEPTH 1
+#define REQUEST_DEPTH 999
 
 static struct kmem_cache *sfq_pool;
 
