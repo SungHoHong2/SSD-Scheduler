@@ -1,0 +1,7 @@
+[read_one_4]
+filename=/dev/sdd
+bs=4k
+numjobs=1
+direct=1
+rw=read
+runtime=20
