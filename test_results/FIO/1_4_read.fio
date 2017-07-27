@@ -1,0 +1,9 @@
+[read_one_4]
+filename=/dev/sdd
+bs=4k
+numjobs=1
+direct=1
+ioengine=libaio
+rw=read
+runtime=20
+group_reporting=1

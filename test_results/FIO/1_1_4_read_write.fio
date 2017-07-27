@@ -1,0 +1,17 @@
+[global]
+filename=/dev/sdd
+runtime=20
+direct=1
+group_reporting=1
+ioengine=libaio
+
+
+[reader_4]
+bs=4k
+numjobs=1
+rw=read
+
+[writer_4]
+bs=4k
+numjobs=1
+rw=write

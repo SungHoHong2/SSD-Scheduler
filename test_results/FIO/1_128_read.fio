@@ -1,0 +1,10 @@
+[read_one_128]
+filename=/dev/sdd
+bs=128k
+numjobs=1
+direct=1
+rw=read
+runtime=60
+group_reporting=1
+ioengine=libaio
+
