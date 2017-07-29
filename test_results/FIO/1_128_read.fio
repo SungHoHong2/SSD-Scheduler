@@ -4,7 +4,7 @@ bs=128k
 numjobs=1
 direct=1
 rw=read
-runtime=60
+runtime=20
 group_reporting=1
-ioengine=libaio
+ioengine=sync
 

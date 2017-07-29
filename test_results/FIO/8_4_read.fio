@@ -1,9 +1,9 @@
-[write_one_4]
+[read_8_4]
 filename=/dev/sdd
 bs=4k
-numjobs=1
+numjobs=8
 direct=1
-rw=write
-runtime=20
 ioengine=sync
+rw=read
+runtime=20
 group_reporting=1
