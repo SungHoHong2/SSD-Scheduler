@@ -1,0 +1,11 @@
+
+fio --filename=/dev/sdd --direct=1 --rw=read --refill_buffers --norandommap --randrepeat=0 --ioengine=libaio --bs=128k --rate_iops=1280  --iodepth=16 --numjobs=1 --time_based --runtime=20 --group_reporting --name=benchtest
+
+
+
+327684KB,
+724544KB, 731888KB,
+730424
+733228
+724416
+716680
