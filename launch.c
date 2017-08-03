@@ -9,6 +9,7 @@
 #include <linux/init.h>
 #include <linux/time.h>
 
+//  74,1176128 write /home/sungho/Documents/SSD-Scheduler/test_results/2017_08_02_workstation/test
 
 struct noop_data {
 	struct list_head queue;
@@ -18,7 +19,7 @@ struct noop_data {
 
 };
 
-
+int track_array[61][1];
 
 static int noop_dispatch(struct request_queue *q, int force)
 {
@@ -43,19 +44,25 @@ static void noop_add_request(struct request_queue *q, struct request *rq){
 static int noop_set_request(struct request_queue *q, struct request *rq, struct bio *bio, gfp_t gfp_mask){
   struct noop_data *nd = q->elevator->elevator_data;
   long track_time = 0;
+	int temp = 0;
 
   if(nd->start_track_time==0){
     do_gettimeofday(&nd->start_time); //it is known as jiffies
     nd->start_track_time = (u32)(nd->start_time.tv_sec);
-    printk("0\t\tfirst request\n");
+    // printk("0\t\tfirst request\n");
+		temp = track_array[0][0];
+		temp++;
+		track_array[0][0] = temp;
 
   }else{
     do_gettimeofday(&nd->current_time);
     track_time = (u32)(nd->current_time.tv_sec);
-    printk("%ld\t\treceive request\n", track_time-(nd->start_track_time));
+    // printk("%ld\t\treceive request\n", track_time-(nd->start_track_time));
+		temp = track_array[track_time][0];
+		temp++;
+		track_array[track_time][0] = temp;
 
   }
-
   return 0;
 }
 
@@ -64,13 +71,19 @@ static int noop_init_queue(struct request_queue *q, struct elevator_type *e)
 {
 	struct noop_data *nd;
 	struct elevator_queue *eq;
+	int i=0;
 
 	eq = elevator_alloc(q, e);
 	if (!eq)
 		return -ENOMEM;
 
+
 	nd = kmalloc_node(sizeof(*nd), GFP_KERNEL, q->node);
   nd->start_track_time = 0;
+
+	for(i=0; i<61; i++){
+		track_array[i][0] = 0;
+	}
 
 	if (!nd) {
 		kobject_put(&eq->kobj);
@@ -91,6 +104,14 @@ static int noop_init_queue(struct request_queue *q, struct elevator_type *e)
 static void noop_exit_queue(struct elevator_queue *e)
 {
 	struct noop_data *nd = e->elevator_data;
+	int i=0;
+
+
+	printk("RESULTS:\n");
+	for(i=0; i<61; i++){
+		printk("job %d\t\t %d",i+1, track_array[i][0]);
+	}
+
 
 	BUG_ON(!list_empty(&nd->queue));
 	kfree(nd);
