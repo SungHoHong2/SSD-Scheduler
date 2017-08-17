@@ -1,181 +1,47 @@
 
-# execute the command line - cat test
-
-        0.000000 execve("/bin/cat", ["cat", "test"], [/* 63 vars */]) = 0
-              executes the program pointed to by filename.
-              filename must be either a binary executable, or a script
-
-        0.000381 brk(NULL)                 = 0x1b54000
-              stands for break and creates a barrier between stack and heap
-              before the program starts the data blocks are loaded at address zero (slightly above)
-              that is why the parameter is NULL
-
-
-# attempt to load ld.so.nohwcap into memory
-
-        0.000192 access("/etc/ld.so.nohwcap", F_OK) = -1 ENOENT (No such file or directory)
-              checks whether the calling process can access the file
-              F_OK: tests the existence of the file
-
-              on most of Linux Systems /etc/ld.so.nohwcap is missing
-              this file is present the dynamic linker will load the non-optimized version of a library,
-              even if the CPU supports the optimized version
-
-
-
-        0.000193 mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7f8866e4e000
-              map or unmap files or devices into memory
-
-
-# attempt to load ld.so.preload into memory
-
-        0.000192 access("/etc/ld.so.preload", R_OK) = -1 ENOENT (No such file or directory)
-              R_OK: check whether it grants reading permission
-
-              what is ld.so.preload do?
-              user-specified, ELF shared libraries to be loaded before all others
-
-
-# attempt to load ld.so.cache into memory
-  load the file descriptor
-  load the file into the memory
-  close
-
-        0.000158 open("/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3
-              creates a new open file description, an entry in the system-wide table of open files
-              the open file description records the file offset and the file status
-
-
-        0.000109 fstat(3, {st_mode=S_IFREG|0644, st_size=91747, ...}) = 0
-              returns the information about a file, in the buffer pointed by statbuf
-
-
-        0.000062 mmap(NULL, 91747, PROT_READ, MAP_PRIVATE, 3, 0) = 0x7f8866e37000
-              map or unmap files or devices into memory
-
-
-        0.000057 close(3)                  = 0
-              closes a file descriptor, so that it no longer refers to any file and may be reused
-
-
-        what is ld.so.cache?
-        this file is caching the map from plain shared library names
-        every time you install a new shared library
-        you need to run ldconfig (as root) after the installation to update that /etc/ld.so.cache file.
-
-
-# attempt to load ld.so.nohwcap into memory
-
-        0.000058 access("/etc/ld.so.nohwcap", F_OK) = -1 ENOENT (No such file or directory)
-              checks whether the calling process can access the file
-              F_OK: tests the existence of the file
-
-
-# upload libc.so.6 in the memory
-  - open the file
-  - read the file
-  - return file information
-  - read or write from the page
-  - ensure nobody accesses this file
-  - read or write in the page
-  - close
-
-
-        0.000065 open("/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3
-              creates a new open file description, an entry in the system-wide table of open files
-              the open file description records the file offset and the file status
-              libc.so.6 is something to do with library of c
-
-
-        0.000060 read(3, "\177ELF\2\1\1\3\0\0\0\0\0\0\0\0\3\0>\0\1\0\0\0P\t\2\0\0\0\0\0"..., 832) = 832
-
-
-        0.000057 fstat(3, {st_mode=S_IFREG|0755, st_size=1868984, ...}) = 0
-              returns the information about a file, in the buffer pointed by statbuf
-
-
-        0.000055 mmap(NULL, 3971488, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0x7f8866861000
-              map or unmap files or devices into memory
-
-
-        0.000057 mprotect(0x7f8866a21000, 2097152, PROT_NONE) = 0
-              changes the access protection for the calling process' memory pages
-              PROT_NONE: the memory cannot be accessed at all
-
-
-        0.000057 mmap(0x7f8866c21000, 24576, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x1c0000) = 0x7f8866c21000
-              map or unmap files or devices into memory
-              PROT_WRITE: Pages may be writeen
-
-        0.000061 mmap(0x7f8866c27000, 14752, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0x7f8866c27000
-              map or unmap files or devices into memory
-              PROT_WRITE: Pages may be writeen
-
-        0.000063 close(3)                  = 0
-
-
-# something that tried to load read or write
-  all protected mapped and protected for reading
-
-        0.000061 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7f8866e36000
-        0.000058 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7f8866e35000
-        0.000056 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7f8866e34000
-        0.000056 arch_prctl(ARCH_SET_FS, 0x7f8866e35700) = 0
-        0.000087 mprotect(0x7f8866c21000, 16384, PROT_READ) = 0
-        0.000061 mprotect(0x60b000, 4096, PROT_READ) = 0
-        0.000058 mprotect(0x7f8866e50000, 4096, PROT_READ) = 0
-
-
-
-# unload the cache memory of ld.so.cache
-
-      0.000057 munmap(0x7f8866e37000, 91747) = 0
-
-
-# change the break point
-
-      0.000114 brk(NULL)                 = 0x1b54000
-      0.000054 brk(0x1b75000)            = 0x1b75000
-
-
-
-
-# attempt to losd locale-archive into memeory
-
-      0.000057 open("/usr/lib/locale/locale-archive", O_RDONLY|O_CLOEXEC) = 3
-      0.000064 fstat(3, {st_mode=S_IFREG|0644, st_size=2981280, ...}) = 0
-      0.000055 mmap(NULL, 2981280, PROT_READ, MAP_PRIVATE, 3, 0) = 0x7f8866589000
-      0.000060 close(3)                  = 0
-
-
-
-# unkown
-      0.000080 fstat(1, {st_mode=S_IFCHR|0620, st_rdev=makedev(136, 4), ...}) = 0
-
-
-
-# attempt to load test file into memory
-
-      0.000058 open("test", O_RDONLY)    = 3
-      0.000058 fstat(3, {st_mode=S_IFREG|0664, st_size=6, ...}) = 0
-      0.000056 fadvise64(3, 0, 0, POSIX_FADV_SEQUENTIAL) = 0
-            used to announce intention to access the file data with specific pattern
-            expects to access the specified data sequentially
-
-
-      0.000053 mmap(NULL, 139264, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7f8866e12000
-      0.000058 read(3, "howdy\n", 131072) = 6
-      0.000058 write(1, "howdy\n", 6howdy)  = 6
-      0.000057 read(3, "", 131072)       = 0
-      0.000053 munmap(0x7f8866e12000, 139264) = 0
-      0.000060 close(3)                  = 0
-      0.000060 close(1)                  = 0
-
-
+0.000000 execve("/bin/cat", ["cat", "test"], [/* 63 vars */]) = 0
+0.000381 brk(NULL)                 = 0x1b54000
+0.000192 access("/etc/ld.so.nohwcap", F_OK) = -1 ENOENT (No such file or directory)
+0.000193 mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7f8866e4e000
+0.000192 access("/etc/ld.so.preload", R_OK) = -1 ENOENT (No such file or directory)
+0.000158 open("/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3
+0.000109 fstat(3, {st_mode=S_IFREG|0644, st_size=91747, ...}) = 0
+0.000062 mmap(NULL, 91747, PROT_READ, MAP_PRIVATE, 3, 0) = 0x7f8866e37000
+0.000057 close(3)                  = 0
+0.000058 access("/etc/ld.so.nohwcap", F_OK) = -1 ENOENT (No such file or directory)
+0.000065 open("/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3
+0.000060 read(3, "\177ELF\2\1\1\3\0\0\0\0\0\0\0\0\3\0>\0\1\0\0\0P\t\2\0\0\0\0\0"..., 832) = 832
+0.000057 fstat(3, {st_mode=S_IFREG|0755, st_size=1868984, ...}) = 0
+0.000055 mmap(NULL, 3971488, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0x7f8866861000
+0.000057 mprotect(0x7f8866a21000, 2097152, PROT_NONE) = 0
+0.000057 mmap(0x7f8866c21000, 24576, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x1c0000) = 0x7f8866c21000
+0.000061 mmap(0x7f8866c27000, 14752, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0x7f8866c27000
+0.000061 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7f8866e36000
+0.000058 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7f8866e35000
+0.000056 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7f8866e34000
+0.000056 arch_prctl(ARCH_SET_FS, 0x7f8866e35700) = 0
+0.000087 mprotect(0x7f8866c21000, 16384, PROT_READ) = 0
+0.000061 mprotect(0x60b000, 4096, PROT_READ) = 0
+0.000058 mprotect(0x7f8866e50000, 4096, PROT_READ) = 0
+0.000063 close(3)                  = 0
+0.000057 munmap(0x7f8866e37000, 91747) = 0
+0.000114 brk(NULL)                 = 0x1b54000
+0.000054 brk(0x1b75000)            = 0x1b75000
+0.000057 open("/usr/lib/locale/locale-archive", O_RDONLY|O_CLOEXEC) = 3
+0.000064 fstat(3, {st_mode=S_IFREG|0644, st_size=2981280, ...}) = 0
+0.000055 mmap(NULL, 2981280, PROT_READ, MAP_PRIVATE, 3, 0) = 0x7f8866589000
+0.000060 close(3)                  = 0
+0.000080 fstat(1, {st_mode=S_IFCHR|0620, st_rdev=makedev(136, 4), ...}) = 0
+0.000058 open("test", O_RDONLY)    = 3
+0.000058 fstat(3, {st_mode=S_IFREG|0664, st_size=6, ...}) = 0
+0.000056 fadvise64(3, 0, 0, POSIX_FADV_SEQUENTIAL) = 0
+0.000053 mmap(NULL, 139264, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7f8866e12000
+0.000058 read(3, "howdy\n", 131072) = 6
+0.000058 write(1, "howdy\n", 6howdy)  = 6
+0.000057 read(3, "", 131072)       = 0
+0.000053 munmap(0x7f8866e12000, 139264) = 0
+0.000060 close(3)                  = 0
+0.000060 close(1)                  = 0
 0.000052 close(2)                  = 0
-
-
-
-
 0.000053 exit_group(0)             = ?
 0.000071 +++ exited with 0 +++

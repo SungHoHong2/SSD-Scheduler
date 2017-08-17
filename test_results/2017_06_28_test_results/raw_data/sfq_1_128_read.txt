@@ -1,4 +1,4 @@
-root@sungho-VirtualBox:/home/sungho/Operating-System/test_results# fio 1_128_read.fio 
+root@sungho-VirtualBox:/home/sungho/Operating-System/test_results# fio 1_128_read.fio
 read_one_128: (g=0): rw=read, bs=128K-128K/128K-128K/128K-128K, ioengine=sync, iodepth=1
 fio-2.2.10
 Starting 1 process
@@ -29,4 +29,3 @@ Run status group 0 (all jobs):
 
 Disk stats (read/write):
   sdb: ios=8793/0, merge=0/0, ticks=19744/0, in_queue=19744, util=98.42%
-

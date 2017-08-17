@@ -32,8 +32,14 @@
 0.000092 close(3)                  = 0
 0.000116 open("testing", O_WRONLY|O_CREAT|O_NOCTTY|O_NONBLOCK, 0666) = 3
 0.000140 dup2(3, 0)                = 0
+         duplicates one file descriptor, making them aliases,
+         and then deleting the old file descriptor.
+         This becomes very useful when attempting to redirect output,
+
 0.000075 close(3)                  = 0
 0.000073 utimensat(0, NULL, NULL, 0) = 0
+         update timestamps of a file with nano second precision
+
 0.000077 close(0)                  = 0
 0.000083 close(1)                  = 0
 0.000072 close(2)                  = 0

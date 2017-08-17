@@ -1,4 +1,4 @@
-root@sungho-VirtualBox:/home/sungho/Operating-System/test_results# fio 1_1_4_read_write.fio 
+root@sungho-VirtualBox:/home/sungho/Operating-System/test_results# fio 1_1_4_read_write.fio
 reader_4: (g=0): rw=read, bs=4K-4K/4K-4K/4K-4K, ioengine=sync, iodepth=1
 writer_4: (g=0): rw=write, bs=4K-4K/4K-4K/4K-4K, ioengine=sync, iodepth=1
 fio-2.2.10
@@ -51,4 +51,3 @@ Run status group 0 (all jobs):
 
 Disk stats (read/write):
   sdb: ios=239883/240396, merge=0/0, ticks=17968/18472, in_queue=36392, util=95.24%
-
