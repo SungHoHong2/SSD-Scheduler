@@ -19,7 +19,8 @@ int main(int argc, char *argv[]){
   int converted_numbers, p1, p2;
   double converted_double;
   int usec_multiply;
-  int latency_total, throughput_total;
+  int latency_total;
+  double throughput_total;
   int total_threads;
 
 
@@ -32,8 +33,8 @@ int main(int argc, char *argv[]){
   cout << "parsing filename " << file_name << endl;
 
   search_latency = "| 99.99th=[";
-  search_io_write = "READ: io=";
-  search_io_read = "WRITE: io=";
+  search_io_write = "READ: bw=";
+  search_io_read = "WRITE: bw=";
   lat_usec_check = "clat percentiles (usec):";
   lat_msec_check = "clat percentiles (msec):";
   usec_multiply= 1;
@@ -66,7 +67,9 @@ file_contents.push_back('\n');
       p1 = str.find("[");
       p2 = str.find("]");
 
+
       str =  str.substr(p1 + 1, p2 - p1 - 1);
+
           converted_numbers = stoi( str ) * usec_multiply;
           str = to_string(converted_numbers);
           file_contents += str;
@@ -83,25 +86,31 @@ file_contents.push_back('\n');
       file_contents += "-------io_throughput-------";
       file_contents.push_back('\n');
 
-      p1 = str.find("=");
-      p2 = str.find(",");
+      p1 = str.find("io=");
+      p2 = str.find("run=");
 
-      str =  str.substr(p1 + 1, p2 - p1 - 1);
+      str =  str.substr(p1 + 3, p2 - p1 - 4);
       // converted_numbers = stoi( str );
+
+      p1 = str.find("(");
+      p2 = str.find(")");
+      str =  str.substr(p1 + 1, p2 - p1 - 1);
+
 
       if(str.find("MB") != string::npos){
           p2 = str.find("MB");
-          str =  str.substr(0, p2 - 2);
-          converted_numbers = stoi( str )*1000;
+          str =  str.substr(0, p2);
+
+          converted_double = stod( str )*1000;
+
           str = to_string(converted_numbers);
       }else{
           p2 = str.find("KB");
-          str =  str.substr(0, p2 - 2);
-          converted_numbers = stoi( str );
-
+          str =  str.substr(0, p2);
+          converted_double = stod( str );
       }
 
-          throughput_total = converted_numbers;
+          throughput_total += converted_double;
           file_contents += str;
           file_contents.push_back('\n');
     }

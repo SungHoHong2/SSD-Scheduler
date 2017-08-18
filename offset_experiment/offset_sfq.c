@@ -157,19 +157,19 @@ static int sfq_set_request(struct request_queue *q, struct request *rq, struct b
   struct sfq_queue *sfqq;
   struct sfq_request *sfqr;
   struct list_head *head;
-	sector_t sector;
+	// sector_t sector;
 
 	if(!sfqd) return 0;
 	if(!rq) return 0;
 	if(!bio) return 0;
 
-	sector = bio_end_sector(bio);
-	if(sector && sector < blk_rq_pos(rq)){
-		printk("bi_iter.bi_sector: [[[%ld]]] \n", sector);
-
-		sector = (bio)->bi_iter.bi_sector;
-		printk("bi_iter.bi_sector: [[[%ld]]] \n", sector);
-	}
+	// sector = bio_end_sector(bio);
+	// if(sector && sector < blk_rq_pos(rq)){
+	// 	printk("bi_iter.bi_sector: [[[%ld]]] \n", sector);
+  //
+	// 	sector = (bio)->bi_iter.bi_sector;
+	// 	printk("bi_iter.bi_sector: [[[%ld]]] \n", sector);
+	// }
 
 
   // check for existing pids
