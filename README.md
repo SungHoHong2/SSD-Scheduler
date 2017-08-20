@@ -6,6 +6,20 @@
 3. limit the number of concurrent I/O requests(Depth)
 
 
+### Testing the offset results
+- track the offsets in scheduler with strace
+- track the offsets in userspace with modified FIO
+- running excel with 4 jobs - didnt work  
+- running only 4 jobs - work
+- running only 8 jobs - didnt work
+-> reason must  be behind the write system call
+
+```
+
+ strace -s 100 -f -o test fio run_fio.fio
+
+```
+
 ### Depth Performance
 - the number of allowed I/O requests that are dispatched
 - [Evaluation] check the overall I/O throughput based on the number of allowed Depth

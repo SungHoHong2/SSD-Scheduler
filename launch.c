@@ -5,8 +5,7 @@
 #include <linux/slab.h>
 #include <linux/init.h>
 
-// /media/sf_SSD-Scheduler/test_results/2017_07_23_depth/40/32_4_read.txt
-// assume all requests have fixed size
+
 #define REQUEST_LENGTH 100
 // assume all requests are read
 #define REQUEST_WEIGHT 1
@@ -69,6 +68,8 @@ typedef struct sfq_data {
   struct work_struct unplug_work;
   struct request_queue *rq_queue;
 
+  struct list_head noop_queue;
+
 } sfq_data;
 
 
@@ -92,35 +93,42 @@ typedef struct sfq_data {
  }
 
 
-// Heap Sorting Common Function
- void heap_swap(sfq_request *n1, sfq_request *n2) {
-     sfq_request temp = *n1 ;
-     *n1 = *n2 ;
-     *n2 = temp ;
- }
- void heapify(sfq_data *hp, int i) {
-     int smallest = (LCHILD(i) < hp->heap_size && hp->requests[LCHILD(i)]->start_tag < hp->requests[i]->start_tag) ? LCHILD(i) : i ;
-     if(RCHILD(i) < hp->heap_size && hp->requests[RCHILD(i)]->start_tag < hp->requests[smallest]->start_tag) {
-         smallest = RCHILD(i) ;
-     }
-     if(smallest != i) {
-         heap_swap(hp->requests[i], hp->requests[smallest]) ;
-         heapify(hp, smallest) ;
-     }
- }
+
+ // Heap Sorting Common Function
+  void heap_swap(sfq_request *n1, sfq_request *n2) {
+      sfq_request temp = *n1 ;
+      *n1 = *n2 ;
+      *n2 = temp ;
+  }
+  void heapify(sfq_data *hp, int i) {
+      int smallest = (LCHILD(i) < hp->heap_size && hp->requests[LCHILD(i)]->start_tag < hp->requests[i]->start_tag) ? LCHILD(i) : i ;
+      if(RCHILD(i) < hp->heap_size && hp->requests[RCHILD(i)]->start_tag < hp->requests[smallest]->start_tag) {
+          smallest = RCHILD(i) ;
+      }
+      if(smallest != i) {
+          heap_swap(hp->requests[i], hp->requests[smallest]) ;
+          heapify(hp, smallest) ;
+      }
+  }
 
 
-static int sfq_init_queue(struct request_queue *q, struct elevator_type *e){
+//  13872871,13872868 write /media/sf_SSD-Scheduler/test_results/2017_08_19_write/sfq_test_08.txt
+
+static int sfq_init_queue(struct request_queue *q, struct elevator_type *e)
+{
 	struct sfq_data *sfqd;
 	struct elevator_queue *eq;
 
 	eq = elevator_alloc(q, e);
-	if (!eq) return -ENOMEM;
+	if (!eq)
+		return -ENOMEM;
+
 	sfqd = kmalloc_node(sizeof(*sfqd), GFP_KERNEL, q->node);
 	if (!sfqd) {
 		kobject_put(&eq->kobj);
 		return -ENOMEM;
 	}
+
 	eq->elevator_data = sfqd;
   sfqd->virtual_time = 0;
   sfqd->depth = 0;
@@ -133,46 +141,31 @@ static int sfq_init_queue(struct request_queue *q, struct elevator_type *e){
   sfqd->heap_limit_size = 0;
   sfq_pool = KMEM_CACHE(sfq_request, 0);
   INIT_LIST_HEAD(&sfqd->queue);
-  // insurance for invoking dispatch during pending requests
   sfqd->rq_queue = q;
   INIT_WORK(&sfqd->unplug_work, sfq_kick_queue);
   hrtimer_init(&sfqd->idle_slice_timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
   sfqd->idle_slice_timer.function = sfq_idle_slice_timer;
 
+
+	INIT_LIST_HEAD(&sfqd->noop_queue);
+
 	spin_lock_irq(q->queue_lock);
 	q->elevator = eq;
 	spin_unlock_irq(q->queue_lock);
-  printk("INIT_SFQ TESTING_DISPATCH_DEPTH: %d ALPHA\n",REQUEST_DEPTH);
-  //  444974,450249 write /media/sf_SSD-Scheduler/test_results/2017_07_19_beta/sfq_test_04.txt
 
-
-	//  990578,956907 write /media/sf_fio/debug/scheduler
+  printk("INIT_SFQ WRITING_ERROR: %d BETA\n",REQUEST_DEPTH);
 
 	return 0;
 }
-
 
 static int sfq_set_request(struct request_queue *q, struct request *rq, struct bio *bio, gfp_t gfp_mask){
   struct sfq_data *sfqd = q->elevator->elevator_data;
   struct sfq_queue *sfqq;
   struct sfq_request *sfqr;
   struct list_head *head;
-	sector_t sector;
 
-	if(!sfqd) return 0;
-	if(!rq) return 0;
-	if(!bio) return 0;
+  if(!sfqd || !rq || !bio) return 0;
 
-	// sector = bio_end_sector(bio);
-	// if(sector && sector < blk_rq_pos(rq)){
-	// 	printk("bi_iter.bi_sector: [[[%ld]]] \n", sector);
-	//
-	// 	// sector = (bio)->bi_iter.bi_sector;
-	// 	// printk("bi_iter.bi_sector: [[[%ld]]] \n", sector);
-	// }
-
-
-  // check for existing pids
   list_for_each(head,&(sfqd->queue)){
      sfqq = list_entry(head,struct sfq_queue, queuelist);
      if (sfqq && sfqq->pid == current->pid){
@@ -181,17 +174,16 @@ static int sfq_set_request(struct request_queue *q, struct request *rq, struct b
      }
    }
 
-  // create a heap_queue
-  if(!sfqd->heap_limit_size){
-    sfqd->requests = (sfq_request **)kmalloc(sizeof(sfq_request *), gfp_mask);
-    sfqd->heap_limit_size++;
-  } else {
-    sfqd->requests = (sfq_request **)krealloc(sfqd->requests, (sfqd->heap_limit_size + 1) * sizeof(sfq_request *), GFP_KERNEL);
-    sfqd->heap_limit_size++;
-  }
-  // printk("SET_REQUEST PID: %d heap_limit_size: %d\n", current->pid, sfqd->heap_limit_size);
+   // create a heap_queue
+   if(!sfqd->heap_limit_size){
+     sfqd->requests = (sfq_request **)kmalloc(sizeof(sfq_request *), gfp_mask);
+     sfqd->heap_limit_size++;
+   } else {
+     sfqd->requests = (sfq_request **)krealloc(sfqd->requests, (sfqd->heap_limit_size + 1) * sizeof(sfq_request *), GFP_KERNEL);
+     sfqd->heap_limit_size++;
+   }
 
-  // allocate sfq_queue
+   // allocate sfq_queue
   sfqq = (struct sfq_queue*)kmalloc(sizeof(struct sfq_queue), gfp_mask);
   sfqq->pid = current->pid;
   sfqd->sfqq_size++;
@@ -199,10 +191,9 @@ static int sfq_set_request(struct request_queue *q, struct request *rq, struct b
   rq->elv.priv[0] = sfqq;
   // add to sfq_data
   list_add_tail(&sfqq->queuelist, &sfqd->queue);
-  // printk("\t\tSET_REQUEST PID: %d virtual_time: %d\n", sfqq->pid, sfqd->virtual_time);
+  // printk("SET_REQUEST PID: %d heap_limit_size: %d\n", current->pid, sfqd->heap_limit_size);
 
   skip_sfq_queue:
-  // allocate sfq_request
   rcu_read_lock();
   sfqr = kmem_cache_alloc_node(sfq_pool, GFP_NOWAIT | __GFP_ZERO, sfqd->rq_queue->node);
   rcu_read_unlock();
@@ -211,8 +202,9 @@ static int sfq_set_request(struct request_queue *q, struct request *rq, struct b
 }
 
 
-static void sfq_add_request(struct request_queue *q, struct request *rq){
-	struct sfq_data *sfqd = q->elevator->elevator_data;
+static void sfq_add_request(struct request_queue *q, struct request *rq)
+{
+  struct sfq_data *sfqd = q->elevator->elevator_data;
   struct sfq_queue *sfqq = rq->elv.priv[0];
   struct sfq_request *sfqr = rq->elv.priv[1];
   // start_tag = prev_arrival_time(finish_tag) vs virutal_time(start_tag)
@@ -229,11 +221,14 @@ static void sfq_add_request(struct request_queue *q, struct request *rq){
   // printk("ADD_REQUEST PID: %d\n", sfqq->pid);
   list_add_tail(&sfqr->queuelist, &sfqq->queue);
   sfqd->sfqr_size++;
+
 }
 
 
-static int sfq_dispatch(struct request_queue *q, int force){
-	struct sfq_data *sfqd = q->elevator->elevator_data;
+
+static int sfq_dispatch(struct request_queue *q, int force)
+{
+  struct sfq_data *sfqd = q->elevator->elevator_data;
   // struct list_head *head;
   struct sfq_queue *sfqq;
   struct sfq_request *sfqr;
@@ -274,13 +269,17 @@ static int sfq_dispatch(struct request_queue *q, int force){
       if(sfqd->sfqr_size) kblockd_schedule_work(&sfqd->unplug_work);
       return 0;
   }
+
+
   // transfer requests into heap-queue
   sfqr = list_first_entry_or_null(&sfqd->os_sfqq->queue, struct sfq_request, queuelist);
   if(sfqr){
-    // printk("RQUEST to HEAP_QUEUE: %d PID: %d\n", sfqr->start_tag,sfqd->os_sfqq->pid);
+    // printk("\t\tRQUEST to HEAP_QUEUE: %d PID: %d\n", sfqr->start_tag,sfqd->os_sfqq->pid);
     // remove request from sfq_queue
     if(sfqd->heap_size < sfqd->heap_limit_size-1){
+        // chara
         list_del_init(&sfqr->queuelist);
+        // printk("\t\tAdded to HEAP_QUEUE: %d PID: %d\n", sfqr->start_tag,sfqd->os_sfqq->pid);
         index = (sfqd->heap_size)++;
         while(index && sfqr->start_tag < sfqd->requests[PARENT(index)]->start_tag) {
             sfqd->requests[index] = sfqd->requests[PARENT(index)] ;
@@ -299,20 +298,33 @@ static int sfq_dispatch(struct request_queue *q, int force){
       rq = sfqr->rq;
       sfqd->requests[0] = sfqd->requests[--(sfqd->heap_size)];
       if(sfqd->heap_size>1) heapify(sfqd, 0);
-      // printk("RQUEST to HEAP_QUEUE pid: %d  heap_size: %d\n", sfqd->os_sfqq->pid, sfqd->heap_size);
-      // printk("RQUEST to HEAP_QUEUE depth: %d\n", sfqd->depth);
+      // printk("DISPATCH: %d PID: %d\n", sfqr->start_tag,sfqd->os_sfqq->pid);
       elv_dispatch_sort(q, rq);
       sfqd->depth++;
       return 1;
   }
+
+
+  // something wrong haha
+  sfqr = list_first_entry_or_null(&sfqd->os_sfqq->queue, struct sfq_request, queuelist);
+	if (sfqr) {
+    // printk("ERROR DISPATCH: %d PID: %d\n", sfqr->start_tag,sfqd->os_sfqq->pid);
+    list_del_init(&sfqr->queuelist);
+		elv_dispatch_sort(q, sfqr->rq);
+    sfqd->depth++;
+		return 1;
+	}
 	return 0;
 }
 
+
 static void sfq_completed(struct request_queue *q, struct request *rq){
   struct sfq_data *sfqd = q->elevator->elevator_data;
-  // printk("COMPLETE BEFORE PID: %d sfqr_size %d\n", sfqd->os_sfqq->pid, sfqd->sfqr_size);
   u64 sl = 0;
   sfqd->depth--;
+
+  // printk("COMPLETE BEFORE PID: %d sfqr_size %d\n", sfqd->os_sfqq->pid, sfqd->sfqr_size);
+
   if((--sfqd->sfqr_size)>0){
      // invoke the dispatch again
      hrtimer_start(&sfqd->idle_slice_timer, ns_to_ktime(sl), HRTIMER_MODE_REL);
@@ -326,23 +338,23 @@ static void sfq_put_request(struct request *rq){
 }
 
 
-static void sfq_exit_queue(struct elevator_queue *e){
-	struct sfq_data *nd = e->elevator_data;
+static void sfq_exit_queue(struct elevator_queue *e)
+{
+  struct sfq_data *nd = e->elevator_data;
   hrtimer_cancel(&nd->idle_slice_timer);
   cancel_work_sync(&nd->unplug_work);
 	kfree(nd);
 }
 
-
 static struct elevator_type elevator_noop = {
 	.ops = {
-    .elevator_exit_fn		= sfq_exit_queue,
     .elevator_put_req_fn =		sfq_put_request,
     .elevator_completed_req_fn  = sfq_completed,
-    .elevator_dispatch_fn		= sfq_dispatch,
-    .elevator_add_req_fn		= sfq_add_request,
+		.elevator_dispatch_fn		= sfq_dispatch,
+		.elevator_add_req_fn		= sfq_add_request,
     .elevator_set_req_fn = sfq_set_request,
-    .elevator_init_fn		= sfq_init_queue,
+		.elevator_init_fn		= sfq_init_queue,
+		.elevator_exit_fn		= sfq_exit_queue,
 	},
 	.elevator_name = "sfq",
 	.elevator_owner = THIS_MODULE,
@@ -362,6 +374,6 @@ module_init(sfq_init);
 module_exit(sfq_exit);
 
 
-MODULE_AUTHOR("Sungho Hong");
+MODULE_AUTHOR("Jens Axboe");
 MODULE_LICENSE("GPL");
-MODULE_DESCRIPTION("SFQ IO scheduler");
+MODULE_DESCRIPTION("No-op IO scheduler");

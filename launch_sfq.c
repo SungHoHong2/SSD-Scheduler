@@ -143,7 +143,11 @@ static int sfq_init_queue(struct request_queue *q, struct elevator_type *e){
 	q->elevator = eq;
 	spin_unlock_irq(q->queue_lock);
   printk("INIT_SFQ TESTING_DISPATCH_DEPTH: %d ALPHA\n",REQUEST_DEPTH);
-  //  1729998,2068302 write /media/sf_SSD-Scheduler/test_results/2017_07_19_beta/sfq_test_04.txt
+  //  3656096,6471991 write /media/sf_SSD-Scheduler/test_results/2017_08_19_write/sfq_test_02.txt
+
+
+	//  990578,956907 write /media/sf_fio/debug/scheduler
+
 	return 0;
 }
 
@@ -153,6 +157,25 @@ static int sfq_set_request(struct request_queue *q, struct request *rq, struct b
   struct sfq_queue *sfqq;
   struct sfq_request *sfqr;
   struct list_head *head;
+	// sector_t sector;
+
+
+  // printk("------>before the set request starts\n");
+	// if(!sfqd) return 0;
+	// if(!rq) return 0;
+	// if(!bio) return 0;
+
+  // printk("------>after the set request starts\n");
+
+
+	// sector = bio_end_sector(bio);
+	// if(sector && sector < blk_rq_pos(rq)){
+	// 	printk("bi_iter.bi_sector: [[[%ld]]] \n", sector);
+	//
+	// 	// sector = (bio)->bi_iter.bi_sector;
+	// 	// printk("bi_iter.bi_sector: [[[%ld]]] \n", sector);
+	// }
+
 
   // check for existing pids
   list_for_each(head,&(sfqd->queue)){
@@ -171,7 +194,7 @@ static int sfq_set_request(struct request_queue *q, struct request *rq, struct b
     sfqd->requests = (sfq_request **)krealloc(sfqd->requests, (sfqd->heap_limit_size + 1) * sizeof(sfq_request *), GFP_KERNEL);
     sfqd->heap_limit_size++;
   }
-  // printk("SET_REQUEST PID: %d heap_limit_size: %d\n", current->pid, sfqd->heap_limit_size);
+  printk("SET_REQUEST PID: %d heap_limit_size: %d\n", current->pid, sfqd->heap_limit_size);
 
   // allocate sfq_queue
   sfqq = (struct sfq_queue*)kmalloc(sizeof(struct sfq_queue), gfp_mask);
@@ -208,7 +231,7 @@ static void sfq_add_request(struct request_queue *q, struct request *rq){
   //previous request
   sfqd->prev_sfqr = sfqr;
   sfqr->rq = rq;
-  // printk("ADD_REQUEST PID: %d\n", sfqq->pid);
+  printk("ADD_REQUEST PID: %d\n", sfqq->pid);
   list_add_tail(&sfqr->queuelist, &sfqq->queue);
   sfqd->sfqr_size++;
 }
@@ -229,7 +252,7 @@ static int sfq_dispatch(struct request_queue *q, int force){
       sfqq = sfqd->os_sfqq = list_first_entry_or_null(&sfqd->queue, struct sfq_queue, queuelist);
       if(!(sfqq)) return 0;
       sfqd->sfqq_total_seek++;
-      // printk("FIRST_DISPATCH PID: %d SEEK: %d  SIZE: %d\n", sfqd->os_sfqq->pid, sfqd->sfqq_total_seek, sfqd->sfqq_size);
+      printk("FIRST_DISPATCH PID: %d SEEK: %d  SIZE: %d\n", sfqd->os_sfqq->pid, sfqd->sfqq_total_seek, sfqd->sfqq_size);
 
   // currently dispatching
   } else {
@@ -248,7 +271,7 @@ static int sfq_dispatch(struct request_queue *q, int force){
           // if empty proceed to the heap-queue dispatch
           goto dispatch_section;
       }
-      // printk("NEXT_DISPATCH PID: %d SEEK: %d  SIZE: %d\n", sfqd->os_sfqq->pid, sfqd->sfqq_total_seek, sfqd->sfqq_size);
+      printk("NEXT_DISPATCH PID: %d SEEK: %d  SIZE: %d\n", sfqd->os_sfqq->pid, sfqd->sfqq_total_seek, sfqd->sfqq_size);
   }
 
   // limiting number of outstanding requests
@@ -259,10 +282,12 @@ static int sfq_dispatch(struct request_queue *q, int force){
   // transfer requests into heap-queue
   sfqr = list_first_entry_or_null(&sfqd->os_sfqq->queue, struct sfq_request, queuelist);
   if(sfqr){
-    // printk("RQUEST to HEAP_QUEUE: %d PID: %d\n", sfqr->start_tag,sfqd->os_sfqq->pid);
+    // chara
+    printk("RQUEST to HEAP_QUEUE: %d PID: %d\n", sfqr->start_tag,sfqd->os_sfqq->pid);
     // remove request from sfq_queue
     if(sfqd->heap_size < sfqd->heap_limit_size-1){
         list_del_init(&sfqr->queuelist);
+        printk("Added to HEAP_QUEUE: %d PID: %d\n", sfqr->start_tag,sfqd->os_sfqq->pid);
         index = (sfqd->heap_size)++;
         while(index && sfqr->start_tag < sfqd->requests[PARENT(index)]->start_tag) {
             sfqd->requests[index] = sfqd->requests[PARENT(index)] ;
@@ -281,7 +306,8 @@ static int sfq_dispatch(struct request_queue *q, int force){
       rq = sfqr->rq;
       sfqd->requests[0] = sfqd->requests[--(sfqd->heap_size)];
       if(sfqd->heap_size>1) heapify(sfqd, 0);
-      // printk("RQUEST to HEAP_QUEUE pid: %d  heap_size: %d\n", sfqd->os_sfqq->pid, sfqd->heap_size);
+      // chara
+      printk("DISPATCH from HEAP_QUEUE pid: %d  heap_size: %d\n", sfqd->os_sfqq->pid, sfqd->heap_size);
       // printk("RQUEST to HEAP_QUEUE depth: %d\n", sfqd->depth);
       elv_dispatch_sort(q, rq);
       sfqd->depth++;
@@ -292,9 +318,12 @@ static int sfq_dispatch(struct request_queue *q, int force){
 
 static void sfq_completed(struct request_queue *q, struct request *rq){
   struct sfq_data *sfqd = q->elevator->elevator_data;
-  // printk("COMPLETE BEFORE PID: %d sfqr_size %d\n", sfqd->os_sfqq->pid, sfqd->sfqr_size);
   u64 sl = 0;
   sfqd->depth--;
+
+
+  printk("COMPLETE BEFORE PID: %d sfqr_size %d\n", sfqd->os_sfqq->pid, sfqd->sfqr_size);
+
   if((--sfqd->sfqr_size)>0){
      // invoke the dispatch again
      hrtimer_start(&sfqd->idle_slice_timer, ns_to_ktime(sl), HRTIMER_MODE_REL);
