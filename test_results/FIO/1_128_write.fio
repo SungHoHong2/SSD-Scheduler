@@ -5,6 +5,3 @@ numjobs=1
 direct=1
 rw=write
 runtime=20
-group_reporting=1
-ioengine=sync
-

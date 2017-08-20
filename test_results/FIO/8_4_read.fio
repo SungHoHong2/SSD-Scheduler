@@ -1,9 +1,0 @@
-[read_8_4]
-filename=/dev/sdd
-bs=4k
-numjobs=8
-direct=1
-ioengine=sync
-rw=read
-runtime=20
-group_reporting=1

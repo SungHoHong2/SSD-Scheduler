@@ -16,12 +16,14 @@ int main(int argc, char *argv[]){
   string str;
   string file_contents;
   string file_name, search_latency, search_io_write, search_io_read, lat_usec_check, lat_msec_check;
+  string read_4kb_check, write_4kb_check, read_128kb_check, write_128kb_check;
   int converted_numbers, p1, p2;
   double converted_double;
   int usec_multiply;
   int latency_total;
   double throughput_total;
   int total_threads;
+  int read_4kb, write_4kb, read_128kb, write_128kb;
 
 
   if(argc == 1){
@@ -33,8 +35,16 @@ int main(int argc, char *argv[]){
   cout << "parsing filename " << file_name << endl;
 
   search_latency = "| 99.99th=[";
-  search_io_write = "READ: bw=";
-  search_io_read = "WRITE: bw=";
+
+  read_4kb_check="read_4kb:";
+  write_4kb_check="write_4kb:";
+  read_128kb_check="read_128kb:";
+  write_128kb_check="write_128kb:";
+  read_4kb = write_4kb = read_128kb = write_128kb = 0;
+
+
+  // search_io_write = "READ: bw=";
+  // search_io_read = "WRITE: bw=";
   lat_usec_check = "clat percentiles (usec):";
   lat_msec_check = "clat percentiles (msec):";
   usec_multiply= 1;
@@ -53,6 +63,9 @@ file_contents += "-------latency_results-------";
 file_contents.push_back('\n');
 
   while (getline(fin, str)){
+
+
+
 
     if (str.find(lat_usec_check) != string::npos) {
         usec_multiply=1;
@@ -81,39 +94,41 @@ file_contents.push_back('\n');
     }
 
 
-    if ((str.find(search_io_write) != string::npos) || (str.find(search_io_read) != string::npos)) {
-
-      file_contents += "-------io_throughput-------";
-      file_contents.push_back('\n');
-
-      p1 = str.find("io=");
-      p2 = str.find("run=");
-
-      str =  str.substr(p1 + 3, p2 - p1 - 4);
-      // converted_numbers = stoi( str );
-
-      p1 = str.find("(");
-      p2 = str.find(")");
-      str =  str.substr(p1 + 1, p2 - p1 - 1);
 
 
-      if(str.find("MB") != string::npos){
-          p2 = str.find("MB");
-          str =  str.substr(0, p2);
-
-          converted_double = stod( str )*1000;
-
-          str = to_string(converted_numbers);
-      }else{
-          p2 = str.find("KB");
-          str =  str.substr(0, p2);
-          converted_double = stod( str );
-      }
-
-          throughput_total += converted_double;
-          file_contents += str;
-          file_contents.push_back('\n');
-    }
+    // if ((str.find(search_io_write) != string::npos) || (str.find(search_io_read) != string::npos)) {
+    //
+    //   file_contents += "-------io_throughput-------";
+    //   file_contents.push_back('\n');
+    //
+    //   p1 = str.find("io=");
+    //   p2 = str.find("run=");
+    //
+    //   str =  str.substr(p1 + 3, p2 - p1 - 4);
+    //   // converted_numbers = stoi( str );
+    //
+    //   p1 = str.find("(");
+    //   p2 = str.find(")");
+    //   str =  str.substr(p1 + 1, p2 - p1 - 1);
+    //
+    //
+    //   if(str.find("MB") != string::npos){
+    //       p2 = str.find("MB");
+    //       str =  str.substr(0, p2);
+    //
+    //       converted_double = stod( str )*1000;
+    //
+    //       str = to_string(converted_numbers);
+    //   }else{
+    //       p2 = str.find("KB");
+    //       str =  str.substr(0, p2);
+    //       converted_double = stod( str );
+    //   }
+    //
+    //       throughput_total += converted_double;
+    //       file_contents += str;
+    //       file_contents.push_back('\n');
+    // }
 
 
   }
