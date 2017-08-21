@@ -1,0 +1,31 @@
+write_one_4: (g=0): rw=randwrite, bs=(R) 4096B-4096B, (W) 4096B-4096B, (T) 4096B-4096B, ioengine=psync, iodepth=1
+fio-2.99-46-g24a7
+Starting 1 process
+
+write_one_4: (groupid=0, jobs=1): err= 0: pid=4033: Sun Aug 20 22:24:19 2017
+  write: IOPS=125, BW=503KiB/s (515kB/s)(9.83MiB/20001msec)
+    clat (usec): min=39, max=431680, avg=7947.18, stdev=48234.67
+     lat (usec): min=39, max=431680, avg=7947.41, stdev=48234.65
+    clat percentiles (usec):
+     |  1.00th=[    41],  5.00th=[    47], 10.00th=[    65], 20.00th=[    83],
+     | 30.00th=[   100], 40.00th=[   111], 50.00th=[   121], 60.00th=[   143],
+     | 70.00th=[   186], 80.00th=[   247], 90.00th=[   478], 95.00th=[   988],
+     | 99.00th=[312476], 99.50th=[333448], 99.90th=[413139], 99.95th=[425722],
+     | 99.99th=[429917]
+   bw (  KiB/s): min=  256, max=  704, per=99.65%, avg=501.23, stdev=155.23, samples=39
+   iops        : min=   64, max=  176, avg=125.26, stdev=38.84, samples=39
+    lat (usec) : 50=6.60%, 100=23.77%, 250=50.20%, 500=9.94%, 750=3.34%
+    lat (usec) : 1000=1.23%
+    lat (msec) : 2=1.87%, 4=0.48%, 250=0.40%, 500=2.19%
+  cpu          : usr=0.08%, sys=0.12%, ctx=2516, majf=0, minf=19
+  IO depths    : 1=100.0%, 2=0.0%, 4=0.0%, 8=0.0%, 16=0.0%, 32=0.0%, >=64=0.0%
+     submit    : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.0%
+     complete  : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.0%
+     issued rwt: total=0,2516,0, short=0,0,0, dropped=0,0,0
+     latency   : target=0, window=0, percentile=100.00%, depth=1
+
+Run status group 0 (all jobs):
+  WRITE: bw=503KiB/s (515kB/s), 503KiB/s-503KiB/s (515kB/s-515kB/s), io=9.83MiB (10.3MB), run=20001-20001msec
+
+Disk stats (read/write):
+  sdd: ios=38/2486, merge=0/0, ticks=16/19628, in_queue=19880, util=99.44%
