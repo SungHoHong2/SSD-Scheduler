@@ -1,0 +1,109 @@
+tested with 64 jobs and the size of 100MB
+
+
+sungho-VirtualBox login: [  122.850365] sched: RT throttling activated
+[  141.489208] ISO 9660 Extensions: Microsoft Joliet Level 3
+[  141.883188] ISO 9660 Extensions: RRIP_1991A
+[  200.094011] io scheduler sfq registered
+[  314.881802] INIT_SFQ WRITING_ERROR: 64 BETA
+[ 4250.526489] ata3.00: exception Emask 0x0 SAct 0x0 SErr 0x0 action 0x6 frozen
+[ 4250.612178] ata3.00: failed command: FLUSH CACHE
+[ 4250.664787] ata3.00: cmd e7/00:00:00:00:00/00:00:00:00:00/a0 tag 9
+[ 4250.664787]          res 40/00:00:00:00:00/00:00:00:00:00/00 Emask 0x4 (timeout)
+[ 4250.760290] ata3.00: status: { DRDY }
+[ 4250.769242] ata3: hard resetting link
+[ 4251.097531] ata3: SATA link up 3.0 Gbps (SStatus 123 SControl 300)
+[ 4251.192245] ata3.00: configured for UDMA/133
+[ 4251.222035] ata3.00: retrying FLUSH 0xe7 Emask 0x4
+[ 4266.386613] ata3.00: qc timeout (cmd 0xe7)
+[ 4266.508515] ata3.00: FLUSH failed Emask 0x4
+[ 4266.560167] ata3: hard resetting link
+[ 4266.938552] ata3: SATA link up 3.0 Gbps (SStatus 123 SControl 300)
+[ 4267.030157] ata3.00: configured for UDMA/133
+[ 4267.114004] ata3.00: retrying FLUSH 0xe7 Emask 0x4
+[ 4282.258593] ata3.00: qc timeout (cmd 0xe7)
+[ 4282.368783] ata3.00: FLUSH failed Emask 0x4
+[ 4282.495134] ata3: limiting SATA link speed to 1.5 Gbps
+[ 4282.585714] ata3.00: limiting speed to UDMA/133:PIO3
+[ 4282.598638] ata3: hard resetting link
+[ 4282.914622] ata3: SATA link up 1.5 Gbps (SStatus 113 SControl 310)
+[ 4282.997989] ata3.00: configured for UDMA/133
+[ 4283.066205] ata3.00: retrying FLUSH 0xe7 Emask 0x4
+[ 4314.002589] ata3.00: qc timeout (cmd 0xe7)
+[ 4314.107786] ata3.00: FLUSH failed Emask 0x4
+[ 4314.219076] ata3.00: disabled
+[ 4314.293096] ata3: hard resetting link
+[ 4314.682254] ata3: SATA link up 1.5 Gbps (SStatus 113 SControl 310)
+[ 4314.789957] ata3: EH complete
+[ 4314.875911] sd 2:0:0:0: [sda] tag#12 FAILED Result: hostbyte=DID_BAD_TARGET driverbyte=DRIVER_OK
+[ 4315.047595] sd 2:0:0:0: [sda] tag#12 CDB: Synchronize Cache(10) 35 00 00 00 00 00 00 00 00 00
+[ 4315.182501] blk_update_request: I/O error, dev sda, sector 50642376
+[ 4315.277654] Aborting journal on device sda1-8.
+[ 4315.277822] sd 2:0:0:0: [sda] Read Capacity(16) failed: Result: hostbyte=DID_BAD_TARGET driverbyte=DRIVER_OK
+[ 4315.277823] sd 2:0:0:0: [sda] Sense not available.
+[ 4315.277830] sd 2:0:0:0: [sda] Read Capacity(10) failed: Result: hostbyte=DID_BAD_TARGET driverbyte=DRIVER_OK
+[ 4315.277831] sd 2:0:0:0: [sda] Sense not available.
+[ 4315.277843] sda: detected capacity change from 104857600000 to 0
+[ 4315.436269] sd 2:0:0:0: [sda] tag#14 FAILED Result: hostbyte=DID_BAD_TARGET driverbyte=DRIVER_OK
+[ 4315.436271] sd 2:0:0:0: [sda] tag#14 CDB: Write(10) 2a 00 00 00 08 00 00 00 10 00
+[ 4315.436273] blk_update_request: I/O error, dev sda, sector 2048
+[ 4315.436275] Buffer I/O error on dev sda1, logical block 0, lost async page write
+[ 4315.436282] Buffer I/O error on dev sda1, logical block 1, lost async page write
+[ 4315.436291] sd 2:0:0:0: [sda] tag#15 FAILED Result: hostbyte=DID_BAD_TARGET driverbyte=DRIVER_OK
+[ 4315.436292] sd 2:0:0:0: [sda] tag#15 CDB: Write(10) 2a 00 00 05 63 f8 00 00 08 00
+[ 4315.436293] blk_update_request: I/O error, dev sda, sector 353272
+[ 4315.436295] EXT4-fs warning (device sda1): ext4_end_bio:314: I/O error -5 writing to inode 524365 (offset 0 size 0 starting block 44160)
+[ 4315.436297] Buffer I/O error on device sda1, logical block 43903
+[ 4315.436306] sd 2:0:0:0: [sda] tag#16 FAILED Result: hostbyte=DID_BAD_TARGET driverbyte=DRIVER_OK
+[ 4315.436307] sd 2:0:0:0: [sda] tag#16 CDB: Write(10) 2a 00 00 80 08 78 00 00 08 00
+[ 4315.436308] blk_update_request: I/O error, dev sda, sector 8390776
+[ 4315.436308] Buffer I/O error on dev sda1, logical block 1048591, lost async page write
+[ 4315.436312] sd 2:0:0:0: [sda] tag#17 FAILED Result: hostbyte=DID_BAD_TARGET driverbyte=DRIVER_OK
+[ 4315.436313] sd 2:0:0:0: [sda] tag#17 CDB: Write(10) 2a 00 04 00 08 80 00 00 08 00
+[ 4315.436313] blk_update_request: I/O error, dev sda, sector 67111040
+[ 4315.436314] Buffer I/O error on dev sda1, logical block 8388624, lost async page write
+[ 4315.436317] sd 2:0:0:0: [sda] tag#18 FAILED Result: hostbyte=DID_BAD_TARGET driverbyte=DRIVER_OK
+[ 4315.436318] sd 2:0:0:0: [sda] tag#18 CDB: Write(10) 2a 00 04 00 09 00 00 00 18 00
+[ 4315.436319] blk_update_request: I/O error, dev sda, sector 67111168
+[ 4315.436319] Buffer I/O error on dev sda1, logical block 8388640, lost async page write
+[ 4315.436321] Buffer I/O error on dev sda1, logical block 8388641, lost async page write
+[ 4315.436322] Buffer I/O error on dev sda1, logical block 8388642, lost async page write
+[ 4315.436325] sd 2:0:0:0: [sda] tag#19 FAILED Result: hostbyte=DID_BAD_TARGET driverbyte=DRIVER_OK
+[ 4315.436325] sd 2:0:0:0: [sda] tag#19 CDB: Write(10) 2a 00 04 00 0a b0 00 00 08 00
+[ 4315.436326] blk_update_request: I/O error, dev sda, sector 67111600
+[ 4315.436326] Buffer I/O error on dev sda1, logical block 8388694, lost async page write
+[ 4315.436329] sd 2:0:0:0: [sda] tag#20 FAILED Result: hostbyte=DID_BAD_TARGET driverbyte=DRIVER_OK
+[ 4315.436330] sd 2:0:0:0: [sda] tag#20 CDB: Write(10) 2a 00 04 01 12 e0 00 00 08 00
+[ 4315.436331] blk_update_request: I/O error, dev sda, sector 67179232
+[ 4315.436331] Buffer I/O error on dev sda1, logical block 8397148, lost async page write
+[ 4315.436334] sd 2:0:0:0: [sda] tag#21 FAILED Result: hostbyte=DID_BAD_TARGET driverbyte=DRIVER_OK
+[ 4315.436335] sd 2:0:0:0: [sda] tag#21 CDB: Write(10) 2a 00 05 40 08 80 00 00 10 00
+[ 4315.436336] blk_update_request: I/O error, dev sda, sector 88082560
+[ 4315.436336] Buffer I/O error on dev sda1, logical block 11010064, lost async page write
+[ 4315.436340] sd 2:0:0:0: [sda] tag#22 FAILED Result: hostbyte=DID_BAD_TARGET driverbyte=DRIVER_OK
+[ 4315.436341] sd 2:0:0:0: [sda] tag#22 CDB: Write(10) 2a 00 05 40 09 00 00 00 08 00
+[ 4315.436341] blk_update_request: I/O error, dev sda, sector 88082688
+[ 4318.212220] EXT4-fs (sda1): ext4_writepages: jbd2_start: 13312 pages, ino 524365; err -30
+[ 4323.220166] EXT4-fs (sda1): ext4_writepages: jbd2_start: 13312 pages, ino 524365; err -30
+[ 4323.220616] EXT4-fs (sda1): ext4_writepages: jbd2_start: 13312 pages, ino 524365; err -30
+[ 4325.027724] JBD2: Error -5 detected when updating journal superblock for sda1-8.
+[ 4325.030760] EXT4-fs (sda1): previous I/O error to superblock detected
+[ 4325.030781] EXT4-fs error (device sda1): ext4_journal_check_start:56: Detected aborted journal
+[ 4325.030782] EXT4-fs (sda1): Remounting filesystem read-only
+[ 4325.030783] EXT4-fs (sda1): previous I/O error to superblock detected
+[ 4368.977573] EXT4-fs error (device sda1): ext4_find_entry:1461: inode #657670: comm unity-panel-ser: reading directory lblock 0
+[ 4369.227793] EXT4-fs (sda1): previous I/O error to superblock detected
+[ 4369.408464] EXT4-fs warning (device sda1): dx_probe:741: inode #657923: lblock 0: comm unity-panel-ser: error -5 reading directory block
+[ 4369.746971] EXT4-fs warning (device sda1): dx_probe:741: inode #657923: lblock 0: comm unity-panel-ser: error -5 reading directory block
+[ 4370.912098] EXT4-fs warning (device sda1): dx_probe:741: inode #657923: lblock 0: comm unity-panel-ser: error -5 reading directory block
+[ 4371.260845] EXT4-fs warning (device sda1): dx_probe:741: inode #657923: lblock 0: comm unity-panel-ser: error -5 reading directory block
+[ 4372.186028] Core dump to |/usr/share/apport/apport 1749 7 0 1749 pipe failed
+[ 4372.439166] Core dump to |/usr/share/apport/apport 2040 7 0 2040 pipe failed
+[ 4372.610403] Core dump to |/usr/share/apport/apport 1623 7 0 1623 pipe failed
+[ 4374.991337] Core dump to |/usr/share/apport/apport 4925 7 0 4925 pipe failed
+[ 4378.282294] Core dump to |/usr/share/apport/apport 1753 7 0 1753 pipe failed
+[ 4379.044145] Core dump to |/usr/share/apport/apport 4940 7 0 4940 pipe failed
+[ 4379.913267] Core dump to |/usr/share/apport/apport 4934 7 0 4934 pipe failed
+[ 4383.038614] Core dump to |/usr/share/apport/apport 4955 7 0 4955 pipe failed
+[ 4385.486867] Core dump to |/usr/share/apport/apport 4947 7 0 4947 pipe failed
+[ 4387.038303] Core dump to |/usr/share/apport/apport 4971 7 0 4971 pipe failed
