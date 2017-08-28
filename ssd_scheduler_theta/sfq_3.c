@@ -57,7 +57,7 @@ typedef struct sfq_data {
   struct list_head queue;
   // total number of sfq_queue
   int sfqq_size;
-  // int sfqq_total_seek;
+  int sfqq_total_seek;
   // total number of sfq_request
   int sfqr_size;
   // total number of heap_size
@@ -71,7 +71,7 @@ typedef struct sfq_data {
   int chara_locker;
   int frisk_locker;
 
-  struct sfq_queue *wrong_sfqq;
+
 
   struct list_head noop_queue;
 
@@ -140,7 +140,7 @@ static int sfq_init_queue(struct request_queue *q, struct elevator_type *e)
   sfqd->prev_sfqr = NULL;
   sfqd->os_sfqq = NULL;
   sfqd->sfqq_size = 0;
-  // sfqd->sfqq_total_seek = 0;
+  sfqd->sfqq_total_seek = 0;
   sfqd->sfqr_size = 0;
   sfqd->heap_size = 0;
   sfqd->heap_limit_size = 0;
@@ -154,7 +154,6 @@ static int sfq_init_queue(struct request_queue *q, struct elevator_type *e)
   sfqd->chara_locker = 0;
   sfqd->frisk_locker = 1;
 
-  sfqd->wrong_sfqq = NULL;
 
 	// INIT_LIST_HEAD(&sfqd->noop_queue);
 
@@ -241,13 +240,11 @@ static int sfq_dispatch(struct request_queue *q, int force)
 {
   struct sfq_data *sfqd = q->elevator->elevator_data;
   // struct list_head *head;
-  struct sfq_queue *sfqq, *sfqq_test;
+  struct sfq_queue *sfqq;
   struct sfq_request *sfqr;
   struct request *rq;
   int index;
   u64 sl = 0;
-
-
 
 
   hrtimer_start(&sfqd->idle_slice_timer, ns_to_ktime(sl), HRTIMER_MODE_REL);
@@ -257,29 +254,19 @@ static int sfq_dispatch(struct request_queue *q, int force)
   if(!(sfqd->os_sfqq)){
       sfqq = sfqd->os_sfqq = list_first_entry_or_null(&sfqd->queue, struct sfq_queue, queuelist);
       if(!(sfqq)) return 0;
-      // sfqd->sfqq_total_seek++;
-
+      sfqd->sfqq_total_seek++;
       // printk("FIRST_DISPATCH PID: %d SEEK: %d  SIZE: %d\n", sfqd->os_sfqq->pid, sfqd->sfqq_total_seek, sfqd->sfqq_size);
 
   // currently dispatching
   } else {
   next_dispatch:
-
       sfqq = list_next_entry(sfqd->os_sfqq, queuelist);
       sfqd->os_sfqq = sfqq;
-        if(!sfqd->wrong_sfqq){
-              sfqq_test = list_next_entry(sfqq, queuelist);
-              // printk("prev: %d, next: %d\n",sfqq->pid, sfqq_test->pid);
-              sfqd->wrong_sfqq = sfqq_test;
-              goto next_dispatch;
-        } else {
-          if(sfqq->pid == sfqd->wrong_sfqq->pid){
-                  // printk("pid: %d caught\n", sfqq->pid);
-                  // sfqd->sfqq_total_seek = 0;
-                  goto next_dispatch;
-          }
-        }
-
+      if(sfqd->sfqq_total_seek == sfqd->sfqq_size){
+        sfqd->sfqq_total_seek = 0;
+        goto next_dispatch;
+      }
+      sfqd->sfqq_total_seek++;
 
       // check for left requests
       if(list_empty(&sfqd->os_sfqq->queue)){
@@ -387,7 +374,7 @@ static void sfq_put_request(struct request *rq){
 static void sfq_exit_queue(struct elevator_queue *e)
 {
   struct sfq_data *nd = e->elevator_data;
-  // hrtimer_cancel(&nd->idle_slice_timer);
+  hrtimer_cancel(&nd->idle_slice_timer);
   cancel_work_sync(&nd->unplug_work);
 	kfree(nd);
 }

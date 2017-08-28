@@ -1,0 +1,350 @@
+/*
+ * while running 64 jobs
+ */
+
+
+ [  433.528911] DISPATCH: 17600 PID: 2897
+ [  433.629435] DISPATCH: 18100 PID: 2896
+ [  433.723211] DISPATCH: -2124419168 PID: 2915
+ [  433.817377] BUG: unable to handle kernel NULL pointer dereference at 0000000000000038
+ [  434.080628] IP: [<ffffffff8e85f482>] _raw_spin_lock_irqsave+0x22/0x3f
+ [  434.381083] PGD 0
+ [  434.435891] Oops: 0002 [#1] SMP
+
+
+ [  221.158180] DISPATCH: 11600 PID: 3248
+ [  221.292527] DISPATCH: -223954032 PID: 3224
+ [  221.517400] DISPATCH: 12000 PID: 3219
+ [  221.706170] DISPATCH: 12300 PID: 3244
+ [  221.812234] DISPATCH: 12500 PID: 3242
+ [  221.987180] DISPATCH: 12600 PID: 3252
+ [  222.091955] DISPATCH: 12100 PID: 3216
+ [  222.247145] DISPATCH: 11300 PID: 3227
+ [  222.438903] ------------[ cut here ]------------
+ [  222.439547] DISPATCH: 12200 PID: 3251
+ [  222.867730] WARNING: CPU: 1 PID: 204 at drivers/ata/libata-core.c:5266 ata_qc_issue+0x31f/0x330
+ [  223.227301] Modules linked in: launch(OE) nls_utf8 isofs vboxsf(OE) vboxvideo(OE) ttm drm_kms_helper snd_intel8x0 snd_ac97_codec ac97_bus drm snd_pcm snd_seq_midi snd_seq_midi_event snd_rawmidi snd_seq vboxguest(OE) crct10dif_pclmul crc32_pclmul snd_seq_device ghash_clmulni_intel snd_timer aesni_intel snd aes_x86_64 lrw gf128mul joydev glue_helper ablk_helper fb_sys_fops syscopyarea soundcore cryptd sysfillrect sysimgblt input_leds serio_raw i2c_piix4 mac_hid parport_pc ppdev lp parport autofs4 hid_generic usbhid hid ahci psmouse e1000 libahci pata_acpi fjes video
+ [  225.317538] CPU: 1 PID: 204 Comm: kworker/1:1H Tainted: G           OE   4.8.8SungHoHong+ #17
+ [  225.627735] Hardware name: innotek GmbH VirtualBox/VirtualBox, BIOS VirtualBox 12/01/2006
+ [  225.917029] Workqueue: kblockd sfq_kick_queue [launch]
+ [  226.072879]  0000000000000086 00000000b575c2f9 ffff8fbcf2b1fc38 ffffffffb73fe913
+
+
+
+ [  217.767263] DISPATCH: 9500 PID: 3190
+ [  217.957800] DISPATCH: 10100 PID: 3240
+ [  218.133797] DISPATCH: 9400 PID: 3239
+ [  218.287226] DISPATCH: 9600 PID: 3213
+ [  218.456686] DISPATCH: 9800 PID: 3248
+ [  218.637628] DISPATCH: 9900 PID: 3224
+ [  218.747530] DISPATCH: 10000 PID: 3229
+ [  218.968009] DISPATCH: 10200 PID: 3245
+ [  219.137329] DISPATCH: 10300 PID: 3206
+ [  219.357436] DISPATCH: 10400 PID: 3190
+ [  219.490784] DISPATCH: 10800 PID: 3238
+ [  219.607292] DISPATCH: 10700 PID: 3214
+ [  219.707373] DISPATCH: 10900 PID: 3237
+ [  219.745431] DISPATCH: 10500 PID: 3211
+ [  219.967724] DISPATCH: 10600 PID: 3229
+ [  220.127813] DISPATCH: 11100 PID: 3208
+ [  220.257165] DISPATCH: 11000 PID: 3190
+ [  220.407934] DISPATCH: 11200 PID: 3196
+ [  220.577679] DISPATCH: 11300 PID: 3246
+ [  220.599552] DISPATCH: 11400 PID: 3251
+ [  220.748098] DISPATCH: 11800 PID: 3245
+ [  220.844419] DISPATCH: 11900 PID: 3206
+ [  221.007204] DISPATCH: 11500 PID: 3239
+ [  221.158180] DISPATCH: 11600 PID: 3248
+ [  221.292527] DISPATCH: -223954032 PID: 3224
+ [  221.517400] DISPATCH: 12000 PID: 3219
+ [  221.706170] DISPATCH: 12300 PID: 3244
+ [  221.812234] DISPATCH: 12500 PID: 3242
+ [  221.987180] DISPATCH: 12600 PID: 3252
+ [  222.091955] DISPATCH: 12100 PID: 3216
+ [  222.247145] DISPATCH: 11300 PID: 3227
+ [  222.438903] ------------[ cut here ]------------
+ [  222.439547] DISPATCH: 12200 PID: 3251
+ [  222.867730] WARNING: CPU: 1 PID: 204 at drivers/ata/libata-core.c:5266 ata_qc_issue+0x31f/0x330
+ [  223.227301] Modules linked in: launch(OE) nls_utf8 isofs vboxsf(OE) vboxvideo(OE) ttm drm_kms_helper snd_intel8x0 snd_ac97_codec ac97_bus drm snd_pcm snd_seq_midi snd_seq_midi_event snd_rawmidi snd_seq vboxguest(OE) crct10dif_pclmul crc32_pclmul snd_seq_device ghash_clmulni_intel snd_timer aesni_intel snd aes_x86_64 lrw gf128mul joydev glue_helper ablk_helper fb_sys_fops syscopyarea soundcore cryptd sysfillrect sysimgblt input_leds serio_raw i2c_piix4 mac_hid parport_pc ppdev lp parport autofs4 hid_generic usbhid hid ahci psmouse e1000 libahci pata_acpi fjes video
+ [  225.317538] CPU: 1 PID: 204 Comm: kworker/1:1H Tainted: G           OE   4.8.8SungHoHong+ #17
+ [  225.627735] Hardware name: innotek GmbH VirtualBox/VirtualBox, BIOS VirtualBox 12/01/2006
+ [  225.917029] Workqueue: kblockd sfq_kick_queue [launch]
+ [  226.072879]  0000000000000086 00000000b575c2f9 ffff8fbcf2b1fc38 ffffffffb73fe913
+ [  226.326997]  0000000000000000 0000000000000000 ffff8fbcf2b1fc78 ffffffffb7081fbb
+ [  226.525759]  0000149200000000 ffff8fbcb3928000 0000000000000006 ffff8fbcb3929e80
+ [  226.799986] Call Trace:
+ [  226.874489]  [<ffffffffb73fe913>] dump_stack+0x63/0x90
+ [  227.073054]  [<ffffffffb7081fbb>] __warn+0xcb/0xf0
+ [  227.207156]  [<ffffffffb70820ed>] warn_slowpath_null+0x1d/0x20
+ [  227.423564]  [<ffffffffb75f016f>] ata_qc_issue+0x31f/0x330
+ [  227.523146]  [<ffffffffb75f6783>] ? ata_scsi_rw_xlat+0x193/0x250
+ [  227.897160]  [<ffffffffb75f65f0>] ? ata_scsiop_inq_b6+0x50/0x50
+ [  228.163252]  [<ffffffffb75f68f2>] ata_scsi_translate+0xb2/0x1a0
+ [  228.418238]  [<ffffffffb75f9c52>] ata_scsi_queuecmd+0x92/0x1e0
+ [  228.641524]  [<ffffffffb75d2101>] scsi_dispatch_cmd+0xe1/0x240
+ [  228.792493]  [<ffffffffb75d4ae6>] ? scsi_request_fn+0x126/0x620
+ [  228.987208]  [<ffffffffb75d4e3c>] scsi_request_fn+0x47c/0x620
+ [  229.169743]  [<ffffffffb73c96c3>] __blk_run_queue+0x33/0x40
+ [  229.326772]  [<ffffffffc044a429>] sfq_kick_queue+0x29/0x50 [launch]
+ [  229.528480]  [<ffffffffb709c45b>] process_one_work+0x16b/0x480
+ [  229.703002]  [<ffffffffb709c7bb>] worker_thread+0x4b/0x500
+ [  229.852493]  [<ffffffffb709c770>] ? process_one_work+0x480/0x480
+ [  230.069791]  [<ffffffffb709c770>] ? process_one_work+0x480/0x480
+ [  230.242954]  [<ffffffffb70a2998>] kthread+0xd8/0xf0
+ [  230.392366]  [<ffffffffb785f75f>] ret_from_fork+0x1f/0x40
+ [  230.533484]  [<ffffffffb70a28c0>] ? kthread_create_on_node+0x1a0/0x1a0
+ [  230.640234] ---[ end trace 278affe24a0d738d ]---
+ [  230.687540] DISPATCH: 12400 PID: 3245
+ [  230.765722] ata4.00: exception Emask 0x0 SAct 0x102000 SErr 0x0 action 0x6 frozen
+ ** 106671 printk messages dropped ** [  230.932670] Stack:
+ ** 210416 printk messages dropped ** [  231.183805] CPU: 1 PID: 3231 Comm: fio Tainted: G      D W  OE   4.8.8SungHoHong+ #17
+ ** 425528 printk messages dropped ** [  231.689278] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+ ** 291750 printk messages dropped ** [  232.047536] CR2: 000000000000004e CR3: 000000014de06000 CR4: 00000000000406e0
+ ** 371001 printk messages dropped ** [  232.489090] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+ ** 223591 printk messages dropped ** [  232.754159] RDX: 0000000000000000 RSI: 0000000000000001 RDI: ffff8fbcc703fbd0
+ ** 393 printk messages dropped ** [  232.754620] CPU: 1 PID: 3231 Comm: fio Tainted: G      D W  OE   4.8.8SungHoHong+ #17
+ ** 362 printk messages dropped ** [  232.755031] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+ ** 336 printk messages dropped ** [  232.755431] CPU: 1 PID: 3231 Comm: fio Tainted: G      D W  OE   4.8.8SungHoHong+ #17
+ ** 363 printk messages dropped ** [  232.755843] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+ ** 372 printk messages dropped ** [  232.756281] Call Trace:
+ ** 193 printk messages dropped ** [  232.756508] Modules linked in: launch(OE) nls_utf8 isofs vboxsf(OE) vboxvideo(OE) ttm drm_kms_helper snd_intel8x0 snd_ac97_codec ac97_bus drm snd_pcm snd_seq_midi snd_seq_midi_event snd_rawmidi snd_seq vboxguest(OE) crct10dif_pclmul crc32_pclmul snd_seq_device ghash_clmulni_intel snd_timer aesni_intel snd aes_x86_64 lrw gf128mul joydev glue_helper ablk_helper fb_sys_fops syscopyarea soundcore cryptd sysfillrect sysimgblt input_leds serio_raw i2c_piix4 mac_hid parport_pc ppdev lp parport autofs4 hid_generic usbhid hid ahci psmouse e1000 libahci pata_acpi fjes video
+ ** 1831 printk messages dropped ** [  232.763647] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+ ** 354 printk messages dropped ** [  232.765722]  ffff8fbcc703fdb8 0000000000000046 000000000000004e ffff8fbcc703fed0
+ ** 540 printk messages dropped ** [  232.768643] R13: ffff8fbcc703fbd0 R14: ffff8fbcc703fbf0 R15: ffff8fbcc703fe68
+ ** 351 printk messages dropped ** [  232.770650] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+ ** 288 printk messages dropped ** [  232.771856] CPU: 1 PID: 3231 Comm: fio Tainted: G      D W  OE   4.8.8SungHoHong+ #17
+ ** 367 printk messages dropped ** [  232.773996]  ffff8fbcc703fdb8 0000000000000046 000000000000004e ffff8fbcc703fed0
+ ** 334 printk messages dropped ** [  232.776082] RIP: 0010:[<ffffffffb73ce7e6>]  [<ffffffffb73ce7e6>] blk_flush_plug_list+0x66/0x250
+ ** 51896 printk messages dropped ** [  232.855511] CPU: 1 PID: 3231 Comm: fio Tainted: G      D W  OE   4.8.8SungHoHong+ #17
+ ** 133513 printk messages dropped ** [  233.015311] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+ ** 31399 printk messages dropped ** [  233.053846] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+ ** 4694 printk messages dropped ** [  233.063061] R13: ffff8fbcc703fbd0 R14: ffff8fbcc703fbf0 R15: ffff8fbcc703fe68
+ ** 551 printk messages dropped ** [  233.063773] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+ ** 592 printk messages dropped ** [  233.064546] RSP: 0018:ffff8fbcc703fe60  EFLAGS: 00010096
+ ** 1208 printk messages dropped ** [  233.066188] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+ ** 6143 printk messages dropped ** [  233.082174] RBP: ffff8fbcc703feb8 R08: 0000000000000002 R09: 000000000000002c
+ ** 6392 printk messages dropped ** [  233.093112] CPU: 1 PID: 3231 Comm: fio Tainted: G      D W  OE   4.8.8SungHoHong+ #17
+ ** 9513 printk messages dropped ** [  233.109598] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+ ** 384 printk messages dropped ** [  233.110217] Modules linked in: launch(OE) nls_utf8 isofs vboxsf(OE) vboxvideo(OE) ttm drm_kms_helper snd_intel8x0 snd_ac97_codec ac97_bus drm snd_pcm snd_seq_midi snd_seq_midi_event snd_rawmidi snd_seq vboxguest(OE) crct10dif_pclmul crc32_pclmul snd_seq_device ghash_clmulni_intel snd_timer aesni_intel snd aes_x86_64 lrw gf128mul joydev glue_helper ablk_helper fb_sys_fops syscopyarea soundcore cryptd sysfillrect sysimgblt input_leds serio_raw i2c_piix4 mac_hid parport_pc ppdev lp parport autofs4 hid_generic usbhid hid ahci psmouse e1000 libahci pata_acpi fjes video
+ ** 70817 printk messages dropped ** [  233.223884]  ffff8fbcc703fe78 00000000eaa66b22 ffff8fbcc977b900 0000000000000009
+ ** 180700 printk messages dropped ** [  233.439050]  ffff8fbcc703fdb8 0000000000000046 000000000000004e ffff8fbcc703fed0
+ ** 118245 printk messages dropped ** [  233.584392] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+ ** 174218 printk messages dropped ** [  233.795649] Hardware name: innotek GmbH VirtualBox/VirtualBox, BIOS VirtualBox 12/01/2006
+ ** 30580 printk messages dropped ** [  233.834273] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+ ** 150596 printk messages dropped ** [  234.019053] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+ ** 106402 printk messages dropped ** [  234.150328] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+ ** 28449 printk messages dropped ** [  234.191814] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+ ** 10460 printk messages dropped ** [  234.211017] RIP  [<ffffffffb73ce7e6>] blk_flush_plug_list+0x66/0x250
+ ** 30038 printk messages dropped ** [  234.274223] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+ ** 30903 printk messages dropped ** [  234.314617]  ffff8fbcc703fdb8 0000000000000046 000000000000004e ffff8fbcc703fed0
+ ** 10946 printk messages dropped ** [  234.330379] Stack:
+ ** 61698 printk messages dropped ** [  234.406533] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+ ** 72160 printk messages dropped ** [  234.496020] RIP  [<ffffffffb73ce7e6>] blk_flush_plug_list+0x66/0x250
+ ** 114488 printk messages dropped ** [  234.633960] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+ ** 114650 printk messages dropped ** [  234.772830] Stack:
+ ** 24098 printk messages dropped ** [  234.802773] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+ ** 119796 printk messages dropped ** [  234.946000] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+ ** 69556 printk messages dropped ** [  235.029677]  ffff8fbcc703fdb8 0000000000000046 000000000000004e ffff8fbcc703fed0
+ ** 29595 printk messages dropped ** [  235.065269] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+ ** 35425 printk messages dropped ** [  235.108870]  [<ffffffffb70820ed>] warn_slowpath_null+0x1d/0x20
+ ** 25327 printk messages dropped ** [  235.144240]  ffff8fbcc703fdb8 0000000000000046 000000000000004e ffff8fbcc703fed0
+ ** 49445 printk messages dropped ** [  235.206246] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+ ** 112299 printk messages dropped ** [  235.348356] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+ ** 428918 printk messages dropped ** [  235.864184] Hardware name: innotek GmbH VirtualBox/VirtualBox, BIOS VirtualBox 12/01/2006
+ ** 371878 printk messages dropped ** [  236.309900] CR2: 000000000000004e CR3: 000000014de06000 CR4: 00000000000406e0
+ ** 365298 printk messages dropped ** [  236.758006] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+ ** 407852 printk messages dropped ** [  237.239956] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+ ** 437675 printk messages dropped ** [  237.766789]  [<ffffffffb70820ed>] warn_slowpath_null+0x1d/0x20
+ ** 354334 printk messages dropped ** [  238.189437] RIP  [<ffffffffb73ce7e6>] blk_flush_plug_list+0x66/0x250
+ ** 329436 printk messages dropped ** [  238.580614] CR2: 000000000000004e CR3: 000000014de06000 CR4: 00000000000406e0
+ ** 127301 printk messages dropped ** [  238.737240] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+ ** 11249 printk messages dropped ** [  238.753467] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+ ** 1649 printk messages dropped ** [  238.757722] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+ ** 2810 printk messages dropped ** [  238.768531] RIP  [<ffffffffb73ce7e6>] blk_flush_plug_list+0x66/0x250
+ ** 17050 printk messages dropped ** [  238.802613]  RSP <ffff8fbcc703fe60>
+ ** 1335 printk messages dropped ** [  238.804199] CR2: 000000000000004e CR3: 000000014de06000 CR4: 00000000000406e0
+ ** 159313 printk messages dropped ** [  238.996989]  RSP <ffff8fbcc703fe60>
+ ** 78084 printk messages dropped ** [  239.091970] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+ ** 5675 printk messages dropped ** [  239.099700] Call Trace:
+ ** 26026 printk messages dropped ** [  239.134369] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+ ** 37896 printk messages dropped ** [  239.186225] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+ ** 290 printk messages dropped ** [  239.186602] task: ffff8fbcc977b900 task.stack: ffff8fbcc703c000
+ ** 38662 printk messages dropped ** [  239.238079] Stack:
+ ** 8948 printk messages dropped ** [  239.249825] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+ ** 29941 printk messages dropped ** [  239.288903] RDX: 0000000000000000 RSI: 0000000000000001 RDI: ffff8fbcc703fbd0
+ ** 8607 printk messages dropped ** [  239.299786] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+ ** 29196 printk messages dropped ** [  239.336685] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+ ** 37820 printk messages dropped ** [  239.384020] CPU: 1 PID: 3231 Comm: fio Tainted: G      D W  OE   4.8.8SungHoHong+ #17
+ ** 113279 printk messages dropped ** [  239.519610] CR2: 000000000000004e CR3: 000000014de06000 CR4: 00000000000406e0
+ ** 280651 printk messages dropped ** [  239.856724] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+ ** 5214 printk messages dropped ** [  239.864823] ------------[ cut here ]------------
+ ** 15026 printk messages dropped ** [  239.896612] RDX: 0000000000000000 RSI: 0000000000000001 RDI: ffff8fbcc703fbd0
+ ** 1657 printk messages dropped ** [  239.899127] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+ ** 1103 printk messages dropped ** [  239.900857]  ffff8fbcc703fdb8 0000000000000046 000000000000004e ffff8fbcc703fed0
+ ** 331 printk messages dropped ** [  239.903475] CPU: 1 PID: 3231 Comm: fio Tainted: G      D W  OE   4.8.8SungHoHong+ #17
+ ** 39207 printk messages dropped ** [  239.966890] R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000001
+ ** 543 printk messages dropped ** [  239.967545] task: ffff8fbcc977b900 task.stack: ffff8fbcc703c000
+ ** 28915 printk messages dropped ** [  240.004175]  ffff8fbcc703fdb8 0000000000000046 000000000000004e ffff8fbcc703fed0
+ ** 49839 printk messages dropped ** [  240.067716] R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000001
+ ** 61655 printk messages dropped ** [  240.144363] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+ ** 15346 printk messages dropped ** [  240.164595] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+ ** 1092 printk messages dropped ** [  240.165920] RSP: 0018:ffff8fbcc703fe60  EFLAGS: 00010096
+ ** 609 printk messages dropped ** [  240.166652] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+ ** 37849 printk messages dropped ** [  240.214518] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+ ** 141645 printk messages dropped ** [  240.386354] FS:  0000000000000000(0000) GS:ffff8fbcf9f00000(0000) knlGS:0000000000000000
+ ** 7800 printk messages dropped ** [  240.398072] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+ ** 24856 printk messages dropped ** [  240.426993]  ffff8fbcc703fdb8 0000000000000046 000000000000004e ffff8fbcc703fed0
+ ** 36141 printk messages dropped ** [  240.473035] FS:  0000000000000000(0000) GS:ffff8fbcf9f00000(0000) knlGS:0000000000000000
+ ** 50602 printk messages dropped ** [  240.535552] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+ ** 39196 printk messages dropped ** [  240.583732] FS:  0000000000000000(0000) GS:ffff8fbcf9f00000(0000) knlGS:0000000000000000
+ ** 40589 printk messages dropped ** [  240.634080] CPU: 1 PID: 3231 Comm: fio Tainted: G      D W  OE   4.8.8SungHoHong+ #17
+ ** 29113 printk messages dropped ** [  240.674168] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+ ** 49749 printk messages dropped ** [  240.735080] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+ ** 39015 printk messages dropped ** [  240.784348] WARNING: CPU: 1 PID: 3231 at kernel/exit.c:737 do_exit+0x62/0xb30
+ ** 38227 printk messages dropped ** [  240.831318] R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000001
+ ** 43905 printk messages dropped ** [  240.884125] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+ ** 49999 printk messages dropped ** [  240.945891] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+ ** 11949 printk messages dropped ** [  240.963182] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+ ** 849 printk messages dropped ** [  240.964755] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+ ** 3744 printk messages dropped ** [  240.973826] R13: ffff8fbcc703fbd0 R14: ffff8fbcc703fbf0 R15: ffff8fbcc703fe68
+ ** 2054 printk messages dropped ** [  240.977214] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+ ** 649 printk messages dropped ** [  240.979501] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+ ** 10399 printk messages dropped ** [  241.001072] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+ ** 7999 printk messages dropped ** [  241.018694] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+ ** 1538 printk messages dropped ** [  241.022981] RIP: 0010:[<ffffffffb73ce7e6>]  [<ffffffffb73ce7e6>] blk_flush_plug_list+0x66/0x250
+ ** 1203 printk messages dropped ** [  241.027053] RBP: ffff8fbcc703feb8 R08: 0000000000000002 R09: 000000000000002c
+ ** 23653 printk messages dropped ** [  241.070572] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+ ** 39356 printk messages dropped ** [  241.121489]  ffff8fbcc703fdb8 0000000000000046 000000000000004e ffff8fbcc703fed0
+ ** 48042 printk messages dropped ** [  241.184381] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+ ** 300 printk messages dropped ** [  241.184729] CR2: 000000000000004e CR3: 000000014de06000 CR4: 00000000000406e0
+ ** 192951 printk messages dropped ** [  241.413837] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+ ** 423395 printk messages dropped ** [  241.913257] FS:  0000000000000000(0000) GS:ffff8fbcf9f00000(0000) knlGS:0000000000000000
+ ** 363003 printk messages dropped ** [  242.357285] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+ ** 390399 printk messages dropped ** [  242.819130] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+ ** 365949 printk messages dropped ** [  243.259895] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+ ** 11499 printk messages dropped ** [  243.275643] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+ ** 2099 printk messages dropped ** [  243.279378] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+ ** 4696 printk messages dropped ** [  243.291856] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+ ** 5102 printk messages dropped ** [  243.303478] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+ ** 745 printk messages dropped ** [  243.304923] FS:  0000000000000000(0000) GS:ffff8fbcf9f00000(0000) knlGS:0000000000000000
+ ** 67698 printk messages dropped ** [  243.392419] R13: ffff8fbcc703fbd0 R14: ffff8fbcc703fbf0 R15: ffff8fbcc703fe68
+ ** 163103 printk messages dropped ** [  243.587196] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+ ** 29750 printk messages dropped ** [  243.623159] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+ ** 8649 printk messages dropped ** [  243.635765] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+ ** 32098 printk messages dropped ** [  243.674705] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+ ** 51800 printk messages dropped ** [  243.739070] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+ ** 262517 printk messages dropped ** [  244.051127] CPU: 1 PID: 3231 Comm: fio Tainted: G      D W  OE   4.8.8SungHoHong+ #17
+ ** 406099 printk messages dropped ** [  244.549501] CPU: 1 PID: 3231 Comm: fio Tainted: G      D W  OE   4.8.8SungHoHong+ #17
+ ** 392881 printk messages dropped ** [  245.017329] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+ ** 257196 printk messages dropped ** [  245.329355] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+ ** 48196 printk messages dropped ** [  245.388410] R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000001
+ ** 2355 printk messages dropped ** [  245.391207] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+ ** 61542 printk messages dropped ** [  245.468858] RBP: ffff8fbcc703feb8 R08: 0000000000000002 R09: 000000000000002c
+ ** 3851 printk messages dropped ** [  245.475979] R13: ffff8fbcc703fbd0 R14: ffff8fbcc703fbf0 R15: ffff8fbcc703fe68
+ ** 404 printk messages dropped ** [  245.477277] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+ ** 492 printk messages dropped ** [  245.478359] RBP: ffff8fbcc703feb8 R08: 0000000000000002 R09: 000000000000002c
+ ** 652 printk messages dropped ** [  245.479196] FS:  0000000000000000(0000) GS:ffff8fbcf9f00000(0000) knlGS:0000000000000000
+ ** 2807 printk messages dropped ** [  245.489160]  ffff8fbcc703fdb8 0000000000000046 000000000000004e ffff8fbcc703fed0
+ ** 14092 printk messages dropped ** [  245.511321] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+ ** 6472 printk messages dropped ** [  245.523341]  0000000000000086 00000000eaa66b22 ffff8fbcc703fe80 ffffffffb73fe913
+ ** 379 printk messages dropped ** [  245.523777] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+ ** 2229 printk messages dropped ** [  245.529992] Fixing recursive fault but reboot is needed!
+ ** 418 printk messages dropped ** [  245.531796] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+ ** 10236 printk messages dropped ** [  245.561139] CPU: 1 PID: 3231 Comm: fio Tainted: G      D W  OE   4.8.8SungHoHong+ #17
+ ** 155513 printk messages dropped ** [  245.759734] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+ ** 166048 printk messages dropped ** [  245.959685] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+ ** 109351 printk messages dropped ** [  246.094129] Stack:
+ ** 72048 printk messages dropped ** [  246.183715] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+ ** 33949 printk messages dropped ** [  246.224348] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+ ** 9999 printk messages dropped ** [  246.239168] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+ ** 435 printk messages dropped ** [  246.239684] CPU: 1 PID: 3231 Comm: fio Tainted: G      D W  OE   4.8.8SungHoHong+ #17
+ ** 49899 printk messages dropped ** [  246.303361] CPU: 1 PID: 3231 Comm: fio Tainted: G      D W  OE   4.8.8SungHoHong+ #17
+ ** 167857 printk messages dropped ** [  246.504438] R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000001
+ ** 13590 printk messages dropped ** [  246.536815] Modules linked in: launch(OE) nls_utf8 isofs vboxsf(OE) vboxvideo(OE) ttm drm_kms_helper snd_intel8x0 snd_ac97_codec ac97_bus drm snd_pcm snd_seq_midi snd_seq_midi_event snd_rawmidi snd_seq vboxguest(OE) crct10dif_pclmul crc32_pclmul snd_seq_device ghash_clmulni_intel snd_timer aesni_intel snd aes_x86_64 lrw gf128mul joydev glue_helper ablk_helper fb_sys_fops syscopyarea soundcore cryptd sysfillrect sysimgblt input_leds serio_raw i2c_piix4 mac_hid parport_pc ppdev lp parport autofs4 hid_generic usbhid hid ahci psmouse e1000 libahci pata_acpi fjes video
+ ** 60665 printk messages dropped ** [  246.631377] Stack:
+ ** 190 printk messages dropped ** [  246.631644] RDX: 0000000000000000 RSI: 0000000000000001 RDI: ffff8fbcc703fbd0
+ ** 3207 printk messages dropped ** [  246.642349] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+ ** 18850 printk messages dropped ** [  246.673717] Stack:
+ ** 245 printk messages dropped ** [  246.674006] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+ ** 1450 printk messages dropped ** [  246.676927] CR2: 000000000000004e CR3: 000000014de06000 CR4: 00000000000406e0
+ ** 295 printk messages dropped ** [  246.677608] R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000001
+ ** 18350 printk messages dropped ** [  246.713307] R13: ffff8fbcc703fbd0 R14: ffff8fbcc703fbf0 R15: ffff8fbcc703fe68
+ ** 264408 printk messages dropped ** [  247.033709]  ffff8fbcc703fdb8 0000000000000046 000000000000004e ffff8fbcc703fed0
+ ** 347445 printk messages dropped ** [  247.454472] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+ ** 307361 printk messages dropped ** [  247.833357]  RSP <ffff8fbcc703fe60>
+ ** 13837 printk messages dropped ** [  247.853592] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+ ** 179511 printk messages dropped ** [  248.067037]  RSP <ffff8fbcc703fe60>
+ ** 18887 printk messages dropped ** [  248.089959] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+ ** 215099 printk messages dropped ** [  248.348847] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+ ** 102799 printk messages dropped ** [  248.472407] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+ ** 117949 printk messages dropped ** [  248.613944] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+ ** 42750 printk messages dropped ** [  248.675084] Stack:
+ ** 183 printk messages dropped ** [  248.675324] Modules linked in: launch(OE) nls_utf8 isofs vboxsf(OE) vboxvideo(OE) ttm drm_kms_helper snd_intel8x0 snd_ac97_codec ac97_bus drm snd_pcm snd_seq_midi snd_seq_midi_event snd_rawmidi snd_seq vboxguest(OE) crct10dif_pclmul crc32_pclmul snd_seq_device ghash_clmulni_intel snd_timer aesni_intel snd aes_x86_64 lrw gf128mul joydev glue_helper ablk_helper fb_sys_fops syscopyarea soundcore cryptd sysfillrect sysimgblt input_leds serio_raw i2c_piix4 mac_hid parport_pc ppdev lp parport autofs4 hid_generic usbhid hid ahci psmouse e1000 libahci pata_acpi fjes video
+ ** 169710 printk messages dropped ** [  248.891304] FS:  0000000000000000(0000) GS:ffff8fbcf9f00000(0000) knlGS:0000000000000000
+ ** 339 printk messages dropped ** [  248.891706] CPU: 1 PID: 3231 Comm: fio Tainted: G      D W  OE   4.8.8SungHoHong+ #17
+ ** 1324 printk messages dropped ** [  248.893498] RIP  [<ffffffffb73ce7e6>] blk_flush_plug_list+0x66/0x250
+ ** 4537 printk messages dropped ** [  248.908583] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+ ** 11750 printk messages dropped ** [  248.931626] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+ ** 5003 printk messages dropped ** [  248.945705]  ffff8fbcc703fdb8 0000000000000046 000000000000004e ffff8fbcc703fed0
+ ** 43895 printk messages dropped ** [  249.005695] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+ ** 29194 printk messages dropped ** [  249.041461] R13: ffff8fbcc703fbd0 R14: ffff8fbcc703fbf0 R15: ffff8fbcc703fe68
+ ** 48854 printk messages dropped ** [  249.102247] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+ ** 32320 printk messages dropped ** [  249.143481]  0000000000000000 0000000000000000 ffff8fbcc703fec0 ffffffffb7081fbb
+ ** 50232 printk messages dropped ** [  249.208411]  ffff8fbcc703fdb8 0000000000000046 000000000000004e ffff8fbcc703fed0
+ ** 29092 printk messages dropped ** [  249.244096] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+ ** 38652 printk messages dropped ** [  249.291860] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+ ** 23545 printk messages dropped ** [  249.322377] FS:  0000000000000000(0000) GS:ffff8fbcf9f00000(0000) knlGS:0000000000000000
+ ** 235654 printk messages dropped ** [  249.606277] Stack:
+ ** 175158 printk messages dropped ** [  249.813787] Code: 89 45 d0 31 c0 48 89 5d c0 48 89 5d c8 49 8b 45 20 49 39 c6 74 6d 49 8b 45 20 49 39 c6 74 23 49 8b 4d 20 49 8b 55 28 48 8b 45 c0 <48> 89 59 08 48 89 4d c0 48 89 02 48 89 50 08 4d 89 75 20 4d 89
+ ** 787139 printk messages dropped ** [  250.774126] DR
+
+
+
+[  802.892987] blk_queue_start_tag: request ffff9b42b5a872b0 for device [sdb] already tagged 17
+[  803.134672] ------------[ cut here ]------------
+[  803.267235] kernel BUG at block/blk-tag.c:324!
+[  803.385750] invalid opcode: 0000 [#1] SMP
+[  803.499717] Modules linked in: launch(OE) nls_utf8 isofs vboxsf(OE) vboxvideo(OE) ttm drm_kms_helper snd_intel8x0 snd_ac97_codec ac97_bus drm snd_pcm snd_seq_midi snd_seq_midi_event snd_rawmidi snd_seq crct10dif_pclmul crc32_pclmul ghash_clmulni_intel snd_seq_device snd_timer vboxguest(OE) aesni_intel joydev snd aes_x86_64 lrw gf128mul glue_helper ablk_helper fb_sys_fops syscopyarea cryptd sysfillrect soundcore sysimgblt input_leds serio_raw i2c_piix4 mac_hid parport_pc ppdev lp parport autofs4 hid_generic usbhid psmouse e1000 hid ahci libahci fjes pata_acpi video [last unloaded: launch]
+[  804.005465] CPU: 0 PID: 3326 Comm: fio Tainted: G           OE   4.8.8SungHoHong+ #17
+[  804.194257] Hardware name: innotek GmbH VirtualBox/VirtualBox, BIOS VirtualBox 12/01/2006
+[  804.425080] task: ffff9b42c62a2ac0 task.stack: ffff9b42ce878000
+[  804.603748] RIP: 0010:[<ffffffff873cf251>]  [<ffffffff873cf251>] blk_queue_start_tag+0x1c1/0x1d0
+[  804.827301] RSP: 0018:ffff9b42ce87b9b0  EFLAGS: 00010082
+[  804.987838] RAX: 0000000000000050 RBX: ffff9b42b56ab3c0 RCX: ffffffff87e50b48
+[  805.179221] RDX: 0000000000000000 RSI: 0000000000000002 RDI: 0000000000000002
+[  805.383531] RBP: ffff9b42ce87b9e8 R08: 0000000000000000 R09: 0000000000000005
+[  805.618703] R10: ffff9b42dd043730 R11: 0000000000000215 R12: ffff9b42b5a872b0
+[  805.838938] R13: 000000000000001e R14: ffff9b42b5a872b0 R15: ffff9b42b4818000
+[  806.034611] FS:  00007f95fe86e700(0000) GS:ffff9b42f9c00000(0000) knlGS:0000000000000000
+[  806.284365] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  806.460497] CR2: 00007f95e00020f8 CR3: 00000001723cf000 CR4: 00000000000406f0
+[  806.676411] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[  806.856438] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+[  807.014616] Stack:
+[  807.036601]  ffff9b42ce87b9e8 ffffffff873ce402 ffff9b42b5996000 ffff9b42b59508e0
+[  807.073852]  000000000000001e ffff9b42b5a872b0 ffff9b42b4818000 ffff9b42ce87ba50
+[  807.214195]  ffffffff875d4ac4 0000000000000000 ffff9b42b5996208 0000000000000000
+[  807.400951] Call Trace:
+[  807.469001]  [<ffffffff873ce402>] ? blk_peek_request+0x52/0x2a0
+[  807.646791]  [<ffffffff875d4ac4>] scsi_request_fn+0x104/0x620
+[  807.826437]  [<ffffffff873c96c3>] __blk_run_queue+0x33/0x40
+[  807.990653]  [<ffffffff873c998a>] queue_unplugged+0x2a/0xb0
+[  808.152912]  [<ffffffff873ce967>] blk_flush_plug_list+0x1e7/0x250
+[  808.318016]  [<ffffffff873ceddc>] blk_finish_plug+0x2c/0x40
+[  808.486909]  [<ffffffff8726c2b6>] do_blockdev_direct_IO+0x1e66/0x3070
+[  808.675412]  [<ffffffff87267380>] ? I_BDEV+0x20/0x20
+[  808.809682]  [<ffffffff8726d4fa>] __blockdev_direct_IO+0x3a/0x40
+[  808.987503]  [<ffffffff87267ccc>] blkdev_direct_IO+0x4c/0x70
+[  809.154398]  [<ffffffff8719c658>] generic_file_read_iter+0x6b8/0x870
+[  809.328104]  [<ffffffff870b6973>] ? update_curr+0xf3/0x180
+[  809.473336]  [<ffffffff872680c5>] blkdev_read_iter+0x35/0x40
+[  809.643150]  [<ffffffff87229bc0>] __vfs_read+0xe0/0x150
+[  809.783285]  [<ffffffff8722ad15>] vfs_read+0x95/0x140
+[  809.930813]  [<ffffffff8722c3d5>] SyS_pread64+0x95/0xb0
+[  810.086439]  [<ffffffff8785f536>] entry_SYSCALL_64_fastpath+0x1e/0xa8
+[  810.272842] Code: 01 00 00 48 c7 c1 2b 0d ca 87 48 c7 c7 48 b6 cc 87 48 8d 42 0c 48 85 d2 48 89 f2 48 c7 c6 d0 32 a5 87 48 0f 45 c8 e8 2d 89 dc ff <0f> 0b 0f 1f 00 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 55
+[  810.644272] RIP  [<ffffffff873cf251>] blk_queue_start_tag+0x1c1/0x1d0
+[  810.817490]  RSP <ffff9b42ce87b9b0>
+[  810.919739] fbcon_switch: detected unhandled fb_set_par error, error code -16
+[  811.130849] fbcon_switch: detected unhandled fb_set_par error, error code -16
+[  811.346144] ---[ end trace 762412a9ea788e78 ]---

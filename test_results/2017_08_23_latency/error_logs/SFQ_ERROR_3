@@ -1,0 +1,24 @@
+[  412.344804] kernel BUG at block/elevator.c:279!
+[  412.555150] invalid opcode: 0000 [#1] SMP
+[  412.665322] Modules linked in: launch(OE) nls_utf8 isofs vboxsf(OE) snd_intel8x0 snd_ac97_codec vboxvideo(OE) ac97_bus ttm snd_pcm snd_seq_midi drm_kms_helper snd_seq_midi_event snd_rawmidi drm snd_seq vboxguest(OE) crct10dif_pclmul crc32_pclmul snd_seq_device ghash_clmulni_intel snd_timer aesni_intel snd aes_x86_64 joydev lrw gf128mul glue_helper ablk_helper fb_sys_fops cryptd syscopyarea sysfillrect soundcore sysimgblt input_leds i2c_piix4 serio_raw mac_hid parport_pc ppdev lp parport autofs4 hid_generic psmouse usbhid ahci hid fjes video libahci e1000 pata_acpi [last unloaded: launch]
+[  414.802476] CPU: 1 PID: 3119 Comm: fio Tainted: G        W  OE   4.8.8SungHoHong+ #17
+
+
+
+[  201.531306] kernel BUG at block/blk-core.c:2486!
+[  201.784054] invalid opcode: 0000 [#1] SMP
+[  201.948518] Modules linked in: launch(OE) nls_utf8 isofs vboxsf(OE) vboxvideo(OE) ttm snd_intel8x0 snd_ac97_codec drm_kms_helper ac97_bus snd
+
+
+[  194.394227] INIT_SFQ WRITING_ERROR: 64 BETA
+[  205.461769] hrtimer: interrupt took 3629 ns
+[  205.978832] blk_queue_start_tag: request ffffa06274014000 for device [sdb] already tagged 10
+[  206.379895] ------------[ cut here ]------------
+[  206.690346] kernel BUG at block/blk-tag.c:324!
+[  206.850211] invalid opcode: 0000 [#1] SMP
+
+
+
+[  372.022630] kernel BUG at block/blk-tag.c:324!
+
+[] 196.260906] kernel BUG at block/blk-tag.c:324!

@@ -1,0 +1,91 @@
+sungho-VirtualBox login: [  178.056579] io scheduler sfq registered
+[  193.750197] io scheduler sfq registered
+[  193.884671] INIT_SFQ WRITING_ERROR: 64 BETA
+[  248.743147] ------------[ cut here ]------------
+[  248.880794] WARNING: CPU: 0 PID: 2940 at drivers/ata/libata-core.c:5266 ata_qc_issue+0x31f/0x330
+[  249.143000] Modules linked in: launch(OE) nls_utf8 isofs vboxsf(OE) vboxvideo(OE) ttm snd_intel8x0 snd_ac97_codec drm_kms_helper ac97_bus snd_pcm drm snd_seq_midi snd_seq_midi_event snd_rawmidi snd_seq crct10dif_pclmul crc32_pclmul ghash_clmulni_intel vboxguest(OE) snd_seq_device snd_timer aesni_intel snd aes_x86_64 lrw gf128mul joydev glue_helper ablk_helper cryptd fb_sys_fops syscopyarea sysfillrect soundcore sysimgblt input_leds i2c_piix4 serio_raw mac_hid parport_pc ppdev lp parport autofs4 hid_generic usbhid ahci psmouse hid libahci video fjes e1000 pata_acpi [last unloaded: launch]
+[  250.501802] CPU: 0 PID: 2940 Comm: fio Tainted: G           OE   4.8.8SungHoHong+ #17
+[  250.727140] Hardware name: innotek GmbH VirtualBox/VirtualBox, BIOS VirtualBox 12/01/2006
+[  250.953173]  0000000000000086 00000000feadc2be ffffa2fdf9c03bb0 ffffffffa43fe913
+[  251.155009]  0000000000000000 0000000000000000 ffffa2fdf9c03bf0 ffffffffa4081fbb
+[  251.352362]  00001492f9c122a8 ffffa2fdb5300000 0000000000000006 ffffa2fdb5301e80
+[  251.566961] Call Trace:
+[  251.640290]  <IRQ>  [<ffffffffa43fe913>] dump_stack+0x63/0x90
+[  251.761827]  [<ffffffffa4081fbb>] __warn+0xcb/0xf0
+[  251.887289]  [<ffffffffa40820ed>] warn_slowpath_null+0x1d/0x20
+[  252.046331]  [<ffffffffa45f016f>] ata_qc_issue+0x31f/0x330
+[  252.212368]  [<ffffffffa45f6783>] ? ata_scsi_rw_xlat+0x193/0x250
+[  252.395563]  [<ffffffffa45f65f0>] ? ata_scsiop_inq_b6+0x50/0x50
+[  252.581077]  [<ffffffffa45f68f2>] ata_scsi_translate+0xb2/0x1a0
+[  252.755818]  [<ffffffffa45f9c52>] ata_scsi_queuecmd+0x92/0x1e0
+[  252.935784]  [<ffffffffa45d2101>] scsi_dispatch_cmd+0xe1/0x240
+[  253.077679]  [<ffffffffa45d4e3c>] scsi_request_fn+0x47c/0x620
+[  253.239901]  [<ffffffffa4203a63>] ? kmem_cache_free+0x1e3/0x1f0
+[  253.415536]  [<ffffffffa43c96c3>] __blk_run_queue+0x33/0x40
+[  253.567737]  [<ffffffffa43c96f6>] blk_run_queue+0x26/0x40
+[  253.722859]  [<ffffffffa45d1a00>] scsi_run_queue+0x250/0x2e0
+[  253.880960]  [<ffffffffa45cb2f7>] ? scsi_host_free_command.isra.11+0x47/0x50
+[  254.091186]  [<ffffffffa45d1d54>] scsi_end_request+0x134/0x1c0
+[  254.261144]  [<ffffffffa45d5216>] scsi_io_completion+0x1b6/0x690
+[  254.424420]  [<ffffffffa45cbe2f>] scsi_finish_command+0xcf/0x120
+[  254.577020]  [<ffffffffa45d4994>] scsi_softirq_done+0x124/0x150
+[  254.749538]  [<ffffffffa43d518b>] blk_done_softirq+0x8b/0xb0
+[  254.886973]  [<ffffffffa4862046>] __do_softirq+0xf6/0x280
+[  255.044830]  [<ffffffffa4087c63>] irq_exit+0xa3/0xb0
+[  255.151758]  [<ffffffffa4050b73>] smp_call_function_single_interrupt+0x33/0x40
+[  255.361225]  [<ffffffffa4861712>] call_function_single_interrupt+0x82/0x90
+[  255.527937]  <EOI>  [<ffffffffa424a5e5>] ? __fget_light+0x45/0x60
+[  255.703725]  [<ffffffffa424a613>] ? __fdget+0x13/0x20
+[  255.861656]  [<ffffffffa422c377>] SyS_pread64+0x37/0xb0
+[  256.019201]  [<ffffffffa485f536>] entry_SYSCALL_64_fastpath+0x1e/0xa8
+[  256.201391] ---[ end trace 9d7f920696f39746 ]---
+[  256.344787] BUG: unable to handle kernel NULL pointer dereference at           (null)
+[  256.559093] IP: [<ffffffffa43d5528>] blk_add_timer+0xf8/0x110
+[  256.725478] PGD 147ca9067 PUD 147caa067 PMD 0
+[  256.852895] Oops: 0002 [#1] SMP
+[  256.940401] Modules linked in: launch(OE) nls_utf8 isofs vboxsf(OE) vboxvideo(OE) ttm snd_intel8x0 snd_ac97_codec drm_kms_helper ac97_bus snd_pcm drm snd_seq_midi snd_seq_midi_event snd_rawmidi snd_seq crct10dif_pclmul crc32_pclmul ghash_clmulni_intel vboxguest(OE) snd_seq_device snd_timer aesni_intel snd aes_x86_64 lrw gf128mul joydev glue_helper ablk_helper cryptd fb_sys_fops syscopyarea sysfillrect soundcore sysimgblt input_leds i2c_piix4 serio_raw mac_hid parport_pc ppdev lp parport autofs4 hid_generic usbhid ahci psmouse hid libahci video fjes e1000 pata_acpi [last unloaded: launch]
+[  258.337644] CPU: 0 PID: 2942 Comm: fio Tainted: G        W  OE   4.8.8SungHoHong+ #17
+[  258.557799] Hardware name: innotek GmbH VirtualBox/VirtualBox, BIOS VirtualBox 12/01/2006
+[  258.778775] task: ffffa2fdf0415580 task.stack: ffffa2fdc7cdc000
+[  258.963662] RIP: 0010:[<ffffffffa43d5528>]  [<ffffffffa43d5528>] blk_add_timer+0xf8/0x110
+[  259.196329] RSP: 0018:ffffa2fdc7cdf978  EFLAGS: 00010046
+[  259.358547] RAX: ffffa2fdb5968730 RBX: ffffa2fdb5fcd8c0 RCX: ffffa2fdb5968870
+[  259.563890] RDX: 0000000000000000 RSI: ffffa2fdb5fcdf98 RDI: 00000000ffffd1a9
+[  259.786117] RBP: ffffa2fdc7cdf988 R08: 0000000000000002 R09: ffffffffffffe803
+[  259.996906] R10: ffffa2fdbc99b438 R11: 0000000000000001 R12: ffffa2fdb5968730
+[  260.213776] R13: 000000000000001f R14: ffffa2fdb5fcd8c0 R15: 000000000000001f
+[  260.426563] FS:  00007efeb6340700(0000) GS:ffffa2fdf9c00000(0000) knlGS:0000000000000000
+[  260.676421] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  260.844277] CR2: 0000000000000000 CR3: 0000000147ca8000 CR4: 00000000000406f0
+[  261.036990] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[  261.243207] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+[  261.443640] Stack:
+[  261.491805]  ffffa2fdb5968730 ffffa2fdb5968730 ffffa2fdc7cdf9a0 ffffffffa43ce247
+[  261.712088]  ffffa2fdb5054f80 ffffa2fdc7cdf9e8 ffffffffa43cf138 000000000000001f
+[  261.918266]  00000001c7cdfab8 ffffa2fdb57cd800 ffffa2fdb5fcd8c0 000000000000000a
+[  262.132643] Call Trace:
+[  262.191299]  [<ffffffffa43ce247>] blk_start_request+0x37/0x50
+[  262.371399]  [<ffffffffa43cf138>] blk_queue_start_tag+0xa8/0x1d0
+[  262.546747]  [<ffffffffa45d4ac4>] scsi_request_fn+0x104/0x620
+[  262.708332]  [<ffffffffa43c96c3>] __blk_run_queue+0x33/0x40
+[  262.879170]  [<ffffffffa43c998a>] queue_unplugged+0x2a/0xb0
+[  263.048845]  [<ffffffffa43ce967>] blk_flush_plug_list+0x1e7/0x250
+[  263.223668]  [<ffffffffa43ceddc>] blk_finish_plug+0x2c/0x40
+[  263.371651]  [<ffffffffa426c2b6>] do_blockdev_direct_IO+0x1e66/0x3070
+[  263.562801]  [<ffffffffa4267380>] ? I_BDEV+0x20/0x20
+[  263.710752]  [<ffffffffa426d4fa>] __blockdev_direct_IO+0x3a/0x40
+[  263.885150]  [<ffffffffa4267ccc>] blkdev_direct_IO+0x4c/0x70
+[  264.040721]  [<ffffffffa419c658>] generic_file_read_iter+0x6b8/0x870
+[  264.227977]  [<ffffffffa40efe63>] ? current_fs_time+0x23/0x30
+[  264.390887]  [<ffffffffa42680c5>] blkdev_read_iter+0x35/0x40
+[  264.533495]  [<ffffffffa4229bc0>] __vfs_read+0xe0/0x150
+[  264.695857]  [<ffffffffa422ad15>] vfs_read+0x95/0x140
+[  264.851353]  [<ffffffffa422c3d5>] SyS_pread64+0x95/0xb0
+[  264.991500]  [<ffffffffa485f536>] entry_SYSCALL_64_fastpath+0x1e/0xa8
+[  265.182830] Code: 0f 85 4e ff ff ff eb c0 48 8b 93 e0 06 00 00 48 8d b3 d8 06 00 00 48 89 8b e0 06 00 00 48 89 b0 40 01 00 00 48 89 90 48 01 00 00 <48> 89 0a 48 8b b8 38 01 00 00 e9 56 ff ff ff 0f 0b 0f 1f 80 00
+[  265.528243] RIP  [<ffffffffa43d5528>] blk_add_timer+0xf8/0x110
+[  265.686805]  RSP <ffffa2fdc7cdf978>
+[  265.783696] CR2: 0000000000000000
+[  265.880202] fbcon_switch: detected unhandled fb_set_par error, error code -16
+[  266.096210] fbcon_switch: detected unhandled fb_set_par error, error code -16
+[  266.313935] ---[ end trace 9d7f920696f39747 ]---

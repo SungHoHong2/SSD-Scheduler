@@ -1,0 +1,57 @@
+[  272.527167] ------------[ cut here ]------------
+[  272.783838] kernel BUG at block/blk-tag.c:324!
+[  273.001712] invalid opcode: 0000 [#1] SMP
+[  273.193831] Modules linked in: launch(OE) nls_utf8 isofs vboxsf(OE) vboxvideo(OE) ttm snd_intel8x0 drm_kms_helper snd_ac97_codec ac97_bus drm snd_pcm snd_seq_midi snd_seq_midi_event snd_rawmidi crct10dif_pclmul snd_seq crc32_pclmul ghash_clmulni_intel vboxguest(OE) snd_seq_device aesni_intel snd_timer aes_x86_64 snd lrw joydev gf128mul glue_helper fb_sys_fops syscopyarea ablk_helper sysfillrect sysimgblt cryptd input_leds serio_raw soundcore i2c_piix4 mac_hid parport_pc ppdev lp parport autofs4 hid_generic usbhid psmouse hid ahci e1000 libahci pata_acpi fjes video [last unloaded: launch]
+[  275.590785] CPU: 1 PID: 0 Comm: swapper/1 Tainted: G           OE   4.8.8SungHoHong+ #17
+[  275.843709] Hardware name: innotek GmbH VirtualBox/VirtualBox, BIOS VirtualBox 12/01/2006
+[  276.095049] task: ffff8d14f2e12ac0 task.stack: ffff8d14f2e24000
+[  276.238912] RIP: 0010:[<ffffffff813cf251>]  [<ffffffff813cf251>] blk_queue_start_tag+0x1c1/0x1d0
+[  276.524017] RSP: 0018:ffff8d14f9d03c90  EFLAGS: 00010086
+[  276.728507] RAX: 0000000000000050 RBX: ffff8d14b5a575c0 RCX: ffffffff81e50b48
+[  276.983396] RDX: 0000000000000000 RSI: 0000000000000002 RDI: 0000000000000002
+[  277.274221] RBP: ffff8d14f9d03cc8 R08: 0000000000000001 R09: 0000000000000005
+[  277.500918] R10: 0000000000000000 R11: 0000000000000225 R12: ffff8d14c936f140
+[  277.760968] R13: 000000000000001e R14: ffff8d14c936f140 R15: ffff8d14b5967800
+[  278.083481] FS:  0000000000000000(0000) GS:ffff8d14f9d00000(0000) knlGS:0000000000000000
+[  278.423319] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  278.499442] CR2: 0000557b6061bdf8 CR3: 000000015fc82000 CR4: 00000000000406e0
+[  278.602653] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[  278.833664] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+[  279.112192] Stack:
+[  279.202232]  ffff8d14f9d03ca0 0000000000000001 ffff8d14b5220800 ffff8d14b59488e0
+[  279.503333]  000000000000001e ffff8d14c936f140 ffff8d14b5967800 ffff8d14f9d03d30
+[  279.763440]  ffffffff815d4ac4 ffff8d14c9374c00 ffff8d14b5220a08 ffff8d14c9374cd8
+[  280.018252] Call Trace:
+[  280.103466]  <IRQ>
+[  280.169868]  [<ffffffff815d4ac4>] scsi_request_fn+0x104/0x620
+[  280.381329]  [<ffffffff813c96c3>] __blk_run_queue+0x33/0x40
+[  280.597316]  [<ffffffff813c96f6>] blk_run_queue+0x26/0x40
+[  280.802792]  [<ffffffff815d1a00>] scsi_run_queue+0x250/0x2e0
+[  280.989829]  [<ffffffff815cb2f7>] ? scsi_host_free_command.isra.11+0x47/0x50
+[  281.428006]  [<ffffffff815d1d54>] scsi_end_request+0x134/0x1c0
+[  281.640044]  [<ffffffff815d5216>] scsi_io_completion+0x1b6/0x690
+[  281.867839]  [<ffffffffc040de94>] ? ahci_handle_port_intr+0x74/0xc0 [libahci]
+[  282.133970]  [<ffffffff815cbe2f>] scsi_finish_command+0xcf/0x120
+[  282.329104]  [<ffffffff815d4994>] scsi_softirq_done+0x124/0x150
+[  282.593818]  [<ffffffff813d518b>] blk_done_softirq+0x8b/0xb0
+[  282.784121]  [<ffffffff81862046>] __do_softirq+0xf6/0x280
+[  282.963946]  [<ffffffff81087c63>] irq_exit+0xa3/0xb0
+[  283.144660]  [<ffffffff81861da4>] do_IRQ+0x54/0xd0
+[  283.341770]  [<ffffffff8185fe82>] common_interrupt+0x82/0x82
+[  283.544463]  <EOI>
+[  283.635022]  [<ffffffff810641c6>] ? native_safe_halt+0x6/0x10
+[  283.825477]  [<ffffffff81037dee>] default_idle+0x1e/0xd0
+[  284.023680]  [<ffffffff8103856f>] arch_cpu_idle+0xf/0x20
+[  284.194642]  [<ffffffff810c62ba>] default_idle_call+0x2a/0x40
+[  284.409129]  [<ffffffff810c65ba>] cpu_startup_entry+0x2ea/0x350
+[  284.602809]  [<ffffffff81051591>] start_secondary+0x151/0x190
+[  284.855418] Code: 01 00 00 48 c7 c1 2b 0d ca 81 48 c7 c7 48 b6 cc 81 48 8d 42 0c 48 85 d2 48 89 f2 48 c7 c6 d0 32 a5 81 48 0f 45 c8 e8 2d 89 dc ff <0f> 0b 0f 1f 00 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 55
+[  285.549124] RIP  [<ffffffff813cf251>] blk_queue_start_tag+0x1c1/0x1d0
+[  285.771696]  RSP <ffff8d14f9d03c90>
+[  285.908197] fbcon_switch: detected unhandled fb_set_par error, error code -16
+[  286.138629] fbcon_switch: detected unhandled fb_set_par error, error code -16
+[  286.373900] ---[ end trace aa131d5fe11ce17c ]---
+[  286.537634] Kernel panic - not syncing: Fatal exception in interrupt
+[  287.853979] Shutting down cpus with NMI
+[  288.014239] Kernel Offset: 0x0 from 0xffffffff81000000 (relocation range: 0xffffffff80000000-0xffffffffbfffffff)
+[  288.584280] ---[ end Kernel panic - not syncing: Fatal exception in interrupt

@@ -1,0 +1,268 @@
+[  346.186371] 		RQUEST to HEAP_QUEUE: 28000 PID: 2787
+[  346.484034] 		RQUEST to HEAP_QUEUE: 27600 PID: 2746
+[  346.684382] 		RQUEST to HEAP_QUEUE: 29000 PID: 2779
+[  346.875250] 		RQUEST to HEAP_QUEUE: 28800 PID: 2777
+[  347.009664] 		RQUEST to HEAP_QUEUE: 1923527256 PID: 2773
+[  347.136761] ------------[ cut here ]------------
+[  347.136840] 		RQUEST to HEAP_QUEUE: 28200 PID: 2751
+[  347.403759] WARNING: CPU: 0 PID: 2791 at drivers/ata/libata-core.c:5266 ata_qc_issue+0x31f/0x330
+[  347.653024] Modules linked in: launch(OE) nls_utf8 isofs vboxsf(OE) vbo
+
+
+
+
+[  381.810566] DISPATCH: 200 PID: 3308
+[  381.920759] NEXT_DISPATCH PID: 3332 SEEK: 4  SIZE: 4
+[  382.066048] 		Added to HEAP_QUEUE: 300 PID: 3332
+[  382.207862] DISPATCH: 300 PID: 3332
+[  382.307203] NEXT_DISPATCH PID: 5 SEEK: 5  SIZE: 5
+[  382.551221] BUG: unable to handle kernel paging request at 0000000500000005
+[  382.827008] IP: [<ffffffffc0470731>] sfq_dispatch+0x191/0x272 [launch]
+[  383.116501] PGD 15f665067 PUD 0
+[  383.261122] Oops: 0000 [#1] SMP
+[  383.394911] Modules linked in: laun
+
+
+
+
+[  287.645659] BUG: unable to handle kernel NULL pointer dereference at 0000000000000008
+[  287.838578] IP: [<ffffffffc042864e>] sfq_dispatch+0xae/0x28b [launch]
+[  288.018129] PGD 15fbbe067 PUD 15fbbf067 PMD 0
+[  288.131929] Oops: 0002 [#1] SMP
+[  288.223953] Modules linked in: launch(OE) nls_utf8 isofs vboxsf(OE) vboxvideo(OE) ttm snd_
+
+
+
+// increasing the printk()s disolves the error
+// which means timing is relevant to the error
+
+
+
+
+// need to check whether same error is given with the test with NOOP
+
+// I suspect that this guy is called more than 20 times which made the error
+
+[  280.888246] blk_queue_start_tag: request ffff8a9882cb7700 for device [sdb] already tagged 20
+
+
+
+3.2.5.1 Tag helpers
+
+Block now offers some simple generic functionality to help support command
+queueing (typically known as tagged command queueing), ie manage more than
+
+
+blk_queue_start_tag(struct request_queue *q, struct request *rq)
+
+Start tagged operation for this request. A free tag number between
+0 and 'depth' is assigned to the request (rq->tag holds this number),
+and 'rq' is added to the internal tag management. If the maximum depth
+for this queue is already achieved (or if the tag wasn't started for
+some other reason), 1 is returned. Otherwise 0 is returned.
+
+
+
+// it is possible that this was activated
+// the exceesive number of  blk_run_queue makes an error
+// because it will run this part
+void blk_dequeue_request(struct request *rq)
+{
+	struct request_queue *q = rq->q;
+
+	BUG_ON(list_empty(&rq->queuelist));
+	BUG_ON(ELV_ON_HASH(rq));
+
+	list_del_init(&rq->queuelist);
+
+	/*
+	 * the time frame between a request being removed from the lists
+	 * and to it is freed is accounted as io that is in progress at
+	 * the driver side.
+	 */
+	if (blk_account_rq(rq)) {
+		q->in_flight[rq_is_sync(rq)]++;
+		set_io_start_time_ns(rq);
+	}
+}
+
+
+// however excessive delays of requests also create an error
+tags the requests before commiting requests to the hard disk
+[  280.888246] blk_queue_start_tag: request ffff8a9882cb7700 for device [sdb] already tagged 20
+
+
+// the two stuff have to be jointed together
+
+
+
+Ubuntu 16.04.1 LTS sungho-VirtualBox ttyS0
+
+sungho-VirtualBox login: [  144.725912] ISO 9660 Extensions: Microsoft Joliet Level 3
+[  145.104399] ISO 9660 Extensions: RRIP_1991A
+[  202.292974] io scheduler sfq registered
+[  202.413261] INIT_SFQ WRITING_ERROR: 64 BETA
+[  212.755909] ADD_REQUEST: 0 PID: 2975
+[  212.861310] ADD_REQUEST: 100 PID: 2991
+[  213.061206] DISPATCH: 100 PID: 2991
+[  213.164852] ADD_REQUEST: 200 PID: 2989
+[  213.288660] DISPATCH: 200 PID: 2989
+[  213.451352] ADD_REQUEST: 300 PID: 2972
+[  213.559439] DISPATCH: 300 PID: 2972
+[  213.666249] ADD_REQUEST: 400 PID: 2986
+[  213.883382] DISPATCH: 400 PID: 2986
+[  213.990704] ADD_REQUEST: 500 PID: 2984
+[  214.133096] DISPATCH: 500 PID: 2984
+[  214.232279] ADD_REQUEST: 600 PID: 2983
+[  214.371311] ADD_REQUEST: 700 PID: 2982
+[  214.530474] DISPATCH: 600 PID: 2983
+[  214.626386] DISPATCH: 700 PID: 2982
+[  214.727017] ADD_REQUEST: 800 PID: 2979
+[  214.943316] DISPATCH: 800 PID: 2979
+[  215.050304] ADD_REQUEST: 900 PID: 2977
+[  215.243872] DISPATCH: 900 PID: 2977
+[  215.352057] ADD_REQUEST: 1000 PID: 3013
+[  215.502059] DISPATCH: 1000 PID: 3013
+[  215.565915] ADD_REQUEST: 1100 PID: 3012
+[  215.745816] DISPATCH: 1100 PID: 3012
+[  215.856171] ADD_REQUEST: 1200 PID: 3010
+[  216.064096] DISPATCH: 1200 PID: 3010
+[  216.134491] ADD_REQUEST: 1300 PID: 3009
+[  216.333559] DISPATCH: 1300 PID: 3009
+[  216.435810] ADD_REQUEST: 1400 PID: 3007
+[  216.651505] DISPATCH: 1400 PID: 3007
+[  216.737854] ADD_REQUEST: 1500 PID: 3005
+[  216.954207] ADD_REQUEST: 1600 PID: 3004
+[  217.094004] ADD_REQUEST: 1700 PID: 3003
+[  217.303248] ADD_REQUEST: 1800 PID: 3002
+[  217.558528] ADD_REQUEST: 1900 PID: 2967
+[  217.656401] ADD_REQUEST: 2000 PID: 2974
+[  217.767873] ADD_REQUEST: 2100 PID: 2979
+[  217.877127] ADD_REQUEST: 2200 PID: 2977
+[  217.990198] ADD_REQUEST: 2300 PID: 3001
+[  218.166884] ADD_REQUEST: 2400 PID: 3012
+[  218.276311] DISPATCH: 1500 PID: 3005
+[  218.378010] DISPATCH: 1600 PID: 3004
+[  218.475747] DISPATCH: 1700 PID: 3003
+[  218.583832] DISPATCH: 1800 PID: 3002
+[  218.793123] DISPATCH: 1900 PID: 2967
+[  218.899716] DISPATCH: 2000 PID: 2974
+[  219.088533] DISPATCH: 2300 PID: 3001
+[  219.184575] DISPATCH: 2100 PID: 2979
+[  219.293211] DISPATCH: 2200 PID: 2977
+[  219.399370] DISPATCH: 2400 PID: 3012
+[  219.497848] ADD_REQUEST: 2500 PID: 2956
+[  219.743721] ADD_REQUEST: 2600 PID: 2991
+[  219.861339] DISPATCH: 2500 PID: 2956
+[  219.971863] DISPATCH: 2600 PID: 2991
+[  220.068139] ADD_REQUEST: 2600 PID: 2953
+[  220.285114] DISPATCH: 2600 PID: 2953
+[  220.439956] ADD_REQUEST: 2700 PID: 3010
+[  220.556130] ADD_REQUEST: 2800 PID: 3009
+[  220.676939] DISPATCH: 2700 PID: 3010
+[  220.874025] DISPATCH: 2800 PID: 3009
+[  221.088478] ADD_REQUEST: 2900 PID: 2964
+[  221.184629] DISPATCH: 2900 PID: 2964
+[  221.352960] ADD_REQUEST: 3000 PID: 3004
+[  221.466313] DISPATCH: 3000 PID: 3004
+[  221.581918] ADD_REQUEST: 3100 PID: 3002
+[  221.698412] DISPATCH: 3100 PID: 3002
+[  221.913365] ADD_REQUEST: 3200 PID: 2967
+[  222.019779] ADD_REQUEST: 3300 PID: 2982
+[  222.130991] DISPATCH: 3200 PID: 2967
+[  222.261590] DISPATCH: 3300 PID: 2982
+[  222.300147] ADD_REQUEST: 3400 PID: 2989
+[  222.338992] ADD_REQUEST: 3500 PID: 3013
+[  222.429094] DISPATCH: 3400 PID: 2989
+[  222.591053] DISPATCH: 3500 PID: 3013
+[  222.784510] ADD_REQUEST: 3500 PID: 2958
+[  223.043286] DISPATCH: 3500 PID: 2958
+[  223.209678] ADD_REQUEST: 3600 PID: 2959
+[  223.320316] ADD_REQUEST: 3700 PID: 2956
+[  223.432726] DISPATCH: 3700 PID: 2956
+[  223.588156] DISPATCH: 3600 PID: 2959
+[  223.731874] ADD_REQUEST: 3800 PID: 2997
+[  223.851097] DISPATCH: 3800 PID: 2997
+[  224.050564] ADD_REQUEST: 3900 PID: 2995
+[  224.154743] DISPATCH: 3900 PID: 2995
+[  224.261916] ADD_REQUEST: 4000 PID: 2994
+[  224.374477] DISPATCH: 4000 PID: 2994
+[  224.508945] ADD_REQUEST: 4100 PID: 2992
+[  224.605229] ADD_REQUEST: 4200 PID: 2964
+[  224.774202] ADD_REQUEST: 4300 PID: 2967
+[  224.920780] DISPATCH: 4100 PID: 2992
+[  225.092493] ADD_REQUEST: 4400 PID: 2989
+[  225.333270] ADD_REQUEST: 4500 PID: 2973
+[  225.452567] DISPATCH: 4400 PID: 2989
+[  225.556917] ADD_REQUEST: 4600 PID: 2971
+[  225.663565] ADD_REQUEST: 4700 PID: 2959
+[  225.824444] ADD_REQUEST: 4800 PID: 2970
+[  225.993992] ADD_REQUEST: 4900 PID: 2968
+[  226.242867] ADD_REQUEST: 5000 PID: 2985
+[  226.353527] ADD_REQUEST: 5100 PID: 2981
+[  226.468400] ADD_REQUEST: 5200 PID: 2980
+[  226.578544] ADD_REQUEST: 5300 PID: 2978
+[  226.688697] DISPATCH: 4300 PID: 2967
+[  226.803150] ADD_REQUEST: 5400 PID: 2976
+[  226.897947] ADD_REQUEST: 5500 PID: 3011
+[  227.010332] ADD_REQUEST: 5600 PID: 2957
+[  227.228035] DISPATCH: 4200 PID: 2964
+[  227.413709] ADD_REQUEST: 5700 PID: 3008
+[  227.533085] DISPATCH: 0 PID: 2959
+[  227.759522] ------------[ cut here ]------------
+[  227.759524] ADD_REQUEST: 5800 PID: 3006
+[  227.759606] ADD_REQUEST: 5900 PID: 3000
+[  227.759610] ADD_REQUEST: 6000 PID: 2999
+[  227.759614] ADD_REQUEST: 6100 PID: 2963
+[  227.759618] ADD_REQUEST: 6200 PID: 2962
+[  227.759619] DISPATCH: 4500 PID: 2973
+[  228.893706] WARNING: CPU: 1 PID: 2957 at drivers/ata/libata-core.c:5266 ata_qc_issue+0x31f/0x330
+[  229.233966] Modules linked in: launch(OE) nls_utf8 isofs vboxsf(OE) vboxvideo(OE) ttm snd_intel8x0 snd_ac97_codec drm_kms_helper ac97_bus snd_pcm drm snd_seq_midi snd_seq_midi_event snd_rawmidi snd_seq vboxguest(OE) crct10dif_pclmul snd_seq_device crc32_pclmul ghash_clmulni_intel snd_timer aesni_intel snd aes_x86_64 joydev lrw gf128mul glue_helper fb_sys_fops ablk_helper syscopyarea sysfillrect cryptd soundcore sysimgblt input_leds serio_raw i2c_piix4 mac_hid parport_pc ppdev lp parport autofs4 hid_generic usbhid psmouse hid ahci fjes libahci video e1000 pata_acpi
+[  231.192937] CPU: 1 PID: 2957 Comm: fio Tainted: G           OE   4.8.8SungHoHong+ #17
+[  231.491464] Hardware name: innotek GmbH VirtualBox/VirtualBox, BIOS VirtualBox 12/01/2006
+[  231.821420]  0000000000000086 00000000c01f9b47 ffff9772b9d03ba8 ffffffff8f3fe913
+[  232.011614]  0000000000000000 0000000000000000 ffff9772b9d03be8 ffffffff8f081fbb
+[  232.263003]  00001492b9d03c00 ffff977275078000 0000000000000006 ffff977275079e80
+[  232.410561] Call Trace:
+[  232.411044]  <IRQ>  [<ffffffff8f3fe913>] dump_stack+0x63/0x90
+[  232.413152]  [<ffffffff8f081fbb>] __warn+0xcb/0xf0
+[  232.414654]  [<ffffffff8f0820ed>] warn_slowpath_null+0x1d/0x20
+[  232.432329]  [<ffffffff8f5f016f>] ata_qc_issue+0x31f/0x330
+[  232.433257]  [<ffffffff8f5f6783>] ? ata_scsi_rw_xlat+0x193/0x250
+[  232.447102]  [<ffffffff8f087c2b>] ? irq_exit+0x6b/0xb0
+[  232.461402]  [<ffffffff8f5f65f0>] ? ata_scsiop_inq_b6+0x50/0x50
+[  232.473738]  [<ffffffff8f5f68f2>] ata_scsi_translate+0xb2/0x1a0
+[  232.475245]  [<ffffffff8f5f9c52>] ata_scsi_queuecmd+0x92/0x1e0
+[  232.476086]  [<ffffffff8f5d2101>] scsi_dispatch_cmd+0xe1/0x240
+[  232.510617]  [<ffffffff8f5d4ae6>] ? scsi_request_fn+0x126/0x620
+[  232.600563]  [<ffffffff8f5d4e3c>] scsi_request_fn+0x47c/0x620
+[  232.693766]  [<ffffffff8f3c96c3>] __blk_run_queue+0x33/0x40
+[  232.777296]  [<ffffffff8f3c96f6>] blk_run_queue+0x26/0x40
+[  232.888367]  [<ffffffff8f5d1a00>] scsi_run_queue+0x250/0x2e0
+[  232.991573]  [<ffffffff8f5cb2f7>] ? scsi_host_free_command.isra.11+0x47/0x50
+[  233.103783]  [<ffffffff8f5d1d54>] scsi_end_request+0x134/0x1c0
+[  233.293189]  [<ffffffff8f5d5216>] scsi_io_completion+0x1b6/0x690
+[  233.450658]  [<ffffffff8f5cbe2f>] scsi_finish_command+0xcf/0x120
+[  233.603413]  [<ffffffff8f5d4994>] scsi_softirq_done+0x124/0x150
+[  233.843189]  [<ffffffff8f3d518b>] blk_done_softirq+0x8b/0xb0
+[  234.017943]  [<ffffffff8f862046>] __do_softirq+0xf6/0x280
+[  234.298086]  [<ffffffff8f087c63>] irq_exit+0xa3/0xb0
+[  234.455640]  [<ffffffff8f861e62>] smp_apic_timer_interrupt+0x42/0x50
+[  234.648254]  [<ffffffff8f861172>] apic_timer_interrupt+0x82/0x90
+[  234.857833]  <EOI>  [<ffffffff8f5d4ae6>] ? scsi_request_fn+0x126/0x620
+[  235.108567]  [<ffffffff8f5d4adf>] ? scsi_request_fn+0x11f/0x620
+[  235.233249]  [<ffffffff8f3c96c3>] __blk_run_queue+0x33/0x40
+[  235.410289]  [<ffffffff8f3c998a>] queue_unplugged+0x2a/0xb0
+[  235.638212]  [<ffffffff8f3ce967>] blk_flush_plug_list+0x1e7/0x250
+[  235.813773]  [<ffffffff8f3ceddc>] blk_finish_plug+0x2c/0x40
+[  236.009483]  [<ffffffff8f26c2b6>] do_blockdev_direct_IO+0x1e66/0x3070
+[  236.255688]  [<ffffffff8f267380>] ? I_BDEV+0x20/0x20
+[  236.435455]  [<ffffffff8f26d4fa>] __blockdev_direct_IO+0x3a/0x40
+[  236.628200]  [<ffffffff8f267ccc>] blkdev_direct_IO+0x4c/0x70
+[  236.923527]  [<ffffffff8f19c658>] generic_file_read_iter+0x6b8/0x870
+[  237.134441]  [<ffffffff8f5f9623>] ? ata_scsi_ioctl+0x23/0x30
+[  237.343787]  [<ffffffff8f5cd449>] ? scsi_ioctl+0x209/0x3b0
+[  237.528289]  [<ffffffff8f22dee3>] ? get_super.part.7+0x53/0xc0
+[  237.759300]  [<ffffffff8f2680c5>] blkdev_read_iter+0x35/0x40
+[  237.978273]  [<ffffffff8f229bc0>] __vfs_read+0xe0/0x150
+[  238.157383]  [<ffffffff8f22ad15>] vfs_read+0x95/0x140

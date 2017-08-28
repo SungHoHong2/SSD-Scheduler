@@ -1,0 +1,268 @@
+
+/*
+   1. after using sfq-scheduler
+   2. remove it
+   3. reload the scheudler again
+   4. and the run
+ */
+
+
+[ 9620.130859] BUG: unable to handle kernel paging request at 000000030000000b
+[ 9620.371155] IP: [<ffffffffc051d6cc>] sfq_dispatch+0xac/0x243 [launch]
+[ 9620.599269] PGD 170e6d067 PUD 0
+[ 9620.703353] Oops: 0000 [#1] SMP
+[ 9620.913613] Modules linked in: launch(OE) nls_utf8 isofs vboxsf(OE) vboxvideo(OE) ttm drm_kms_helper snd_intel8x0 snd_ac97_codec drm ac97_bus snd_pcm snd_seq_midi snd_seq_midi_event snd_rawmidi snd_seq vboxguest(OE) crct10dif_pclmul crc32_pclmul ghash_clmulni_intel snd_seq_device snd_timer aesni_intel snd aes_x86_64 lrw joydev gf128mul glue_helper ablk_helper fb_sys_fops cryptd syscopyarea input_leds soundcore sysfillrect sysimgblt serio_raw i2c_piix4 mac_hid parport_pc ppdev lp parport autofs4 hid_generic usbhid psmouse ahci hid e1000 fjes libahci video pata_acpi [last unloaded: launch]
+[ 9623.171826] CPU: 1 PID: 168 Comm: kworker/1:1H Tainted: G           OE   4.8.8SungHoHong+ #17
+[ 9623.443665] Hardware name: innotek GmbH VirtualBox/VirtualBox, BIOS VirtualBox 12/01/2006
+[ 9623.719639] Workqueue: kblockd sfq_kick_queue [launch]
+[ 9623.890571] task: ffffa27d75aeaac0 task.stack: ffffa27d75678000
+[ 9624.094215] RIP: 0010:[<ffffffffc051d6cc>]  [<ffffffffc051d6cc>] sfq_dispatch+0xac/0x243 [launch]
+[ 9624.383151] RSP: 0018:ffffa27d7567bd28  EFLAGS: 00010093
+[ 9624.569711] RAX: 0000000000000002 RBX: ffffa27db0e84500 RCX: ffffa27db0e84538
+[ 9624.813041] RDX: 0000000300000003 RSI: 0000000000000000 RDI: ffffa27db0e84550
+[ 9625.053943] RBP: ffffa27d7567bd40 R08: 00000002fffffff3 R09: 0000000300000003
+[ 9625.260854] R10: 0000000000000000 R11: ffffa27db0d1b400 R12: ffffa27d75ffe1a0
+[ 9625.510662] R13: 00000000ffffff87 R14: 00000000fffffffb R15: ffffa27d74dc2800
+[ 9625.731802] FS:  0000000000000000(0000) GS:ffffa27db9d00000(0000) knlGS:0000000000000000
+[ 9626.026837] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[ 9626.208376] CR2: 000000030000000b CR3: 0000000170f52000 CR4: 00000000000406e0
+[ 9626.215130] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[ 9626.246200] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+[ 9626.254968] Stack:
+[ 9626.259846]  ffffa27d75ffe1a0 ffffa27d82fd73c0 00000000ffffff87 ffffa27d7567bd78
+[ 9626.270771]  ffffffff9e3ce402 ffffa27d75224000 ffffa27d75ffe1a0 ffffa27db9d1e100
+[ 9626.346125]  0000000000000060 ffffa27d74dc2800 ffffa27d7567bde0 ffffffff9e5d49fe
+[ 9626.533935] Call Trace:
+[ 9626.566896]  [<ffffffff9e3ce402>] blk_peek_request+0x52/0x2a0
+[ 9626.663166]  [<ffffffff9e5d49fe>] scsi_request_fn+0x3e/0x620
+[ 9626.781979]  [<ffffffff9e3c96c3>] __blk_run_queue+0x33/0x40
+[ 9626.908384]  [<ffffffffc051d4b9>] sfq_kick_queue+0x29/0x50 [launch]
+[ 9627.061834]  [<ffffffff9e09c45b>] process_one_work+0x16b/0x480
+[ 9627.204907]  [<ffffffff9e09c7bb>] worker_thread+0x4b/0x500
+[ 9627.311836]  [<ffffffff9e09c770>] ? process_one_work+0x480/0x480
+[ 9627.314110]  [<ffffffff9e09c770>] ? process_one_work+0x480/0x480
+[ 9627.341923]  [<ffffffff9e0a2998>] kthread+0xd8/0xf0
+[ 9627.372711]  [<ffffffff9e85f75f>] ret_from_fork+0x1f/0x40
+[ 9627.379663]  [<ffffffff9e0a28c0>] ? kthread_create_on_node+0x1a0/0x1a0
+[ 9627.390029] Code: 48 10 48 39 d1 0f 84 9e 00 00 00 4c 8b 48 10 4d 89 c8 49 83 e8 10 0f 84 8d 00 00 00 8b 43 48 83 e8 01 39 43 44 0f 8d 66 01 00 00 <49> 8b 41 08 49 8b 11 48 89 42 08 48 89 10 4d 89 09 4d 89 49 08
+[ 9627.564376] RIP  [<ffffffffc051d6cc>] sfq_dispatch+0xac/0x243 [launch]
+[ 9627.723700]  RSP <ffffa27d7567bd28>
+[ 9627.823759] CR2: 000000030000000b
+[ 9627.872500] fbcon_switch: detected unhandled fb_set_par error, error code -16
+[ 9628.072124] fbcon_switch: detected unhandled fb_set_par error, error code -16
+[ 9628.300422] ---[ end trace 5b5dd157b0e143a0 ]---
+[ 9628.402144] BUG: unable to handle kernel paging request at 00000000b9afad16
+[ 9628.526090] IP: [<ffffffff9e0c550b>] __wake_up_common+0x2b/0x90
+[ 9628.760527] PGD 170e6d067 PUD 0
+[ 9628.861095] Oops: 0000 [#2] SMP
+[ 9628.974553] Modules linked in: launch(OE) nls_utf8 isofs vboxsf(OE) vboxvideo(OE) ttm drm_kms_helper snd_intel8x0 snd_ac97_codec drm ac97_bus snd_pcm snd_seq_midi snd_seq_midi_event snd_rawmidi snd_seq vboxguest(OE) crct10dif_pclmul crc32_pclmul ghash_clmulni_intel snd_seq_device snd_timer aesni_intel snd aes_x86_64 lrw joydev gf128mul glue_helper ablk_helper fb_sys_fops cryptd syscopyarea input_leds soundcore sysfillrect sysimgblt serio_raw i2c_piix4 mac_hid parport_pc ppdev lp parport autofs4 hid_generic usbhid psmouse ahci hid e1000 fjes libahci video pata_acpi [last unloaded: launch]
+[ 9630.760311] CPU: 1 PID: 168 Comm: kworker/1:1H Tainted: G      D    OE   4.8.8SungHoHong+ #17
+[ 9631.093633] Hardware name: innotek GmbH VirtualBox/VirtualBox, BIOS VirtualBox 12/01/2006
+[ 9631.466556] task: ffffa27d75aeaac0 task.stack: ffffa27d75678000
+[ 9631.793785] RIP: 0010:[<ffffffff9e0c550b>]  [<ffffffff9e0c550b>] __wake_up_common+0x2b/0x90
+[ 9632.068707] RSP: 0018:ffffa27d7567be40  EFLAGS: 00010082
+[ 9632.231933] RAX: 0000000000000282 RBX: ffffa27d7567bf10 RCX: 0000000000000000
+[ 9632.492181] RDX: 00000000b9afad16 RSI: 0000000000000003 RDI: ffffa27d7567bf10
+[ 9632.843685] RBP: ffffa27d7567be78 R08: 0000000000000000 R09: 0000000000000005
+[ 9633.194064] R10: 0000000000000001 R11: 000000000000024f R12: ffffa27d7567bf18
+[ 9633.562054] R13: 0000000000000282 R14: 0000000000000046 R15: 0000000000000003
+[ 9633.941996] FS:  0000000000000000(0000) GS:ffffa27db9d00000(0000) knlGS:0000000000000000
+[ 9634.262251] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[ 9634.541668] CR2: 0000000000000028 CR3: 0000000170f52000 CR4: 00000000000406e0
+[ 9634.844612] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[ 9635.182667] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+[ 9635.233609] Stack:
+[ 9635.252187]  0000000100000001 0000000000000000 ffffa27d7567bf10 ffffa27d7567bf08
+[ 9635.270167]  0000000000000282 0000000000000046 000000030000000b ffffa27d7567be88
+[ 9635.411534]  ffffffff9e0c55d3 ffffa27d7567beb0 ffffffff9e0c6057 ffffa27d75aeb1c8
+[ 9635.567408] Call Trace:
+[ 9635.614253]  [<ffffffff9e0c55d3>] __wake_up_locked+0x13/0x20
+[ 9635.779496]  [<ffffffff9e0c6057>] complete+0x37/0x50
+[ 9635.782718]  [<ffffffff9e07f48f>] mm_release+0xbf/0x140
+[ 9635.895986]  [<ffffffff9e085c7d>] do_exit+0x14d/0xb30
+[ 9636.034178]  [<ffffffff9e860cd7>] rewind_stack_do_exit+0x17/0x20
+[ 9636.182199]  [<ffffffff9e0a28c0>] ? kthread_create_on_node+0x1a0/0x1a0
+[ 9636.329109] Code: 0f 1f 44 00 00 55 48 89 e5 41 57 41 56 41 55 41 54 4c 8d 67 08 53 41 89 f7 48 83 ec 10 89 55 cc 48 8b 57 08 4c 89 45 d0 49 39 d4 <48> 8b 32 74 45 41 89 ce 48 8d 42 e8 4c 8d 6e e8 eb 03 49 89 d5
+[ 9636.387879] RIP  [<ffffffff9e0c550b>] __wake_up_common+0x2b/0x90
+[ 9636.393911]  RSP <ffffa27d7567be40>
+[ 9636.397976] CR2: 00000000b9afad16
+[ 9636.427242] ---[ end trace 5b5dd157b0e143a1 ]---
+[ 9636.536165] Fixing recursive fault but reboot is needed!
+[ 9636.713230] BUG: unable to handle kernel paging request at ffffffffffffffd8
+[ 9636.984153] IP: [<ffffffff9e0a3050>] kthread_data+0x10/0x20
+[ 9637.224471] PGD 6ae09067 PUD 6ae0b067 PMD 0
+[ 9637.388133] Oops: 0000 [#3] SMP
+[ 9637.502308] Modules linked in: launch(OE) nls_utf8 isofs vboxsf(OE) vboxvideo(OE) ttm drm_kms_helper snd_intel8x0 snd_ac97_codec drm ac97_bus snd_pcm snd_seq_midi snd_seq_midi_event snd_rawmidi snd_seq vboxguest(OE) crct10dif_pclmul crc32_pclmul ghash_clmulni_intel snd_seq_device snd_timer aesni_intel snd aes_x86_64 lrw joydev gf128mul glue_helper ablk_helper fb_sys_fops cryptd syscopyarea input_leds soundcore sysfillrect sysimgblt serio_raw i2c_piix4 mac_hid parport_pc ppdev lp parport autofs4 hid_generic usbhid psmouse ahci hid e1000 fjes libahci video pata_acpi [last unloaded: launch]
+[ 9639.355508] CPU: 1 PID: 168 Comm: kworker/1:1H Tainted: G      D    OE   4.8.8SungHoHong+ #17
+[ 9639.633620] Hardware name: innotek GmbH VirtualBox/VirtualBox, BIOS VirtualBox 12/01/2006
+[ 9639.874347] task: ffffa27d75aeaac0 task.stack: ffffa27d75678000
+[ 9640.065558] RIP: 0010:[<ffffffff9e0a3050>]  [<ffffffff9e0a3050>] kthread_data+0x10/0x20
+[ 9640.395508] RSP: 0018:ffffa27d7567be50  EFLAGS: 00010002
+[ 9640.584328] RAX: 0000000000000000 RBX: ffffa27db9d19200 RCX: 0000000000000001
+[ 9640.842258] RDX: ffffa27db9804080 RSI: ffffa27d75aeab40 RDI: ffffa27d75aeaac0
+[ 9641.081887] RBP: ffffa27d7567be50 R08: 00000000ffffffff R09: 0000000000000000
+[ 9641.323694] R10: 0000000000dcc3cb R11: ffffa27d75aeab40 R12: 0000000000019200
+[ 9641.586859] R13: 0000000000000000 R14: ffffa27d75aeaac0 R15: ffffa27db9d19200
+[ 9641.800589] FS:  0000000000000000(0000) GS:ffffa27db9d00000(0000) knlGS:0000000000000000
+[ 9642.011607] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[ 9642.223660] CR2: 0000000000000028 CR3: 0000000170f52000 CR4: 00000000000406e0
+[ 9642.465722] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[ 9642.657084] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+[ 9642.853663] Stack:
+[ 9642.898611]  ffffa27d7567be60 ffffffff9e09d81e ffffa27d7567beb8 ffffffff9e85aa59
+[ 9642.993801]  ffffffff9e197bd5 ffffa27d00000008 ffffa27d75aeaac0 ffffa27d7567be98
+[ 9643.068495]  ffffa27d7567c000 0000000000000009 ffffa27d7567bd98 0000000000000046
+[ 9643.106735] Call Trace:
+[ 9643.120401]  [<ffffffff9e09d81e>] wq_worker_sleeping+0xe/0x90
+[ 9643.146216]  [<ffffffff9e85aa59>] __schedule+0x519/0x790
+[ 9643.216897]  [<ffffffff9e197bd5>] ? printk+0x57/0x73
+[ 9643.323697]  [<ffffffff9e85ad05>] schedule+0x35/0x80
+[ 9643.510718]  [<ffffffff9e086448>] do_exit+0x918/0xb30
+[ 9643.701951]  [<ffffffff9e860cd7>] rewind_stack_do_exit+0x17/0x20
+[ 9643.939468]  [<ffffffff9e0a28c0>] ? kthread_create_on_node+0x1a0/0x1a0
+[ 9644.163638] Code: c1 c9 9e e8 a3 f0 fd ff e9 a2 fe ff ff 0f 1f 40 00 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 8b 87 50 05 00 00 55 48 89 e5 <48> 8b 40 d8 5d c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00
+[ 9644.682653] RIP  [<ffffffff9e0a3050>] kthread_data+0x10/0x20
+[ 9644.873923]  RSP <ffffa27d7567be50>
+[ 9645.042690] CR2: ffffffffffffffd8
+[ 9645.153841] ---[ end trace 5b5dd157b0e143a2 ]---
+[ 9645.312318] Fixing recursive fault but reboot is needed!
+
+
+
+// same error
+
+[  102.977366] IPv6: ADDRCONF(NETDEV_UP): enp0s3: link is not ready
+[  103.199361] IPv6: ADDRCONF(NETDEV_UP): enp0s3: link is not ready
+[  103.368266] e1000: enp0s3 NIC Link is Up 1000 Mbps Full Duplex, Flow Control: RX
+[  103.729189] IPv6: ADDRCONF(NETDEV_CHANGE): enp0s3: link becomes ready
+
+Ubuntu 16.04.1 LTS sungho-VirtualBox ttyS0
+
+sungho-VirtualBox login: [ 3224.372418] ISO 9660 Extensions: Microsoft Joliet Level 3
+[ 3224.628068] ISO 9660 Extensions: RRIP_1991A
+[ 3273.802505] io scheduler sfq registered
+[ 3273.890060] INIT_SFQ WRITING_ERROR: 64 BETA
+[ 3285.748556] traps: pool[2902] trap int3 ip:7f43dfb9aa6b sp:7f43bd41e6f0 error:0 in libglib-2.0.so.0.4800.1[7f43dfb4a000+10f000]
+[ 3412.705377] io scheduler sfq registered
+[ 3412.831953] INIT_SFQ WRITING_ERROR: 64 BETA
+[ 3546.118821] io scheduler sfq registered
+[ 3546.353452] INIT_SFQ WRITING_ERROR: 64 BETA
+[ 3569.565424] BUG: unable to handle kernel paging request at 0000000a00000012
+[ 3569.768645] IP: [<ffffffffc05c96cc>] sfq_dispatch+0xac/0x243 [launch]
+[ 3569.969715] PGD 1348fe067 PUD 0
+[ 3570.060996] Oops: 0000 [#1] SMP
+[ 3570.148179] Modules linked in: launch(OE) nls_utf8 isofs vboxsf(OE) vboxvideo(OE) ttm drm_kms_helper snd_intel8x0 snd_ac97_codec drm ac97_bus snd_pcm snd_seq_midi snd_seq_midi_event snd_rawmidi snd_seq vboxguest(OE) crct10dif_pclmul crc32_pclmul ghash_clmulni_intel snd_seq_device snd_timer aesni_intel aes_x86_64 snd lrw joydev gf128mul glue_helper ablk_helper cryptd fb_sys_fops soundcore syscopyarea sysfillrect sysimgblt input_leds serio_raw i2c_piix4 mac_hid parport_pc ppdev lp parport autofs4 hid_generic usbhid e1000 fjes hid psmouse ahci pata_acpi libahci video [last unloaded: launch]
+[ 3571.543807] CPU: 0 PID: 90 Comm: kworker/0:1H Tainted: G           OE   4.8.8SungHoHong+ #17
+[ 3571.777413] Hardware name: innotek GmbH VirtualBox/VirtualBox, BIOS VirtualBox 12/01/2006
+[ 3572.001920] Workqueue: kblockd sfq_kick_queue [launch]
+[ 3572.147733] task: ffff8d05b4600e40 task.stack: ffff8d05b460c000
+[ 3572.315113] RIP: 0010:[<ffffffffc05c96cc>]  [<ffffffffc05c96cc>] sfq_dispatch+0xac/0x243 [launch]
+[ 3572.567004] RSP: 0018:ffff8d05b460fd28  EFLAGS: 00010093
+[ 3572.723946] RAX: 0000000000000009 RBX: ffff8d05f0ad7800 RCX: ffff8d05f0ad7838
+[ 3572.889376] RDX: 0000000a0000000a RSI: 0000000000000000 RDI: ffff8d05f0ad7850
+[ 3572.995356] RBP: ffff8d05b460fd40 R08: 00000009fffffffa R09: 0000000a0000000a
+[ 3573.190294] R10: 000000000002000b R11: ffff8d05b475ec00 R12: ffff8d05b4bfea80
+[ 3573.399761] R13: 00000000ffffff87 R14: 00000000fffffffb R15: ffff8d05b41cd000
+[ 3573.582726] FS:  0000000000000000(0000) GS:ffff8d05f9e00000(0000) knlGS:0000000000000000
+[ 3573.821062] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[ 3573.991884] CR2: 0000000a00000012 CR3: 00000001624cb000 CR4: 00000000000406f0
+[ 3574.187660] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[ 3574.391436] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+[ 3574.579294] Stack:
+[ 3574.622313]  ffff8d05b4bfea80 ffff8d05b3f30720 00000000ffffff87 ffff8d05b460fd78
+[ 3574.808149]  ffffffffb43ce402 ffff8d05b433f000 ffff8d05b4bfea80 ffff8d05f9e1e100
+[ 3574.933182]  0000000000000020 ffff8d05b41cd000 ffff8d05b460fde0 ffffffffb45d49fe
+[ 3575.149324] Call Trace:
+[ 3575.215966]  [<ffffffffb43ce402>] blk_peek_request+0x52/0x2a0
+[ 3575.378171]  [<ffffffffb45d49fe>] scsi_request_fn+0x3e/0x620
+[ 3575.549966]  [<ffffffffb43c96c3>] __blk_run_queue+0x33/0x40
+[ 3575.696569]  [<ffffffffc05c94b9>] sfq_kick_queue+0x29/0x50 [launch]
+[ 3575.869553]  [<ffffffffb409c45b>] process_one_work+0x16b/0x480
+[ 3576.033705]  [<ffffffffb409c7bb>] worker_thread+0x4b/0x500
+[ 3576.202376]  [<ffffffffb409c770>] ? process_one_work+0x480/0x480
+[ 3576.390005]  [<ffffffffb409c770>] ? process_one_work+0x480/0x480
+[ 3576.568633]  [<ffffffffb40a2998>] kthread+0xd8/0xf0
+[ 3576.722699]  [<ffffffffb485f75f>] ret_from_fork+0x1f/0x40
+[ 3576.859018]  [<ffffffffb40a28c0>] ? kthread_create_on_node+0x1a0/0x1a0
+[ 3577.042602] Code: 48 10 48 39 d1 0f 84 9e 00 00 00 4c 8b 48 10 4d 89 c8 49 83 e8 10 0f 84 8d 00 00 00 8b 43 48 83 e8 01 39 43 44 0f 8d 66 01 00 00 <49> 8b 41 08 49 8b 11 48 89 42 08 48 89 10 4d 89 09 4d 89 49 08
+[ 3577.384894] RIP  [<ffffffffc05c96cc>] sfq_dispatch+0xac/0x243 [launch]
+[ 3577.568365]  RSP <ffff8d05b460fd28>
+[ 3577.667793] CR2: 0000000a00000012
+[ 3577.757823] fbcon_switch: detected unhandled fb_set_par error, error code -16
+[ 3577.963204] fbcon_switch: detected unhandled fb_set_par error, error code -16
+[ 3578.163005] ---[ end trace 478b5ec6803f9087 ]---
+[ 3578.305399] BUG: unable to handle kernel paging request at 00000000c5f53719
+[ 3578.524137] IP: [<ffffffffb40c550b>] __wake_up_common+0x2b/0x90
+[ 3578.706800] PGD 1348fe067 PUD 0
+[ 3578.794324] Oops: 0000 [#2] SMP
+[ 3578.890029] Modules linked in: launch(OE) nls_utf8 isofs vboxsf(OE) vboxvideo(OE) ttm drm_kms_helper snd_intel8x0 snd_ac97_codec drm ac97_bus snd_pcm snd_seq_midi snd_seq_midi_event snd_rawmidi snd_seq vboxguest(OE) crct10dif_pclmul crc32_pclmul ghash_clmulni_intel snd_seq_device snd_timer aesni_intel aes_x86_64 snd lrw joydev gf128mul glue_helper ablk_helper cryptd fb_sys_fops soundcore syscopyarea sysfillrect sysimgblt input_leds serio_raw i2c_piix4 mac_hid parport_pc ppdev lp parport autofs4 hid_generic usbhid e1000 fjes hid psmouse ahci pata_acpi libahci video [last unloaded: launch]
+[ 3580.297039] CPU: 0 PID: 90 Comm: kworker/0:1H Tainted: G      D    OE   4.8.8SungHoHong+ #17
+[ 3580.525156] Hardware name: innotek GmbH VirtualBox/VirtualBox, BIOS VirtualBox 12/01/2006
+[ 3580.759259] task: ffff8d05b4600e40 task.stack: ffff8d05b460c000
+[ 3580.906041] RIP: 0010:[<ffffffffb40c550b>]  [<ffffffffb40c550b>] __wake_up_common+0x2b/0x90
+[ 3581.137606] RSP: 0018:ffff8d05b460fe40  EFLAGS: 00010096
+[ 3581.290213] RAX: 0000000000000282 RBX: ffff8d05b460ff10 RCX: 0000000000000000
+[ 3581.472259] RDX: 00000000c5f53719 RSI: 0000000000000003 RDI: ffff8d05b460ff10
+[ 3581.683819] RBP: ffff8d05b460fe78 R08: 0000000000000000 R09: 0000000000000005
+[ 3581.892983] R10: 0000000000000001 R11: 000000000000023e R12: ffff8d05b460ff18
+[ 3582.109277] R13: 0000000000000282 R14: 0000000000000046 R15: 0000000000000003
+[ 3582.318404] FS:  0000000000000000(0000) GS:ffff8d05f9e00000(0000) knlGS:0000000000000000
+[ 3582.522826] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[ 3582.686218] CR2: 0000000000000028 CR3: 00000001624cb000 CR4: 00000000000406f0
+[ 3582.891920] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[ 3583.106462] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+[ 3583.314636] Stack:
+[ 3583.374535]  0000000100000001 0000000000000000 ffff8d05b460ff10 ffff8d05b460ff08
+[ 3583.572966]  0000000000000282 0000000000000046 0000000a00000012 ffff8d05b460fe88
+[ 3583.749811]  ffffffffb40c55d3 ffff8d05b460feb0 ffffffffb40c6057 ffff8d05b4601548
+[ 3583.952206] Call Trace:
+[ 3584.024936]  [<ffffffffb40c55d3>] __wake_up_locked+0x13/0x20
+[ 3584.188244]  [<ffffffffb40c6057>] complete+0x37/0x50
+[ 3584.335823]  [<ffffffffb407f48f>] mm_release+0xbf/0x140
+[ 3584.486887]  [<ffffffffb4085c7d>] do_exit+0x14d/0xb30
+[ 3584.637402]  [<ffffffffb4860cd7>] rewind_stack_do_exit+0x17/0x20
+[ 3584.809352]  [<ffffffffb40a28c0>] ? kthread_create_on_node+0x1a0/0x1a0
+[ 3585.003725] Code: 0f 1f 44 00 00 55 48 89 e5 41 57 41 56 41 55 41 54 4c 8d 67 08 53 41 89 f7 48 83 ec 10 89 55 cc 48 8b 57 08 4c 89 45 d0 49 39 d4 <48> 8b 32 74 45 41 89 ce 48 8d 42 e8 4c 8d 6e e8 eb 03 49 89 d5
+[ 3585.358121] RIP  [<ffffffffb40c550b>] __wake_up_common+0x2b/0x90
+[ 3585.522823]  RSP <ffff8d05b460fe40>
+[ 3585.625757] CR2: 00000000c5f53719
+[ 3585.727105] ---[ end trace 478b5ec6803f9088 ]---
+[ 3585.849911] Fixing recursive fault but reboot is needed!
+[ 3585.984782] BUG: unable to handle kernel paging request at ffffffffffffffd8
+[ 3586.191515] IP: [<ffffffffb40a3050>] kthread_data+0x10/0x20
+[ 3586.354097] PGD 149e09067 PUD 149e0b067 PMD 0
+[ 3586.472968] Oops: 0000 [#3] SMP
+[ 3586.570159] Modules linked in: launch(OE) nls_utf8 isofs vboxsf(OE) vboxvideo(OE) ttm drm_kms_helper snd_intel8x0 snd_ac97_codec drm ac97_bus snd_pcm snd_seq_midi snd_seq_midi_event snd_rawmidi snd_seq vboxguest(OE) crct10dif_pclmul crc32_pclmul ghash_clmulni_intel snd_seq_device snd_timer aesni_intel aes_x86_64 snd lrw joydev gf128mul glue_helper ablk_helper cryptd fb_sys_fops soundcore syscopyarea sysfillrect sysimgblt input_leds serio_raw i2c_piix4 mac_hid parport_pc ppdev lp parport autofs4 hid_generic usbhid e1000 fjes hid psmouse ahci pata_acpi libahci video [last unloaded: launch]
+[ 3587.965251] CPU: 0 PID: 90 Comm: kworker/0:1H Tainted: G      D    OE   4.8.8SungHoHong+ #17
+[ 3588.170816] Hardware name: innotek GmbH VirtualBox/VirtualBox, BIOS VirtualBox 12/01/2006
+[ 3588.400455] task: ffff8d05b4600e40 task.stack: ffff8d05b460c000
+[ 3588.577852] RIP: 0010:[<ffffffffb40a3050>]  [<ffffffffb40a3050>] kthread_data+0x10/0x20
+[ 3588.805258] RSP: 0018:ffff8d05b460fe50  EFLAGS: 00010002
+[ 3588.952780] RAX: 0000000000000000 RBX: ffff8d05f9e19200 RCX: 0000000000000000
+[ 3589.168354] RDX: ffff8d05f3c04080 RSI: ffff8d05b4600ec0 RDI: ffff8d05b4600e40
+[ 3589.318115] RBP: ffff8d05b460fe50 R08: 00000000ffffffff R09: 0000000000000000
+[ 3589.537338] R10: 000000000066eeec R11: ffff8d05b4600ec0 R12: 0000000000019200
+[ 3589.750713] R13: 0000000000000000 R14: ffff8d05b4600e40 R15: ffff8d05f9e19200
+[ 3589.959267] FS:  0000000000000000(0000) GS:ffff8d05f9e00000(0000) knlGS:0000000000000000
+[ 3590.193740] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[ 3590.351420] CR2: 0000000000000028 CR3: 00000001624cb000 CR4: 00000000000406f0
+[ 3590.530459] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[ 3590.682607] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+[ 3590.754955] Stack:
+[ 3590.756105]  ffff8d05b460fe60 ffffffffb409d81e ffff8d05b460feb8 ffffffffb485aa59
+[ 3590.939877]  ffffffffb4197bd5 ffff8d0500000008 ffff8d05b4600e40 ffff8d05b460fe98
+[ 3591.117609]  ffff8d05b4610000 0000000000000009 ffff8d05b460fd98 0000000000000046
+[ 3591.291434] Call Trace:
+[ 3591.351313]  [<ffffffffb409d81e>] wq_worker_sleeping+0xe/0x90
+[ 3591.462577]  [<ffffffffb485aa59>] __schedule+0x519/0x790
+[ 3591.485935]  [<ffffffffb4197bd5>] ? printk+0x57/0x73
+[ 3591.508682]  [<ffffffffb485ad05>] schedule+0x35/0x80
+[ 3591.511930]  [<ffffffffb4086448>] do_exit+0x918/0xb30
+[ 3591.570441]  [<ffffffffb4860cd7>] rewind_stack_do_exit+0x17/0x20
+[ 3591.739268]  [<ffffffffb40a28c0>] ? kthread_create_on_node+0x1a0/0x1a0
+[ 3591.910294] Code: c1 c9 b4 e8 a3 f0 fd ff e9 a2 fe ff ff 0f 1f 40 00 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 8b 87 50 05 00 00 55 48 89 e5 <48> 8b 40 d8 5d c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00
+[ 3592.252491] RIP  [<ffffffffb40a3050>] kthread_data+0x10/0x20
+[ 3592.422965]  RSP <ffff8d05b460fe50>
+[ 3592.525058] CR2: ffffffffffffffd8
+[ 3592.611695] ---[ end trace 478b5ec6803f9089 ]---
+[ 3592.744645] Fixing recursive fault but reboot is needed!

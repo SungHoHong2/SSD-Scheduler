@@ -1,0 +1,66 @@
+[  849.187290] hrtimer: interrupt took 12093 ns
+[  959.893085] io scheduler sfq registered
+[  960.023325] INIT_SFQ WRITING_ERROR: 64 BETA
+[  972.635999] ------------[ cut here ]------------
+[  972.771640] kernel BUG at block/blk-core.c:2444!
+[  972.908403] invalid opcode: 0000 [#1] SMP
+[  973.002573] Modules linked in: launch(OE) nls_utf8 isofs vboxsf(OE) vboxvideo(OE) ttm snd_intel8x0 snd_ac97_codec drm_kms_helper ac97_bus snd_pcm drm snd_seq_midi snd_seq_midi_event snd_rawmidi vboxguest(OE) crct10dif_pclmul snd_seq crc32_pclmul snd_seq_device ghash_clmulni_intel snd_timer aesni_intel snd aes_x86_64 lrw joydev gf128mul glue_helper ablk_helper fb_sys_fops cryptd syscopyarea sysfillrect soundcore sysimgblt input_leds serio_raw i2c_piix4 mac_hid parport_pc ppdev lp parport autofs4 hid_generic usbhid ahci psmouse hid pata_acpi libahci e1000 fjes video [last unloaded: launch]
+[  974.400984] CPU: 0 PID: 0 Comm: swapper/0 Tainted: G           OE   4.8.8SungHoHong+ #17
+[  974.640876] Hardware name: innotek GmbH VirtualBox/VirtualBox, BIOS VirtualBox 12/01/2006
+[  974.873110] task: ffffffffade0d540 task.stack: ffffffffade00000
+[  974.951250] RIP: 0010:[<ffffffffad3ce207>]  [<ffffffffad3ce207>] blk_dequeue_request+0x77/0x80
+[  974.953171] RSP: 0018:ffff95f9b9c03c98  EFLAGS: 00010046
+[  974.955496] RAX: ffff95f9a8fbe450 RBX: ffff95f9a8fbe450 RCX: 0000000000000016
+[  974.982710] RDX: 0000000000000017 RSI: 0000000000000016 RDI: ffff95f9a8fbe450
+[  975.163477] RBP: ffff95f9b9c03ca8 R08: ffffffffffffffff R09: ffffffff80400000
+[  975.203076] R10: 0000000000000000 R11: 0000000000000001 R12: ffff95f9a8fbe450
+[  975.232714] R13: 000000000000001f R14: ffff95f9757d88e0 R15: 000000000000001f
+[  975.360179] FS:  0000000000000000(0000) GS:ffff95f9b9c00000(0000) knlGS:0000000000000000
+[  975.536797] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  975.664917] CR2: 00007f953f9e416c CR3: 000000013526d000 CR4: 00000000000406f0
+[  975.865482] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[  976.074000] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+[  976.278034] Stack:
+[  976.332150]  ffffffffad3ce222 ffff95f9a7350c40 ffff95f9b9c03cf0 ffffffffad3cf138
+[  976.532622]  000000000000001f 00000008b9c03d70 ffff95f9759ff000 ffff95f9757d88e0
+[  976.733724]  000000000000001e ffff95f9a8fbe450 ffff95f9757d3800 ffff95f9b9c03d58
+[  976.955646] Call Trace:
+[  977.030313]  <IRQ>
+[  977.086192]  [<ffffffffad3ce222>] ? blk_start_request+0x12/0x50
+[  977.252424]  [<ffffffffad3cf138>] blk_queue_start_tag+0xa8/0x1d0
+[  977.422449]  [<ffffffffad5d4ac4>] scsi_request_fn+0x104/0x620
+[  977.571983]  [<ffffffffad203a63>] ? kmem_cache_free+0x1e3/0x1f0
+[  977.746761]  [<ffffffffad3c96c3>] __blk_run_queue+0x33/0x40
+[  977.911114]  [<ffffffffad3c96f6>] blk_run_queue+0x26/0x40
+[  978.061182]  [<ffffffffad5d1a00>] scsi_run_queue+0x250/0x2e0
+[  978.226121]  [<ffffffffad5cb2f7>] ? scsi_host_free_command.isra.11+0x47/0x50
+[  978.448223]  [<ffffffffad5d1d54>] scsi_end_request+0x134/0x1c0
+[  978.604194]  [<ffffffffad5d5216>] scsi_io_completion+0x1b6/0x690
+[  978.725995]  [<ffffffffad5cbe2f>] scsi_finish_command+0xcf/0x120
+[  978.867366]  [<ffffffffad5d4994>] scsi_softirq_done+0x124/0x150
+[  979.020108]  [<ffffffffad3d518b>] blk_done_softirq+0x8b/0xb0
+[  979.170215]  [<ffffffffad862046>] __do_softirq+0xf6/0x280
+[  979.323511]  [<ffffffffad087c63>] irq_exit+0xa3/0xb0
+[  979.467984]  [<ffffffffad050b73>] smp_call_function_single_interrupt+0x33/0x40
+[  979.677055]  [<ffffffffad861712>] call_function_single_interrupt+0x82/0x90
+[  979.862021]  <EOI>
+[  979.922232]  [<ffffffffad0641c6>] ? native_safe_halt+0x6/0x10
+[  980.092671]  [<ffffffffad037dee>] default_idle+0x1e/0xd0
+[  980.248031]  [<ffffffffad03856f>] arch_cpu_idle+0xf/0x20
+[  980.407280]  [<ffffffffad0c62ba>] default_idle_call+0x2a/0x40
+[  980.578403]  [<ffffffffad0c65ba>] cpu_startup_entry+0x2ea/0x350
+[  980.757740]  [<ffffffffad851f47>] rest_init+0x77/0x80
+[  980.887044]  [<ffffffffadf7ffdc>] start_kernel+0x466/0x487
+[  981.050299]  [<ffffffffadf7f120>] ? early_idt_handler_array+0x120/0x120
+[  981.245854]  [<ffffffffadf7f2d5>] x86_64_start_reservations+0x24/0x26
+[  981.437034]  [<ffffffffadf7f41a>] x86_64_start_kernel+0x143/0x166
+[  981.620517] Code: 48 89 e5 53 74 08 c1 e8 03 83 e0 01 89 c2 48 63 c2 48 89 fb 83 84 81 5c 06 00 00 01 e8 13 8e c6 ff 48 89 83 e8 00 00 00 5b 5d c3 <0f> 0b 0f 0b 0f 1f 44 00 00 0f 1f 44 00 00 55 48 89 e5 53 48 89
+[  981.962152] RIP  [<ffffffffad3ce207>] blk_dequeue_request+0x77/0x80
+[  982.133435]  RSP <ffff95f9b9c03c98>
+[  982.238793] fbcon_switch: detected unhandled fb_set_par error, error code -16
+[  982.441122] fbcon_switch: detected unhandled fb_set_par error, error code -16
+[  982.634770] ---[ end trace ad86f7ba64bb1516 ]---
+[  982.764116] Kernel panic - not syncing: Fatal exception in interrupt
+[  983.987871] Shutting down cpus with NMI
+[  984.102660] Kernel Offset: 0x2c000000 from 0xffffffff81000000 (relocation range: 0xffffffff80000000-0xffffffffbfffffff)
+[  984.386583] ---[ end Kernel panic - not syncing: Fatal exception in interrupt

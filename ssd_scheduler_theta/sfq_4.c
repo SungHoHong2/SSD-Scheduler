@@ -57,7 +57,7 @@ typedef struct sfq_data {
   struct list_head queue;
   // total number of sfq_queue
   int sfqq_size;
-  // int sfqq_total_seek;
+  int sfqq_total_seek;
   // total number of sfq_request
   int sfqr_size;
   // total number of heap_size
@@ -140,7 +140,7 @@ static int sfq_init_queue(struct request_queue *q, struct elevator_type *e)
   sfqd->prev_sfqr = NULL;
   sfqd->os_sfqq = NULL;
   sfqd->sfqq_size = 0;
-  // sfqd->sfqq_total_seek = 0;
+  sfqd->sfqq_total_seek = 0;
   sfqd->sfqr_size = 0;
   sfqd->heap_size = 0;
   sfqd->heap_limit_size = 0;
@@ -257,7 +257,7 @@ static int sfq_dispatch(struct request_queue *q, int force)
   if(!(sfqd->os_sfqq)){
       sfqq = sfqd->os_sfqq = list_first_entry_or_null(&sfqd->queue, struct sfq_queue, queuelist);
       if(!(sfqq)) return 0;
-      // sfqd->sfqq_total_seek++;
+      sfqd->sfqq_total_seek++;
 
       // printk("FIRST_DISPATCH PID: %d SEEK: %d  SIZE: %d\n", sfqd->os_sfqq->pid, sfqd->sfqq_total_seek, sfqd->sfqq_size);
 
@@ -266,20 +266,45 @@ static int sfq_dispatch(struct request_queue *q, int force)
   next_dispatch:
 
       sfqq = list_next_entry(sfqd->os_sfqq, queuelist);
-      sfqd->os_sfqq = sfqq;
-        if(!sfqd->wrong_sfqq){
-              sfqq_test = list_next_entry(sfqq, queuelist);
-              // printk("prev: %d, next: %d\n",sfqq->pid, sfqq_test->pid);
-              sfqd->wrong_sfqq = sfqq_test;
-              goto next_dispatch;
-        } else {
-          if(sfqq->pid == sfqd->wrong_sfqq->pid){
-                  // printk("pid: %d caught\n", sfqq->pid);
-                  // sfqd->sfqq_total_seek = 0;
-                  goto next_dispatch;
-          }
-        }
 
+      if(!sfqd->wrong_sfqq){
+        sfqd->wrong_sfqq = list_next_entry(sfqq, queuelist);
+        printk("not yet intialized\n");
+      } else {
+        if(sfqq->pid == sfqd->wrong_sfqq->pid) printk("pid: %d caught\n", sfqq->pid);
+      }
+
+
+      // if(sfqq_test)
+      // printk("prev pid: %d  next pid: %d\n", sfqq->pid, sfqq_test->pid);
+      //
+      //
+      // //work
+      // if(sfqd->wrong_sfqq){
+      //   if(sfqq->pid == sfqd->wrong_sfqq->pid) printk("pid: %d caught\n", sfqq->pid);
+      // } else {
+      //   printk("not yet intialized\n");
+      // }
+
+      sfqd->os_sfqq = sfqq;
+
+      if(sfqd->sfqq_total_seek == sfqd->sfqq_size){
+        sfqd->sfqq_total_seek = 0;
+        sfqd->wrong_sfqq = sfqq;
+        goto next_dispatch;
+      }
+
+      // sfqd->os_sfqq = sfqq;
+      // if(sfqd->wrong_sfqq){
+      //     if(sfqd->os_sfqq->pid == sfqd->wrong_sfqq->pid){
+      //       // sfqd->sfqq_total_seek = 0;
+      //       // sfqd->wrong_sfqq = sfqq;
+      //       goto next_dispatch;
+      //     }
+      // }
+
+
+      sfqd->sfqq_total_seek++;
 
       // check for left requests
       if(list_empty(&sfqd->os_sfqq->queue)){

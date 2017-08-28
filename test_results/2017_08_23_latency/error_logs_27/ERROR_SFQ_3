@@ -1,0 +1,107 @@
+[  230.666083] hrtimer: interrupt took 3354 ns
+[  242.573193] ------------[ cut here ]------------
+[  242.817655] WARNING: CPU: 1 PID: 0 at drivers/ata/libata-core.c:5266 ata_qc_issue+0x31f/0x330
+[  243.227189] Modules linked in: launch(OE) nls_utf8 isofs vboxsf(OE) vboxvideo(OE) snd_intel8x0 ttm snd_ac97_codec ac97_bus snd_pcm drm_kms_helper snd_seq_midi snd_seq_midi_event snd_rawmidi drm snd_seq vboxguest(OE) crct10dif_pclmul crc32_pclmul snd_seq_device ghash_clmulni_intel snd_timer aesni_intel snd aes_x86_64 joydev lrw gf128mul glue_helper fb_sys_fops syscopyarea ablk_helper sysfillrect cryptd soundcore sysimgblt input_leds serio_raw i2c_piix4 mac_hid parport_pc ppdev lp parport autofs4 hid_generic usbhid psmouse hid ahci fjes video libahci pata_acpi e1000 [last unloaded: launch]
+[  245.826575] CPU: 1 PID: 0 Comm: swapper/1 Tainted: G           OE   4.8.8SungHoHong+ #17
+[  246.216514] Hardware name: innotek GmbH VirtualBox/VirtualBox, BIOS VirtualBox 12/01/2006
+[  246.687689]  0000000000000086 eefdefe3526f8483 ffff92a8f9d03b88 ffffffff973fe913
+[  246.993330]  0000000000000000 0000000000000000 ffff92a8f9d03bc8 ffffffff97081fbb
+[  247.323661]  00001492970b3d0c ffff92a8b5578000 0000000000000006 ffff92a8b5579e80
+[  247.573449] Call Trace:
+[  247.573837]  <IRQ>  [<ffffffff973fe913>] dump_stack+0x63/0x90
+[  247.637193]  [<ffffffff97081fbb>] __warn+0xcb/0xf0
+[  247.836982]  [<ffffffff970820ed>] warn_slowpath_null+0x1d/0x20
+[  248.007910]  [<ffffffff975f016f>] ata_qc_issue+0x31f/0x330
+[  248.165672]  [<ffffffff975f6783>] ? ata_scsi_rw_xlat+0x193/0x250
+[  248.380702]  [<ffffffff975f65f0>] ? ata_scsiop_inq_b6+0x50/0x50
+[  248.404338]  [<ffffffff975f68f2>] ata_scsi_translate+0xb2/0x1a0
+[  248.439720]  [<ffffffff975f9c52>] ata_scsi_queuecmd+0x92/0x1e0
+[  248.443717]  [<ffffffff975d2101>] scsi_dispatch_cmd+0xe1/0x240
+[  248.465540]  [<ffffffff975d4e3c>] scsi_request_fn+0x47c/0x620
+[  248.469216]  [<ffffffff973c96c3>] __blk_run_queue+0x33/0x40
+[  248.494933]  [<ffffffff973c96f6>] blk_run_queue+0x26/0x40
+[  248.587515]  [<ffffffff975d1a00>] scsi_run_queue+0x250/0x2e0
+[  248.727242]  [<ffffffff975cb2f7>] ? scsi_host_free_command.isra.11+0x47/0x50
+[  249.115677]  [<ffffffff975d1d54>] scsi_end_request+0x134/0x1c0
+[  249.447394]  [<ffffffff975d5216>] scsi_io_completion+0x1b6/0x690
+[  249.727726]  [<ffffffff975cbe2f>] scsi_finish_command+0xcf/0x120
+[  250.057278]  [<ffffffff975d4994>] scsi_softirq_done+0x124/0x150
+[  250.393465]  [<ffffffff973d518b>] blk_done_softirq+0x8b/0xb0
+[  250.641213]  [<ffffffff97862046>] __do_softirq+0xf6/0x280
+[  250.897476]  [<ffffffff97087c63>] irq_exit+0xa3/0xb0
+[  251.174919]  [<ffffffff97861da4>] do_IRQ+0x54/0xd0
+[  251.373208]  [<ffffffff9785fe82>] common_interrupt+0x82/0x82
+[  251.569328]  <EOI>  [<ffffffff970641c6>] ? native_safe_halt+0x6/0x10
+[  251.741701]  [<ffffffff97037dee>] default_idle+0x1e/0xd0
+[  251.910098]  [<ffffffff9703856f>] arch_cpu_idle+0xf/0x20
+[  252.106668]  [<ffffffff970c62ba>] default_idle_call+0x2a/0x40
+[  252.356880]  [<ffffffff970c65ba>] cpu_startup_entry+0x2ea/0x350
+[  252.549436]  [<ffffffff97051591>] start_secondary+0x151/0x190
+[  252.625672] ---[ end trace 0129235e430e7bcf ]---
+[  252.773298] BUG: unable to handle kernel NULL pointer dereference at           (null)
+[  252.811833] IP: [<ffffffff975d0165>] scsi_times_out+0x15/0x250
+[  252.956494] PGD 15ade7067 PUD 15ade8067 PMD 0
+[  252.971381] Oops: 0000 [#1] SMP
+[  252.985355] Modules linked in: launch(OE) nls_utf8 isofs vboxsf(OE) vboxvideo(OE) snd_intel8x0 ttm snd_ac97_codec ac97_bus snd_pcm drm_kms_helper snd_seq_midi snd_seq_midi_event snd_rawmidi drm snd_seq vboxguest(OE) crct10dif_pclmul crc32_pclmul snd_seq_device ghash_clmulni_intel snd_timer aesni_intel snd aes_x86_64 joydev lrw gf128mul glue_helper fb_sys_fops syscopyarea ablk_helper sysfillrect cryptd soundcore sysimgblt input_leds serio_raw i2c_piix4 mac_hid parport_pc ppdev lp parport autofs4 hid_generic usbhid psmouse hid ahci fjes video libahci pata_acpi e1000 [last unloaded: launch]
+[  254.384268] CPU: 1 PID: 0 Comm: swapper/1 Tainted: G        W  OE   4.8.8SungHoHong+ #17
+[  254.709326] Hardware name: innotek GmbH VirtualBox/VirtualBox, BIOS VirtualBox 12/01/2006
+[  255.043192] task: ffff92a8f2e12ac0 task.stack: ffff92a8f2e24000
+[  255.302274] RIP: 0010:[<ffffffff975d0165>]  [<ffffffff975d0165>] scsi_times_out+0x15/0x250
+[  255.744409] RSP: 0018:ffff92a8f9d03b38  EFLAGS: 00010086
+[  256.037107] RAX: ffffffff975d0150 RBX: ffff92a8c1567140 RCX: ffff92a8c1567280
+[  256.365727] RDX: ffff92a8c1567280 RSI: 0000000000000006 RDI: ffff92a8c1567140
+[  256.667047] RBP: ffff92a8f9d03b50 R08: 0000000000000001 R09: 0000000000000005
+[  256.935710] R10: 000000000002000b R11: 0000000000000231 R12: 0000000000000000
+[  257.246365] R13: ffff92a8b5f961a0 R14: ffff92a8b557a300 R15: ffff92a8b5579e80
+[  257.523257] FS:  0000000000000000(0000) GS:ffff92a8f9d00000(0000) knlGS:0000000000000000
+[  257.841436] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  258.051960] CR2: 0000000000000000 CR3: 000000015ade6000 CR4: 00000000000406e0
+[  258.467097] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[  258.762598] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+[  259.053003] Stack:
+[  259.127069]  ffff92a8c1567140 0000000000000046 ffff92a8b5f961a0 ffff92a8f9d03b68
+[  259.557034]  ffffffff973d555f ffff92a8b5578a60 ffff92a8f9d03b78 ffffffff973d5748
+[  259.927874]  ffff92a8f9d03ba0 ffffffff975fb78e ffff92a8b5578a60 0000000000000006
+[  260.306114] Call Trace:
+[  260.414601]  <IRQ>
+[  260.469656]  [<ffffffff973d555f>] blk_rq_timed_out+0x1f/0x60
+[  260.727192]  [<ffffffff973d5748>] blk_abort_request+0x58/0x60
+[  260.932173]  [<ffffffff975fb78e>] ata_qc_schedule_eh+0x6e/0xa0
+[  261.129077]  [<ffffffff975efcb9>] ata_qc_complete+0x229/0x2e0
+[  261.357241]  [<ffffffff975eff4a>] ata_qc_issue+0xfa/0x330
+[  261.567795]  [<ffffffff975f6783>] ? ata_scsi_rw_xlat+0x193/0x250
+[  261.749175]  [<ffffffff975f65f0>] ? ata_scsiop_inq_b6+0x50/0x50
+[  261.974157]  [<ffffffff975f68f2>] ata_scsi_translate+0xb2/0x1a0
+[  262.202429]  [<ffffffff975f9c52>] ata_scsi_queuecmd+0x92/0x1e0
+[  262.491019]  [<ffffffff975d2101>] scsi_dispatch_cmd+0xe1/0x240
+[  262.717959]  [<ffffffff975d4e3c>] scsi_request_fn+0x47c/0x620
+[  262.956329]  [<ffffffff973c96c3>] __blk_run_queue+0x33/0x40
+[  263.188210]  [<ffffffff973c96f6>] blk_run_queue+0x26/0x40
+[  263.368463]  [<ffffffff975d1a00>] scsi_run_queue+0x250/0x2e0
+[  263.620294]  [<ffffffff975cb2f7>] ? scsi_host_free_command.isra.11+0x47/0x50
+[  263.927911]  [<ffffffff975d1d54>] scsi_end_request+0x134/0x1c0
+[  264.167758]  [<ffffffff975d5216>] scsi_io_completion+0x1b6/0x690
+[  264.460022]  [<ffffffff975cbe2f>] scsi_finish_command+0xcf/0x120
+[  264.716935]  [<ffffffff975d4994>] scsi_softirq_done+0x124/0x150
+[  264.978971]  [<ffffffff973d518b>] blk_done_softirq+0x8b/0xb0
+[  265.228179]  [<ffffffff97862046>] __do_softirq+0xf6/0x280
+[  265.477819]  [<ffffffff97087c63>] irq_exit+0xa3/0xb0
+[  265.663971]  [<ffffffff97861da4>] do_IRQ+0x54/0xd0
+[  265.893061]  [<ffffffff9785fe82>] common_interrupt+0x82/0x82
+[  266.085302]  <EOI>
+[  266.177597]  [<ffffffff970641c6>] ? native_safe_halt+0x6/0x10
+[  266.445240]  [<ffffffff97037dee>] default_idle+0x1e/0xd0
+[  266.655176]  [<ffffffff9703856f>] arch_cpu_idle+0xf/0x20
+[  266.837527]  [<ffffffff970c62ba>] default_idle_call+0x2a/0x40
+[  267.133683]  [<ffffffff970c65ba>] cpu_startup_entry+0x2ea/0x350
+[  267.440213]  [<ffffffff97051591>] start_secondary+0x151/0x190
+[  267.687441] Code: 48 89 df 45 31 ed e8 bb bf ff ff 85 c0 75 d2 e9 51 ff ff ff 66 90 0f 1f 44 00 00 55 48 89 e5 41 55 41 54 53 4c 8b a7 f8 00 00 00 <49> 8b 04 24 4c 8b 28 0f 1f 44 00 00 be 07 20 00 00 4c 89 e7 e8
+[  268.303318] RIP  [<ffffffff975d0165>] scsi_times_out+0x15/0x250
+[  268.565104]  RSP <ffff92a8f9d03b38>
+[  268.718048] CR2: 0000000000000000
+[  268.848691] fbcon_switch: detected unhandled fb_set_par error, error code -16
+[  268.977548] fbcon_switch: detected unhandled fb_set_par error, error code -16
+[  268.999042] ---[ end trace 0129235e430e7bd0 ]---
+[  269.047406] Kernel panic - not syncing: Fatal exception in interrupt
+[  269.240290] Kernel Offset: 0x16000000 from 0xffffffff81000000 (relocation range: 0xffffffff80000000-0xffffffffbfffffff)
+[  269.494598] ---[ end Kernel panic - not syncing: Fatal exception in interrupt
