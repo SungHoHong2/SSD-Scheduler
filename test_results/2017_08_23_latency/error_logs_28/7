@@ -1,0 +1,56 @@
+Ubuntu 16.04.1 LTS sungho-VirtualBox ttyS0
+
+sungho-VirtualBox login: [  146.128642] ISO 9660 Extensions: Microsoft Joliet Level 3
+[  146.442661] ISO 9660 Extensions: RRIP_1991A
+[  207.479864] traps: pool[2260] trap int3 ip:7f471f990a6b sp:7f46fd2066f0 error:0 in libglib-2.0.so.0.4800.1[7f471f940000+10f000]
+[  319.619567] io scheduler sfq registered
+[  322.088058] io scheduler sfq registered
+[  322.218976] INIT_SFQ WRITING_ERROR: 64 BETA
+[  324.952603] hrtimer: interrupt took 3536 ns
+[  327.302541] blk_queue_start_tag: request ffff9cf572adaa10 for device [sdb] already tagged 23
+[  327.507280] ------------[ cut here ]------------
+[  327.649529] kernel BUG at block/blk-tag.c:324!
+[  327.774609] invalid opcode: 0000 [#1] SMP
+[  327.891551] Modules linked in: launch(OE) nls_utf8 isofs vboxsf(OE) vboxvideo(OE) ttm snd_intel8x0 drm_kms_helper snd_ac97_codec ac97_bus snd_pcm drm snd_seq_midi snd_seq_midi_event snd_rawmidi snd_seq vboxguest(OE) crct10dif_pclmul crc32_pclmul ghash_clmulni_intel snd_seq_device snd_timer aesni_intel snd aes_x86_64 joydev lrw gf128mul glue_helper ablk_helper cryptd soundcore fb_sys_fops syscopyarea sysfillrect input_leds sysimgblt serio_raw i2c_piix4 mac_hid parport_pc ppdev lp parport autofs4 hid_generic ahci usbhid psmouse pata_acpi hid e1000 libahci fjes video [last unloaded: launch]
+[  329.309883] CPU: 0 PID: 2747 Comm: fio Tainted: G           OE   4.8.8SungHoHong+ #17
+[  329.554877] Hardware name: innotek GmbH VirtualBox/VirtualBox, BIOS VirtualBox 12/01/2006
+[  329.779690] task: ffff9cf55adf2ac0 task.stack: ffff9cf55ef90000
+[  329.959077] RIP: 0010:[<ffffffff993cf251>]  [<ffffffff993cf251>] blk_queue_start_tag+0x1c1/0x1d0
+[  330.219634] RSP: 0018:ffff9cf55ef939b0  EFLAGS: 00010082
+[  330.373569] RAX: 0000000000000050 RBX: ffff9cf5355d3d80 RCX: ffffffff99e50b48
+[  330.589834] RDX: 0000000000000000 RSI: 0000000000000002 RDI: 0000000000000002
+[  330.787263] RBP: ffff9cf55ef939e8 R08: 0000000000000000 R09: 0000000000000005
+[  330.968486] R10: ffff9cf54897e208 R11: 000000000000020d R12: ffff9cf572adaa10
+[  331.173955] R13: 0000000000000006 R14: ffff9cf572adaa10 R15: ffff9cf534c49000
+[  331.383998] FS:  00007f891f5e3700(0000) GS:ffff9cf579c00000(0000) knlGS:0000000000000000
+[  331.609290] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  331.776748] CR2: 00007ffc059b9002 CR3: 000000015ef77000 CR4: 00000000000406f0
+[  331.981565] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[  332.186492] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+[  332.403874] Stack:
+[  332.464330]  ffff9cf55ef939e8 ffffffff993ce402 ffff9cf5359ff000 ffff9cf535771aa0
+[  332.675338]  0000000000000006 ffff9cf572adaa10 ffff9cf534c49000 ffff9cf55ef93a50
+[  332.884965]  ffffffff995d4ac4 0000000000000000 ffff9cf5359ff208 0000000000000000
+[  333.109284] Call Trace:
+[  333.183652]  [<ffffffff993ce402>] ? blk_peek_request+0x52/0x2a0
+[  333.349570]  [<ffffffff995d4ac4>] scsi_request_fn+0x104/0x620
+[  333.524735]  [<ffffffff993c96c3>] __blk_run_queue+0x33/0x40
+[  333.684693]  [<ffffffff993c998a>] queue_unplugged+0x2a/0xb0
+[  333.849586]  [<ffffffff993ce967>] blk_flush_plug_list+0x1e7/0x250
+[  334.031812]  [<ffffffff993ceddc>] blk_finish_plug+0x2c/0x40
+[  334.184565]  [<ffffffff9926c2b6>] do_blockdev_direct_IO+0x1e66/0x3070
+[  334.340741]  [<ffffffff99267380>] ? I_BDEV+0x20/0x20
+[  334.489550]  [<ffffffff9926d4fa>] __blockdev_direct_IO+0x3a/0x40
+[  334.661622]  [<ffffffff99267ccc>] blkdev_direct_IO+0x4c/0x70
+[  334.817546]  [<ffffffff9919c658>] generic_file_read_iter+0x6b8/0x870
+[  335.006679]  [<ffffffff992680c5>] blkdev_read_iter+0x35/0x40
+[  335.166042]  [<ffffffff99229bc0>] __vfs_read+0xe0/0x150
+[  335.313853]  [<ffffffff9922ad15>] vfs_read+0x95/0x140
+[  335.433031]  [<ffffffff9922c3d5>] SyS_pread64+0x95/0xb0
+[  335.577232]  [<ffffffff9985f536>] entry_SYSCALL_64_fastpath+0x1e/0xa8
+[  335.760956] Code: 01 00 00 48 c7 c1 2b 0d ca 99 48 c7 c7 48 b6 cc 99 48 8d 42 0c 48 85 d2 48 89 f2 48 c7 c6 d0 32 a5 99 48 0f 45 c8 e8 2d 89 dc ff <0f> 0b 0f 1f 00 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 55
+[  336.096530] RIP  [<ffffffff993cf251>] blk_queue_start_tag+0x1c1/0x1d0
+[  336.285389]  RSP <ffff9cf55ef939b0>
+[  336.390370] fbcon_switch: detected unhandled fb_set_par error, error code -16
+[  336.595149] fbcon_switch: detected unhandled fb_set_par error, error code -16
+[  336.800291] ---[ end trace 8b4c0624793a05c8 ]---

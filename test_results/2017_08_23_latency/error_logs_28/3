@@ -1,0 +1,70 @@
+sungho-VirtualBox login: [ 1327.563651] ISO 9660 Extensions: Microsoft Joliet Level 3
+[ 1327.962252] ISO 9660 Extensions: RRIP_1991A
+[ 1388.961566] do_trap: 6 callbacks suppressed
+[ 1389.062505] traps: pool[2691] trap int3 ip:7f01716cca6b sp:7f014eddd6f0 error:0 in libglib-2.0.so.0.4800.1[7f017167c000+10f000]
+[ 1494.256358] io scheduler sfq registered
+[ 1497.591641] io scheduler sfq registered
+[ 1497.728986] INIT_SFQ WRITING_ERROR: 64 BETA
+[ 1506.479778] hrtimer: interrupt took 15745 ns
+[ 1538.704541] blk_queue_start_tag: request ffff97283a2a9420 for device [sdb] already tagged 28
+[ 1538.960777] ------------[ cut here ]------------
+[ 1539.107067] kernel BUG at block/blk-tag.c:324!
+[ 1539.232001] invalid opcode: 0000 [#1] SMP
+[ 1539.322551] Modules linked in: launch(OE) nls_utf8 isofs vboxvideo(OE) vboxsf(OE) ttm drm_kms_helper snd_intel8x0 snd_ac97_codec ac97_bus snd_pcm drm snd_seq_midi snd_seq_midi_event snd_rawmidi snd_seq vboxguest(OE) crct10dif_pclmul crc32_pclmul ghash_clmulni_intel snd_seq_device snd_timer aesni_intel snd joydev aes_x86_64 lrw gf128mul glue_helper ablk_helper cryptd fb_sys_fops syscopyarea soundcore sysfillrect input_leds sysimgblt serio_raw i2c_piix4 mac_hid parport_pc ppdev lp parport autofs4 hid_generic usbhid psmouse e1000 hid fjes video ahci pata_acpi libahci [last unloaded: launch]
+[ 1540.752664] CPU: 0 PID: 0 Comm: swapper/0 Tainted: G           OE   4.8.8SungHoHong+ #17
+[ 1540.967942] Hardware name: innotek GmbH VirtualBox/VirtualBox, BIOS VirtualBox 12/01/2006
+[ 1541.210840] task: ffffffff8ae0d540 task.stack: ffffffff8ae00000
+[ 1541.382910] RIP: 0010:[<ffffffff8a3cf251>]  [<ffffffff8a3cf251>] blk_queue_start_tag+0x1c1/0x1d0
+[ 1541.631740] RSP: 0018:ffff972879c03cb8  EFLAGS: 00010086
+[ 1541.738184] RAX: 0000000000000050 RBX: ffff972835b75380 RCX: ffffffff8ae50b48
+[ 1541.954817] RDX: 0000000000000000 RSI: 0000000000000002 RDI: 0000000000000002
+[ 1542.161507] RBP: ffff972879c03cf0 R08: 0000000000000000 R09: 0000000000000005
+[ 1542.375882] R10: ffff97284a1f8300 R11: 0000000000000215 R12: ffff97283a2a9420
+[ 1542.591407] R13: 000000000000001e R14: ffff97283a2a9420 R15: ffff9728350b3000
+[ 1542.791253] FS:  0000000000000000(0000) GS:ffff972879c00000(0000) knlGS:0000000000000000
+[ 1543.024532] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[ 1543.193284] CR2: 00007f23d907301c CR3: 0000000149c4d000 CR4: 00000000000406f0
+[ 1543.406569] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[ 1543.607527] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+[ 1543.800455] Stack:
+[ 1543.862338]  0000000000000001 ffff972879c03d70 ffff972835a1f000 ffff972835240000
+[ 1544.066425]  000000000000001e ffff97283a2a9420 ffff9728350b3000 ffff972879c03d58
+[ 1544.281096]  ffffffff8a5d4ac4 0000000000000fe0 ffff972835a1f208 ffff97284a1f86d8
+[ 1544.480530] Call Trace:
+[ 1544.554313]  <IRQ>
+[ 1544.613922]  [<ffffffff8a5d4ac4>] scsi_request_fn+0x104/0x620
+[ 1544.794533]  [<ffffffff8a203a63>] ? kmem_cache_free+0x1e3/0x1f0
+[ 1544.951271]  [<ffffffff8a3c96c3>] __blk_run_queue+0x33/0x40
+[ 1545.120099]  [<ffffffff8a3c96f6>] blk_run_queue+0x26/0x40
+[ 1545.265443]  [<ffffffff8a5d1a00>] scsi_run_queue+0x250/0x2e0
+[ 1545.425950]  [<ffffffff8a5cb2f7>] ? scsi_host_free_command.isra.11+0x47/0x50
+[ 1545.624389]  [<ffffffff8a5d1d54>] scsi_end_request+0x134/0x1c0
+[ 1545.782648]  [<ffffffff8a5d5216>] scsi_io_completion+0x1b6/0x690
+[ 1545.943216]  [<ffffffff8a5cbe2f>] scsi_finish_command+0xcf/0x120
+[ 1546.102380]  [<ffffffff8a5d4994>] scsi_softirq_done+0x124/0x150
+[ 1546.275303]  [<ffffffff8a3d518b>] blk_done_softirq+0x8b/0xb0
+[ 1546.447381]  [<ffffffff8a862046>] __do_softirq+0xf6/0x280
+[ 1546.603914]  [<ffffffff8a087c63>] irq_exit+0xa3/0xb0
+[ 1546.754915]  [<ffffffff8a050b73>] smp_call_function_single_interrupt+0x33/0x40
+[ 1546.943998]  [<ffffffff8a861712>] call_function_single_interrupt+0x82/0x90
+[ 1547.086723]  <EOI>
+[ 1547.099104]  [<ffffffff8a0641c6>] ? native_safe_halt+0x6/0x10
+[ 1547.131414]  [<ffffffff8a037dee>] default_idle+0x1e/0xd0
+[ 1547.146403]  [<ffffffff8a03856f>] arch_cpu_idle+0xf/0x20
+[ 1547.148637]  [<ffffffff8a0c62ba>] default_idle_call+0x2a/0x40
+[ 1547.169911]  [<ffffffff8a0c65ba>] cpu_startup_entry+0x2ea/0x350
+[ 1547.312026]  [<ffffffff8a851f47>] rest_init+0x77/0x80
+[ 1547.453638]  [<ffffffff8af7ffdc>] start_kernel+0x466/0x487
+[ 1547.603427]  [<ffffffff8af7f120>] ? early_idt_handler_array+0x120/0x120
+[ 1547.797690]  [<ffffffff8af7f2d5>] x86_64_start_reservations+0x24/0x26
+[ 1547.976381]  [<ffffffff8af7f41a>] x86_64_start_kernel+0x143/0x166
+[ 1548.146335] Code: 01 00 00 48 c7 c1 2b 0d ca 8a 48 c7 c7 48 b6 cc 8a 48 8d 42 0c 48 85 d2 48 89 f2 48 c7 c6 d0 32 a5 8a 48 0f 45 c8 e8 2d 89 dc ff <0f> 0b 0f 1f 00 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 55
+[ 1548.492651] RIP  [<ffffffff8a3cf251>] blk_queue_start_tag+0x1c1/0x1d0
+[ 1548.670486]  RSP <ffff972879c03cb8>
+[ 1548.769879] fbcon_switch: detected unhandled fb_set_par error, error code -16
+[ 1548.951207] fbcon_switch: detected unhandled fb_set_par error, error code -16
+[ 1549.165661] ---[ end trace 4a9cbf6c0f3f5864 ]---
+[ 1549.282423] Kernel panic - not syncing: Fatal exception in interrupt
+[ 1550.493956] Shutting down cpus with NMI
+[ 1550.588042] Kernel Offset: 0x9000000 from 0xffffffff81000000 (relocation range: 0xffffffff80000000-0xffffffffbfffffff)
+[ 1550.899871] ---[ end Kernel panic - not syncing: Fatal exception in interrupt

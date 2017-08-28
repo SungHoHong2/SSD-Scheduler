@@ -1,0 +1,159 @@
+[  196.104901] io scheduler sfq registered
+[  196.223272] INIT_SFQ WRITING_ERROR: 64 BETA
+[  202.858385] ------------[ cut here ]------------
+[  202.988523] WARNING: CPU: 0 PID: 0 at drivers/ata/libata-core.c:5266 ata_qc_issue+0x31f/0x330
+[  203.210936] Modules linked in: launch(OE) nls_utf8 isofs vboxvideo(OE) vboxsf(OE) ttm drm_kms_helper snd_intel8x0 snd_ac97_codec ac97_bus snd_pcm drm snd_seq_midi snd_seq_midi_event snd_rawmidi snd_seq vboxguest(OE) crct10dif_pclmul crc32_pclmul snd_seq_device ghash_clmulni_intel snd_timer aesni_intel snd aes_x86_64 joydev lrw gf128mul glue_helper fb_sys_fops ablk_helper syscopyarea cryptd sysfillrect soundcore sysimgblt input_leds serio_raw i2c_piix4 mac_hid parport_pc ppdev lp parport autofs4 hid_generic usbhid hid psmouse fjes ahci libahci e1000 video pata_acpi [last unloaded: launch]
+[  204.562861] CPU: 0 PID: 0 Comm: swapper/0 Tainted: G           OE   4.8.8SungHoHong+ #17
+[  204.807340] Hardware name: innotek GmbH VirtualBox/VirtualBox, BIOS VirtualBox 12/01/2006
+[  205.044488]  0000000000000086 d9931d6a4b944e67 ffff8f76f9c03bb0 ffffffffa23fe913
+[  205.250307]  0000000000000000 0000000000000000 ffff8f76f9c03bf0 ffffffffa2081fbb
+[  205.395959]  00001492f9c03bd0 ffff8f76b5b68000 0000000000000006 ffff8f76b5b69e80
+[  205.437143] Call Trace:
+[  205.442128]  <IRQ>  [<ffffffffa23fe913>] dump_stack+0x63/0x90
+[  205.445121]  [<ffffffffa2081fbb>] __warn+0xcb/0xf0
+[  205.459422]  [<ffffffffa20820ed>] warn_slowpath_null+0x1d/0x20
+[  205.557164]  [<ffffffffa25f016f>] ata_qc_issue+0x31f/0x330
+[  205.712416]  [<ffffffffa25f6783>] ? ata_scsi_rw_xlat+0x193/0x250
+[  205.880786]  [<ffffffffa25f65f0>] ? ata_scsiop_inq_b6+0x50/0x50
+[  206.036933]  [<ffffffffa25f68f2>] ata_scsi_translate+0xb2/0x1a0
+[  206.203477]  [<ffffffffa25f9c52>] ata_scsi_queuecmd+0x92/0x1e0
+[  206.384368]  [<ffffffffa25d2101>] scsi_dispatch_cmd+0xe1/0x240
+[  206.548739]  [<ffffffffa25d4e3c>] scsi_request_fn+0x47c/0x620
+[  206.714766]  [<ffffffffa23c96c3>] __blk_run_queue+0x33/0x40
+[  206.870090]  [<ffffffffa23c96f6>] blk_run_queue+0x26/0x40
+[  207.034180]  [<ffffffffa25d1a00>] scsi_run_queue+0x250/0x2e0
+[  207.195391]  [<ffffffffa25cb2f7>] ? scsi_host_free_command.isra.11+0x47/0x50
+[  207.296320]  [<ffffffffa25d1d54>] scsi_end_request+0x134/0x1c0
+[  207.376767]  [<ffffffffa25d5216>] scsi_io_completion+0x1b6/0x690
+[  207.405502]  [<ffffffffa20ad518>] ? try_to_wake_up+0x58/0x3e0
+[  207.469421]  [<ffffffffa25cbe2f>] scsi_finish_command+0xcf/0x120
+[  207.481667]  [<ffffffffa25d4994>] scsi_softirq_done+0x124/0x150
+[  207.527635]  [<ffffffffa23d518b>] blk_done_softirq+0x8b/0xb0
+[  207.651136]  [<ffffffffa2862046>] __do_softirq+0xf6/0x280
+[  207.664173]  [<ffffffffa2087c63>] irq_exit+0xa3/0xb0
+[  207.675822]  [<ffffffffa2050b73>] smp_call_function_single_interrupt+0x33/0x40
+[  207.710950]  [<ffffffffa2861712>] call_function_single_interrupt+0x82/0x90
+[  207.727956]  <EOI>  [<ffffffffa20641c6>] ? native_safe_halt+0x6/0x10
+[  207.804855]  [<ffffffffa2037dee>] default_idle+0x1e/0xd0
+[  207.916359]  [<ffffffffa203856f>] arch_cpu_idle+0xf/0x20
+[  207.918997]  [<ffffffffa20c62ba>] default_idle_call+0x2a/0x40
+[  207.920409]  [<ffffffffa20c65ba>] cpu_startup_entry+0x2ea/0x350
+[  207.933732]  [<ffffffffa2851f47>] rest_init+0x77/0x80
+[  207.935308]  [<ffffffffa2f7ffdc>] start_kernel+0x466/0x487
+[  207.938376]  [<ffffffffa2f7f120>] ? early_idt_handler_array+0x120/0x120
+[  207.954967]  [<ffffffffa2f7f2d5>] x86_64_start_reservations+0x24/0x26
+[  208.105171]  [<ffffffffa2f7f41a>] x86_64_start_kernel+0x143/0x166
+[  208.235931] ---[ end trace 8a8b0d8abade2f39 ]---
+[  208.348550] ata4.00: exception Emask 0x0 SAct 0x800000 SErr 0x0 action 0x6
+[  208.446614] ata4.00: failed command: READ FPDMA QUEUED
+[  208.632556] ata4.00: cmd 60/10:b8:a8:05:00/00:00:00:00:00/40 tag 23 ncq dma 8192 in
+[  208.632556]          res 00/00:01:00:00:00/00:00:00:00:00/00 Emask 0x42 (HSM violation)
+[  209.312681] ata4: hard resetting link
+[  209.749949] ata4: SATA link up 3.0 Gbps (SStatus 123 SControl 300)
+[  210.033775] ata4.00: configured for UDMA/133
+[  210.205401] ata4: EH complete
+[  210.352621] ata4.00: exception Emask 0x0 SAct 0x200 SErr 0x0 action 0x6
+[  210.473653] ata4.00: failed command: READ FPDMA QUEUED
+[  210.565015] ata4.00: cmd 60/10:48:a8:05:00/00:00:00:00:00/40 tag 9 ncq dma 8192 in
+[  210.565015]          res 00/00:00:00:00:00/00:00:00:00:00/a0 Emask 0x42 (HSM violation)
+[  210.819515] ata4: hard resetting link
+[  210.946221] traps: pool[3390] trap int3 ip:7f703edeba6b sp:7f701c6786f0 error:0 in libglib-2.0.so.0.4800.1[7f703ed9b000+10f000]
+[  211.402999] ata4: SATA link up 3.0 Gbps (SStatus 123 SControl 300)
+[  211.655551] ata4.00: configured for UDMA/133
+[  211.782819] ata4: EH complete
+[  211.882070] ata4.00: exception Emask 0x0 SAct 0x800 SErr 0x0 action 0x6
+[  212.085156] ata4.00: failed command: READ FPDMA QUEUED
+[  212.272371] ata4.00: cmd 60/10:58:a8:05:00/00:00:00:00:00/40 tag 11 ncq dma 8192 in
+[  212.272371]          res 00/00:00:00:00:00/00:00:00:00:00/a0 Emask 0x42 (HSM violation)
+[  212.487885] ata4: hard resetting link
+[  212.814373] ata4: SATA link up 3.0 Gbps (SStatus 123 SControl 300)
+[  212.874577] ata4.00: configured for UDMA/133
+[  212.984768] ata4: EH complete
+[  213.112266] ata4.00: NCQ disabled due to excessive errors
+[  213.258231] ata4.00: exception Emask 0x0 SAct 0x400 SErr 0x0 action 0x6
+[  213.384526] ata4.00: failed command: READ FPDMA QUEUED
+[  213.521247] ata4.00: cmd 60/10:50:a8:05:00/00:00:00:00:00/40 tag 10 ncq dma 8192 in
+[  213.521247]          res 00/00:00:00:00:00/00:00:00:00:00/a0 Emask 0x42 (HSM violation)
+[  213.990731] ata4: hard resetting link
+[  214.340336] ata4: SATA link up 3.0 Gbps (SStatus 123 SControl 300)
+[  214.440633] ata4.00: configured for UDMA/133
+[  214.452740] ata4: EH complete
+[  214.479417] ata4.00: exception Emask 0x0 SAct 0x0 SErr 0x0 action 0x6
+[  214.487426] ata4.00: failed command: READ DMA
+[  214.490230] ata4.00: cmd c8/00:10:a8:05:00/00:00:00:00:00/e0 tag 24 dma 8192 in
+[  214.490230]          res 00/00:00:00:00:00/00:00:00:00:00/a0 Emask 0x42 (HSM violation)
+[  214.509507] ata4: hard resetting link
+[  214.829119] ata4: SATA link up 3.0 Gbps (SStatus 123 SControl 300)
+[  214.986552] ata4.00: configured for UDMA/133
+[  215.079719] ata4: EH complete
+[  215.162060] ata4: limiting SATA link speed to 1.5 Gbps
+[  215.300398] ata4.00: exception Emask 0x0 SAct 0x0 SErr 0x0 action 0x6
+[  215.490356] ata4.00: failed command: READ DMA
+[  215.553574] ata4.00: cmd c8/00:10:a8:05:00/00:00:00:00:00/e0 tag 28 dma 8192 in
+[  215.553574]          res 00/00:00:00:00:00/00:00:00:00:00/a0 Emask 0x42 (HSM violation)
+[  215.911485] ata4: hard resetting link
+[  216.283914] ata4: SATA link up 1.5 Gbps (SStatus 113 SControl 310)
+[  216.459776] ata4.00: configured for UDMA/133
+[  216.569635] ata4: EH complete
+[  216.813743] ------------[ cut here ]------------
+[  216.943251] kernel BUG at block/blk-core.c:2486!
+[  217.071277] invalid opcode: 0000 [#1] SMP
+[  217.190136] Modules linked in: launch(OE) nls_utf8 isofs vboxvideo(OE) vboxsf(OE) ttm drm_kms_helper snd_intel8x0 snd_ac97_codec ac97_bus snd_pcm drm snd_seq_midi snd_seq_midi_event snd_rawmidi snd_seq vboxguest(OE) crct10dif_pclmul crc32_pclmul snd_seq_device ghash_clmulni_intel snd_timer aesni_intel snd aes_x86_64 joydev lrw gf128mul glue_helper fb_sys_fops ablk_helper syscopyarea cryptd sysfillrect soundcore sysimgblt input_leds serio_raw i2c_piix4 mac_hid parport_pc ppdev lp parport autofs4 hid_generic usbhid hid psmouse fjes ahci libahci e1000 video pata_acpi [last unloaded: launch]
+[  218.089764] CPU: 0 PID: 0 Comm: swapper/0 Tainted: G        W  OE   4.8.8SungHoHong+ #17
+[  218.308045] Hardware name: innotek GmbH VirtualBox/VirtualBox, BIOS VirtualBox 12/01/2006
+[  218.548961] task: ffffffffa2e0d540 task.stack: ffffffffa2e00000
+[  218.725671] RIP: 0010:[<ffffffffa23ce25b>]  [<ffffffffa23ce25b>] blk_start_request+0x4b/0x50
+[  218.956830] RSP: 0018:ffff8f76f9c03ca0  EFLAGS: 00010002
+[  219.099132] RAX: 0000000000000001 RBX: ffff8f76f0cce5c0 RCX: 0000000000000002
+[  219.300611] RDX: 000000347d79362b RSI: 00000000a05ed09a RDI: ffff8f76fa0f7000
+[  219.415298] RBP: ffff8f76f9c03ca8 R08: 0000000000000002 R09: fffffffffffff7ff
+[  219.613816] R10: 0000000000000001 R11: ffff8f76b55de800 R12: ffff8f76f0cce5c0
+[  219.830618] R13: 000000000000001f R14: ffff8f76b5fc7360 R15: 000000000000001f
+[  220.044687] FS:  0000000000000000(0000) GS:ffff8f76f9c00000(0000) knlGS:0000000000000000
+[  220.234629] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  220.406163] CR2: 00007f05ed12fe2c CR3: 00000001491e0000 CR4: 00000000000406f0
+[  220.607203] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[  220.827632] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+[  221.047169] Stack:
+[  221.106423]  ffff8f76b5284140 ffff8f76f9c03cf0 ffffffffa23cf138 000000000000001f
+[  221.307352]  0000000ca23ce522 ffff8f76b59e7000 ffff8f76b5fc7360 0000000000000001
+[  221.500257]  ffff8f76f0cce5c0 ffff8f76b574f800 ffff8f76f9c03d58 ffffffffa25d4ac4
+[  221.700592] Call Trace:
+[  221.767556]  <IRQ>
+[  221.817394]  [<ffffffffa23cf138>] blk_queue_start_tag+0xa8/0x1d0
+[  222.001766]  [<ffffffffa25d4ac4>] scsi_request_fn+0x104/0x620
+[  222.165309]  [<ffffffffa2203a63>] ? kmem_cache_free+0x1e3/0x1f0
+[  222.325323]  [<ffffffffa23c96c3>] __blk_run_queue+0x33/0x40
+[  222.337607]  [<ffffffffa23c96f6>] blk_run_queue+0x26/0x40
+[  222.492088]  [<ffffffffa25d1a00>] scsi_run_queue+0x250/0x2e0
+[  222.656274]  [<ffffffffa25cb2f7>] ? scsi_host_free_command.isra.11+0x47/0x50
+[  222.869985]  [<ffffffffa25d1d54>] scsi_end_request+0x134/0x1c0
+[  223.036317]  [<ffffffffa25d5216>] scsi_io_completion+0x1b6/0x690
+[  223.220382]  [<ffffffffa25cbe2f>] scsi_finish_command+0xcf/0x120
+[  223.398099]  [<ffffffffa25d4994>] scsi_softirq_done+0x124/0x150
+[  223.556685]  [<ffffffffa23d518b>] blk_done_softirq+0x8b/0xb0
+[  223.711707]  [<ffffffffa2862046>] __do_softirq+0xf6/0x280
+[  223.873430]  [<ffffffffa2087c63>] irq_exit+0xa3/0xb0
+[  224.006101]  [<ffffffffa2050b73>] smp_call_function_single_interrupt+0x33/0x40
+[  224.224678]  [<ffffffffa2861712>] call_function_single_interrupt+0x82/0x90
+[  224.415600]  <EOI>
+[  224.465749]  [<ffffffffa20641c6>] ? native_safe_halt+0x6/0x10
+[  224.620771]  [<ffffffffa2037dee>] default_idle+0x1e/0xd0
+[  224.773497]  [<ffffffffa203856f>] arch_cpu_idle+0xf/0x20
+[  224.934904]  [<ffffffffa20c62ba>] default_idle_call+0x2a/0x40
+[  225.066132]  [<ffffffffa20c65ba>] cpu_startup_entry+0x2ea/0x350
+[  225.245090]  [<ffffffffa2851f47>] rest_init+0x77/0x80
+[  225.391544]  [<ffffffffa2f7ffdc>] start_kernel+0x466/0x487
+[  225.541801]  [<ffffffffa2f7f120>] ? early_idt_handler_array+0x120/0x120
+[  225.720541]  [<ffffffffa2f7f2d5>] x86_64_start_reservations+0x24/0x26
+[  225.886354]  [<ffffffffa2f7f41a>] x86_64_start_kernel+0x143/0x166
+[  226.077819] Code: 00 00 48 85 c0 75 13 48 8b 43 50 a8 01 75 1c 48 89 df e8 e9 71 00 00 5b 5d c3 8b 50 58 89 90 2c 01 00 00 48 8b 43 50 a8 01 74 e4 <0f> 0b 0f 1f 00 0f 1f 44 00 00 55 48 89 e5 41 54 53 41 89 f4 48
+[  226.463801] RIP  [<ffffffffa23ce25b>] blk_start_request+0x4b/0x50
+[  226.633243]  RSP <ffff8f76f9c03ca0>
+[  226.734472] fbcon_switch: detected unhandled fb_set_par error, error code -16
+[  226.933333] fbcon_switch: detected unhandled fb_set_par error, error code -16
+[  227.137981] ---[ end trace 8a8b0d8abade2f3a ]---
+[  227.274627] Kernel panic - not syncing: Fatal exception in interrupt
+[  228.488655] Shutting down cpus with NMI
+[  228.603887] Kernel Offset: 0x21000000 from 0xffffffff81000000 (relocation range: 0xffffffff80000000-0xffffffffbfffffff)
+[  228.920127] ---[ end Kernel panic - not syncing: Fatal exception in interrupt
