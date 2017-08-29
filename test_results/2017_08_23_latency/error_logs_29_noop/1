@@ -1,0 +1,52 @@
+sungho-VirtualBox login: [  153.031640] ISO 9660 Extensions: Microsoft Joliet Level 3
+[  153.427078] ISO 9660 Extensions: RRIP_1991A
+[  334.137849] io scheduler sfq registered
+[  334.264141] INIT_SFQ WRITING_ERROR: 64 THETA
+[  491.994507] io scheduler sfq registered
+[  492.209115] noop_experiment
+[  502.792504] ------------[ cut here ]------------
+[  503.060605] kernel BUG at block/blk-core.c:1448!
+[  503.247374] invalid opcode: 0000 [#1] SMP
+[  503.370187] Modules linked in: launch(OE) nls_utf8 isofs vboxsf(OE) vboxvideo(OE) ttm snd_intel8x0 drm_kms_helper snd_ac97_codec ac97_bus drm snd_pcm snd_seq_midi snd_seq_midi_event snd_rawmidi snd_seq vboxguest(OE) crct10dif_pclmul crc32_pclmul ghash_clmulni_intel snd_seq_device aesni_intel snd_timer aes_x86_64 joydev snd lrw gf128mul glue_helper ablk_helper cryptd fb_sys_fops syscopyarea sysfillrect sysimgblt input_leds soundcore serio_raw i2c_piix4 mac_hid parport_pc ppdev lp parport autofs4 hid_generic usbhid psmouse hid pata_acpi fjes e1000 ahci libahci video [last unloaded: launch]
+[  506.010178] CPU: 1 PID: 4304 Comm: fio Tainted: G           OE   4.8.8SungHoHong+ #17
+[  506.430510] Hardware name: innotek GmbH VirtualBox/VirtualBox, BIOS VirtualBox 12/01/2006
+[  506.780096] task: ffffa09832d42ac0 task.stack: ffffa0981bd24000
+[  507.069951] RIP: 0010:[<ffffffff873ca98f>]  [<ffffffff873ca98f>] __blk_put_request+0x15f/0x1b0
+[  507.524197] RSP: 0018:ffffa0981bd279a8  EFLAGS: 00010083
+[  507.555778] RAX: ffffa09827d82e60 RBX: ffffa09802fc2b80 RCX: 0000000000000028
+[  507.815361] RDX: 0000000000000027 RSI: ffffa09802fc2b80 RDI: ffffa097f43e88e0
+[  508.246444] RBP: ffffa0981bd279c8 R08: 000000010000ad37 R09: ffffea0004dc2180
+[  508.626655] R10: 0000000000001000 R11: 0000000000001000 R12: 0000000002441000
+[  508.950371] R13: ffffa097f38a4048 R14: 0000000000000000 R15: ffffa09827d6fc00
+[  509.190761] FS:  00007ff1e847d700(0000) GS:ffffa09839d00000(0000) knlGS:0000000000000000
+[  509.489087] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  509.750580] CR2: 00007ff1cf429018 CR3: 000000015bd1f000 CR4: 00000000000406e0
+[  510.000538] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[  510.239475] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+[  510.516970] Stack:
+[  510.610301]  ffffa09802fc32b0 ffffa09802fc2b80 ffffa097f38a4048 ffffa097f43e88e0
+[  510.897994]  ffffa0981bd27a40 ffffffff873d4cb9 0000000000000000 0000100000000000
+[  511.095860]  0000000000001000 ffffea0004deffc0 0000000000001000 ffffea0004dc2180
+[  511.176911] Call Trace:
+[  511.179336]  [<ffffffff873d4cb9>] attempt_merge+0x3a9/0x620
+[  511.183304]  [<ffffffff873d4feb>] blk_attempt_req_merge+0x3b/0x50
+[  511.184868]  [<ffffffff873c733d>] __elv_add_request+0x27d/0x2c0
+[  511.188792]  [<ffffffff873ce9a0>] blk_flush_plug_list+0x220/0x250
+[  511.195233]  [<ffffffff873ceddc>] blk_finish_plug+0x2c/0x40
+[  511.200845]  [<ffffffff8726c2b6>] do_blockdev_direct_IO+0x1e66/0x3070
+[  511.204913]  [<ffffffff87267380>] ? I_BDEV+0x20/0x20
+[  511.250452]  [<ffffffff8726d4fa>] __blockdev_direct_IO+0x3a/0x40
+[  511.336506]  [<ffffffff87267ccc>] blkdev_direct_IO+0x4c/0x70
+[  511.441930]  [<ffffffff8719c658>] generic_file_read_iter+0x6b8/0x870
+[  511.581071]  [<ffffffff870efe63>] ? current_fs_time+0x23/0x30
+[  511.772348]  [<ffffffff872680c5>] blkdev_read_iter+0x35/0x40
+[  511.973733]  [<ffffffff87229bc0>] __vfs_read+0xe0/0x150
+[  512.217346]  [<ffffffff8722ad15>] vfs_read+0x95/0x140
+[  512.367586]  [<ffffffff8722c3d5>] SyS_pread64+0x95/0xb0
+[  512.526100]  [<ffffffff8785f536>] entry_SYSCALL_64_fastpath+0x1e/0xa8
+[  512.626262] Code: ff 49 8b 7d 00 48 89 de e8 7f cb ff ff 48 8b 83 a0 00 00 00 48 85 c0 0f 84 4f ff ff ff 48 8b 78 08 e8 a6 78 00 00 e9 41 ff ff ff <0f> 0b be 9d 05 00 00 48 c7 c7 df a0 cc 87 e8 2e 77 cb ff e9 e8
+[  513.250662] RIP  [<ffffffff873ca98f>] __blk_put_request+0x15f/0x1b0
+[  513.460729]  RSP <ffffa0981bd279a8>
+[  513.630310] fbcon_switch: detected unhandled fb_set_par error, error code -16
+[  513.971871] fbcon_switch: detected unhandled fb_set_par error, error code -16
+[  514.387348] ---[ end trace 1f10f6ea9ee1d036 ]---
